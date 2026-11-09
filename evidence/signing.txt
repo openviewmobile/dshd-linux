@@ -1,0 +1,11 @@
+# x64 artifact signing (2026-11-09)
+
+Mechanism verified with an ephemeral test ed25519 key:
+  fingerprint: 4D80B69980D4E23B6E00DF4FFCCDD72B613C96B0
+  gpg --verify SHA256SUMS.asc SHA256SUMS: Good signature
+  shasum -a 256 -c SHA256SUMS: all 4 artifacts OK
+
+Test signature kept only at evidence/SHA256SUMS.asc.test; it is NOT a release signature.
+Production requires the release owner GPG key:
+  DSHD_GPG_KEY=<fingerprint> scripts/sign-artifacts.sh
+  scripts/verify-artifacts.sh

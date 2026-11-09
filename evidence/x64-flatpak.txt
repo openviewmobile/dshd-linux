@@ -1,0 +1,17 @@
+# x64 Flatpak (2026-11-09)
+
+Artifact: dist/linux-x64/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.flatpak
+Size: 239 MiB
+SHA-256: 74b27f8653eec8328819ebbd56a6a6c735c8deb8dc207d8460d276e2117cb50b
+
+Build: privileged amd64 container, Flathub Platform/SDK 24.08 pre-seeded, host-side
+CONNECT proxy for HTTPS. electron-builder built AppImage + flatpak; deb/rpm were also
+rebuilt in the same run.
+
+Validation:
+- `flatpak install --user <bundle>` succeeded.
+- App ref: com.deepseek.harness/x86_64/master
+- Runtime: org.freedesktop.Platform/x86_64/24.08
+- Metadata command: electron-wrapper
+- `flatpak run` cannot start in Docker: bwrap reports PR_SET_SECCOMP EINVAL; GUI
+  acceptance must run on a real Linux host.

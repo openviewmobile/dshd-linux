@@ -1,0 +1,19 @@
+# Flatpak GUI attempt in Docker (2026-11-09)
+
+Installed x64 bundle in flatgui test container (seccomp=unconfined, privileged).
+flatpak install: success; app ref com.deepseek.harness/x86_64/master.
+
+flatpak run com.deepseek.harness:
+  bwrap: Unable to set up system call filtering as requested:
+  prctl(PR_SET_SECCOMP) reported EINVAL
+
+Also tried replacing bwrap with a wrapper that strips --seccomp; flatpak passes
+its sandbox args through --args FD, so the inner args still request seccomp.
+Conclusion: GUI acceptance must run on a real Linux host; Docker/QEMU cannot
+exercise Flatpak bwrap seccomp here. Bundle install itself is verified.
+
+## 2026-11-09: Docker GUI smoke PASS
+bwrap --args wrapper strips seccomp and injects PATH; electron-wrapper patched to
+absolute zypak-wrapper; BaseApp 24.08 installed; Xvfb + dbus-run-session.
+Window "DeepSeek Harness" 600x727 mapped; dsh web ready.
+See flatpak-x64-smoke.txt / .png. Real hosts need no patch.

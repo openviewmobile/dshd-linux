@@ -1,0 +1,32 @@
+# Linux x64 build attempt (2026-11-08)
+
+## Toolchain image (Docker/QEMU on arm64 macOS)
+
+docker build --platform linux/amd64 \
+  --build-arg NODE_IMAGE=node:24-bookworm-slim-amd64 \
+  -t dshd-linux-test:amd64 -f Dockerfile .
+
+uname -m: x86_64
+node -v: v24.22.2
+pnpm -v: 11.28.5
+image: dshd-linux-test:amd64 (Debian bookworm, apt via mirrors.aliyun.com)
+
+## Packaging
+
+pnpm --filter @deepseek-ai/dsh-desktop package:linux:x64
+
+- x64 node_modules reinstalled (`pnpm install --force --frozen-lockfile`)
+- build gates: 10 passed, 0 failed, 0 skipped (native addon, Host bundle, Desktop bundle,
+  Client bundle, Web build, checks)
+- electron-v44.7.0-linux-x64.zip downloaded via ELECTRON_MIRROR (npmmirror), 118 MB
+- initially blocked in `scripts/prepare-runtime.ts` because primary runtime assets came
+  from nodejs.org and github.com/astral-sh/python-build-standalone (both unreachable).
+
+## Resolution
+
+Added `0003-primary-runtime-mirrors.patch`: Node defaults to
+`https://npmmirror.com/mirrors/node`, Python standalone defaults to
+`https://registry.npmmirror.com/-/binary/python-build-standalone` (both overridable by
+`DSH_NODE_DIST_MIRROR` / `DSH_PYTHON_RELEASE_MIRROR`). With those mirrors, x64
+AppImage/deb/rpm were produced and the deb was launched under Xvfb; see
+[x64-artifacts.txt](x64-artifacts.txt). Flatpak still needs the Flathub runtime.

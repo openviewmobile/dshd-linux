@@ -1,0 +1,32 @@
+diff --git a/scripts/primary-runtime/prepare.ts b/scripts/primary-runtime/prepare.ts
+index 5437086c..399fff90 100644
+--- a/scripts/primary-runtime/prepare.ts
++++ b/scripts/primary-runtime/prepare.ts
+@@ -15,6 +15,9 @@ import { acceptsNpmPlatform } from '../npm-platform.ts'
+ import lock from './lock.json' with { type: 'json' }
+ import { prunePrimaryRuntimePythonTests } from './prune-python-tests.ts'
+ 
++const NODE_DIST_MIRROR = (process.env.DSH_NODE_DIST_MIRROR ?? 'https://npmmirror.com/mirrors/node').replace(/\/+$/u, '')
++const PYTHON_RELEASE_MIRROR = (process.env.DSH_PYTHON_RELEASE_MIRROR ?? 'https://registry.npmmirror.com/-/binary/python-build-standalone').replace(/\/+$/u, '')
++
+ /**
+  * Download or reuse an archive only when its bytes match the release lock.
+  * @param url - Locked archive URL.
+@@ -91,7 +94,7 @@ export async function downloadRuntimeNpmPackage(artifact: RuntimeNpmArchive, des
+ export async function downloadNodeRuntime(target: PrimaryRuntimeTarget, destination: string, cache: string): Promise<void> {
+   const artifact = lock.targets[target]
+   const filename = `node-v${lock.nodeVersion}-${artifact.nodeArchive}`
+-  const archive = await downloadPrimaryRuntimeAsset(`https://nodejs.org/dist/v${lock.nodeVersion}/${filename}`, artifact.nodeSha256, cache)
++  const archive = await downloadPrimaryRuntimeAsset(`${NODE_DIST_MIRROR}/v${lock.nodeVersion}/${filename}`, artifact.nodeSha256, cache)
+   const staging = mkdtempSync(join(tmpdir(), 'dsh-node-'))
+   try {
+     if (target === 'win-x64') await extractZip(archive, { dir: staging })
+@@ -109,7 +112,7 @@ export async function downloadNodeRuntime(target: PrimaryRuntimeTarget, destinat
+ async function pythonArchive(target: keyof typeof lock.targets, cache: string): Promise<string> {
+   const artifact = lock.targets[target]
+   const filename = `cpython-${lock.pythonVersion}+${lock.pythonRelease}-${artifact.pythonTarget}-install_only_stripped.tar.gz`
+-  return downloadPrimaryRuntimeAsset(`https://github.com/astral-sh/python-build-standalone/releases/download/${lock.pythonRelease}/${encodeURIComponent(filename)}`, artifact.pythonSha256, cache)
++  return downloadPrimaryRuntimeAsset(`${PYTHON_RELEASE_MIRROR}/${lock.pythonRelease}/${encodeURIComponent(filename)}`, artifact.pythonSha256, cache)
+ }
+ 
+ /**

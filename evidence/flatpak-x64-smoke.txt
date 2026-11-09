@@ -1,0 +1,14 @@
+# Flatpak x64 Docker GUI smoke (2026-11-09)
+
+Result: PASS. Screenshot: flatpak-x64-smoke.png
+Window: 0x200005 "DeepSeek Harness" 600x727+420+86
+App log contains "dsh web: http://127.0.0.1:<port>/?token=<redacted>".
+
+Test-only workaround (Docker kernel rejects bwrap seccomp):
+  - /usr/bin/bwrap wrapper strips --seccomp/--add-seccomp-fd from the --args FD
+  - injects PATH=/app/bin:/usr/bin:/bin
+  - electron-wrapper patched to call /app/bin/zypak-wrapper absolutely
+  - BaseApp org.electronjs.Electron2.BaseApp//24.08 installed
+  - Xvfb + dbus-run-session
+
+Real Linux hosts do NOT need the bwrap/electron-wrapper patches.

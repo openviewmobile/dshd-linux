@@ -1,0 +1,17 @@
+# Linux 桌面 Provider 配置（2026-11-09，deb GUI 实测）
+
+首启 Add API Key 页只有官方 key，没有 Base URL/模型字段 —— 这是 onboarding 的
+UX 缺口，不是能力缺失。
+
+跳过首启后：More → Settings → Models → Add model provider → Custom model API，
+可以看到 Provider ID / Display name / Base URL / API key / models 等字段，说明
+Linux 桌面具备自定义 OpenAI 兼容供应商的能力。
+
+截图：linux-ui-02-provider.png（首启只有 key）
+      linux-ui-14-settings.png（Settings）
+      linux-ui-15-models.png（Models）
+      linux-ui-16-add-provider.png（第三方/自定义入口）
+      linux-ui-17-custom-provider.png（自定义 Base URL 表单）
+
+未完成：用真实 baseURL/key 在 GUI 里保存并跑一轮对话 E2E。
+建议：把 Custom model API 入口前移到首启页，减少非技术用户的操作步骤。

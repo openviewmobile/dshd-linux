@@ -1,0 +1,27 @@
+# Linux 桌面逐界面截图（deb，Docker Xvfb）
+
+linux-ui-01-welcome.png          欢迎页，Sign in / Add API Key
+linux-ui-02-provider.png         Add API Key 页：只有 API key，没有 Base URL/模型
+linux-ui-03-home.png             Set up later 后首页
+linux-ui-04-plugins.png          插件页
+linux-ui-05-add-plugin.png       添加插件对话框
+linux-ui-06-install-progress.png 安装检查中
+linux-ui-07-install-result.png   Installed + Enable now
+linux-ui-08-plugin-enabled.png   小鲸鱼已启用（实验性区域出现宠物）
+linux-ui-09-whale-detail.png     插件详情/卸载按钮
+linux-ui-10-uninstall-confirm.png 卸载确认
+linux-ui-11-uninstalled.png      卸载后列表恢复
+
+结论：Linux 插件安装、启用、卸载全部成功，无需重启。
+已知功能缺口：Add API Key 页面只接受官方 key，不能配置 Base URL/模型；
+自定义 provider 需另行配置，尚未做进桌面 UI。
+
+linux-ui-12-settings-entry.png  跳过首启后的首页
+linux-ui-13-more-menu.png       More 菜单（Settings）
+linux-ui-14-settings.png        Settings General
+linux-ui-15-models.png          Models：DeepSeek + Add model provider
+linux-ui-16-add-provider.png    Add model provider：第三方/自定义
+linux-ui-17-custom-provider.png Custom model API：Provider ID/Base URL 等
+
+补充：首启页没有 Base URL，但 Settings→Models 支持自定义供应商；
+尚未做真实 baseURL/key 的保存+对话 E2E。

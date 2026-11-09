@@ -1,0 +1,66 @@
+# Linux formats verification (2026-11-08, arm64 Docker)
+
+## deb
+ new Debian package, version 2.0.
+ size 275097792 bytes: control archive=201568 bytes.
+     525 bytes,    14 lines      control              
+ 1249163 bytes,  8385 lines      md5sums              
+    3064 bytes,    57 lines   *  postinst             #!/bin/bash
+    1147 bytes,    26 lines   *  postrm               #!/bin/bash
+ Package: deepseek-harness
+ Version: 0.2.2~rc.1
+ License: MIT
+ Vendor: DeepSeek Harness <support@deepseek.com>
+ Architecture: arm64
+ Maintainer: DeepSeek Harness <support@deepseek.com>
+ Installed-Size: 1096299
+ Depends: libgtk-3-0, libnotify4, libnss3, libxss1, libxtst6, xdg-utils, libatspi2.0-0, libuuid1, libsecret-1-0
+ Recommends: libappindicator3-1
+ Section: default
+ Priority: optional
+ Homepage: https://github.com/deepseek-ai/deepseek-harness
+ Description: 
+   Electron desktop shell for a bundled dsh runtime and external plugins
+
+## rpm
+Name        : deepseek-harness
+Version     : 0.2.2~rc.1
+Release     : 1
+Architecture: aarch64
+Install Date: (not installed)
+Group       : default
+Size        : 1122629459
+License     : MIT
+Signature   : (none)
+Source RPM  : deepseek-harness-0.2.2~rc.1-1.src.rpm
+Build Date  : Sun Nov  8 14:55:03 2026
+Build Host  : 50b22d91bd49
+Relocations : / 
+Packager    : DeepSeek Harness <support@deepseek.com>
+Vendor      : DeepSeek Harness <support@deepseek.com>
+URL         : https://github.com/deepseek-ai/deepseek-harness
+Summary     : Electron desktop shell for a bundled dsh runtime and external plugins
+Description :
+Electron desktop shell for a bundled dsh runtime and external plugins
+
+## flatpak
+          ID: com.deepseek.harness
+         Ref: app/com.deepseek.harness/aarch64/master
+        Arch: aarch64
+      Branch: master
+      Origin: harness-origin
+  Collection: 
+Installation: user
+   Installed: 1.1?GB
+     Runtime: org.freedesktop.Platform/aarch64/24.08
+         Sdk: org.freedesktop.Sdk/aarch64/24.08
+
+      Commit: 83c0d3cdb39c800216b1677badfce6668e7423d162b7fea3889c9297cb6e2697
+     Subject: Export com.deepseek.harness
+        Date: 2026-11-08 15:01:32 +0000
+
+## sha256
+c93e1a4e9a8a67fe8f4d03e344911ac6bc1687acd7026a57f45cb2da2d4ec00d  deepseek-harness-0.2.2-rc.1-linux-arm64-unsigned.AppImage
+b9ef57a7a330dafe4afef2c3d041e78cb5364d6b1ef628d4e9d10d818818a5f9  deepseek-harness-0.2.2-rc.1-linux-arm64-unsigned.deb
+cac2bd37d5f711e5205c133e43709b53c5d0a28a4caa2361e5f9e8469425b1ca  deepseek-harness-0.2.2-rc.1-linux-aarch64-unsigned.rpm
+10e148aae34ccf969369c97f450824b57b51440f023057e0365e6eb63a7eeb4b  deepseek-harness-0.2.2-rc.1-linux-aarch64-unsigned.flatpak

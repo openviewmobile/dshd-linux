@@ -1,0 +1,44 @@
+# Linux x64 artifacts and GUI smoke (2026-11-08)
+
+## Artifacts
+```
+## x64 artifacts
+92fc7ff191fba41f16937bb8467f2ef3999f856f7bd9be599e62d418912ae4c5  dist/linux-x64/deepseek-harness-0.2.2-rc.1-linux-amd64-unsigned.deb
+cd9f8fc968d1278b6fc6919970c472064dc3d2e796315d36447ed323666a738d  dist/linux-x64/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.AppImage
+6568a2e6dd75854409683b938b00c1a44a33c6c8483253ab818b065db75b5670  dist/linux-x64/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.rpm
+
+total 1762440
+-rw-r--r--@ 1 figotan  staff   278M Nov  9 00:11 deepseek-harness-0.2.2-rc.1-linux-amd64-unsigned.deb
+-rwxr-xr-x@ 1 figotan  staff   354M Nov  9 00:11 deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.AppImage
+-rw-r--r--@ 1 figotan  staff   229M Nov  9 00:11 deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.rpm
+```
+
+## Package metadata
+- deb Architecture: amd64, Version: 0.2.2~rc.1
+- rpm Architecture: x86_64, Version: 0.2.2~rc.1
+
+## GUI smoke (deb installed in amd64 container, Xvfb 1440x900)
+Processes:
+- /usr/bin/deepseek-harness --no-sandbox --disable-gpu
+- /opt/DeepSeek Harness/deepseek-harness --type=zygote ...
+- desktop-host lib/index.js with profile /root/.dsh/profiles/desktop
+
+Host line:
+dsh web: http://127.0.0.1:37523/?token=<redacted>
+
+Screenshot: [linux-x64-gui.png](linux-x64-gui.png)
+
+DBus/login1 warnings are expected in a bare Docker Xvfb session; the window and Host started.
+
+## Flatpak x64
+
+The flatpak target was attempted with a privileged container and a Flathub remote.
+`org.freedesktop.Sdk/x86_64/24.08` was installed successfully, but the build then
+needed the 24.08 Platform runtime; downloading it stalled at ~40 MB in the current
+network, so the build was stopped. x64 Flatpak still needs a pre-seeded Platform
+runtime or a faster Flathub mirror. Arm64 Flatpak remains the verified Flatpak artifact.
+
+## Repeatable smoke
+
+`scripts/smoke-deb-x64.sh` reruns the deb install + Xvfb GUI check
+and writes `deb-x64-smoke.png`; verified with dsh web listening on a random port.
