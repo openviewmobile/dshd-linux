@@ -32,6 +32,15 @@ docker run --rm -it -v "$PWD:/work" -v dshd-linux-src:/src dshd-linux-test
 完整设计、测试与发布文档见 [docs/](docs/README.md)；产物格式和平台限制见下方
 “Linux 安装包格式”和“已知风险”。
 
+## 发行版支持
+
+当前**已产出** AppImage / deb / rpm / Flatpak（arm64 与 x64）；其中 deb、AppImage、
+Flatpak 有安装/启动验证，rpm 目前只做了元数据检查。Snap、Arch/AUR、openSUSE OBS
+仍是计划项，尚未实现；Alpine 因 musl 与 Electron 官方 glibc 二进制不兼容而明确
+不支持。分层建议、技术约束与 CI 验证方式见
+[docs/distro-packages.md](docs/distro-packages.md)。Flatpak 当前使用的 24.08 runtime
+已 EOL，升级前只应作为临时产物。
+
 目标：在官方 `apps/desktop` 基础上增加 **Linux x64/arm64 桌面发行版**，功能与 macOS/Windows 桌面端对齐；用 Docker 做可重复的构建/运行测试。
 
 ## 当前发现
