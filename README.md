@@ -29,7 +29,8 @@ docker run --rm -it -v "$PWD:/work" -v dshd-linux-src:/src dshd-linux-test
 /work/scripts/build-and-smoke.sh
 ```
 
-产物格式和平台限制见下方“Linux 安装包格式”和“已知风险”。
+完整设计、测试与发布文档见 [docs/](docs/README.md)；产物格式和平台限制见下方
+“Linux 安装包格式”和“已知风险”。
 
 目标：在官方 `apps/desktop` 基础上增加 **Linux x64/arm64 桌面发行版**，功能与 macOS/Windows 桌面端对齐；用 Docker 做可重复的构建/运行测试。
 
