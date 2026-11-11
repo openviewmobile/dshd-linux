@@ -86,7 +86,8 @@ jobs:
               esac
               src="/src/apps/desktop/.desktop-build/targets/linux-${suffix}/unsigned-artifacts"
               test -d "$src"
-              cp -a "$src/." "/work/dist/linux-${suffix}/"
+              find "$src" -maxdepth 1 -type f \( -name '*.AppImage' -o -name '*.deb' -o -name '*.rpm' -o -name '*.flatpak' \) \
+                -exec cp -a {} "/work/dist/linux-${suffix}/" \;
               chmod -R a+rX "/work/dist"
             '
 
@@ -133,11 +134,13 @@ jobs:
         run: |
           set -euo pipefail
           cd dist/release
+          find . -mindepth 1 -maxdepth 1 -type d -exec rm -rf {} +
           find . -maxdepth 1 -type f ! -name 'SHA256SUMS' ! -name '*.asc' -printf '%f\n' \
             | sort | xargs -r sha256sum > SHA256SUMS
           cp ../../keys/deepseek-harness-release-signing.asc .
           FPR="$(cat /tmp/gpg-fpr)"
           for f in *; do
+            [ -f "$f" ] || continue
             gpg --batch --yes --armor --local-user "$FPR" --detach-sign "$f"
           done
           gpg --verify SHA256SUMS.asc SHA256SUMS
