@@ -42,6 +42,14 @@ if [ "${SKIP_INSTALL:-0}" != "1" ]; then
   pnpm install --frozen-lockfile --reporter=append-only
 fi
 
+# The arm64 native LibreOfficeKit package is not published; pnpm leaves an
+# incomplete directory behind. Remove it so the runtime uses the bundled WASM
+# engine instead of failing in the packaged smoke test.
+if [ "$(uname -m)" = "aarch64" ] || [ "$(uname -m)" = "arm64" ]; then
+  find "$SRC" -type d -path '*/node_modules/@deepseek-ai/libreoffice-kit-linux-arm64-glibc'     -prune -exec rm -rf {} +
+  find "$SRC" -type d -path '*/node_modules/.pnpm/@deepseek-ai+libreoffice-kit-linux-arm64-glibc*'     -prune -exec rm -rf {} +
+fi
+
 pnpm --filter @deepseek-ai/dsh-desktop "package:linux:${SUFFIX}"
 echo "artifacts: $SRC/apps/desktop/.desktop-build/targets/linux-${SUFFIX}/unsigned-artifacts"
 find "$SRC/apps/desktop/.desktop-build/targets/linux-${SUFFIX}/unsigned-artifacts" -maxdepth 1 -type f -printf '%f\\n' | sort
