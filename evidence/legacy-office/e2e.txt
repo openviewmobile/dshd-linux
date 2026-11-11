@@ -1,0 +1,15 @@
+# Reproducible legacy Office test
+
+Command: scripts/e2e-legacy-office.sh /legacy /legacy/e2e-out
+Container: dshd-linux-test:amd64-e2e (deb installed), no X11 needed
+
+== .doc /legacy/SampleDoc.doc
+{"backend":"wasm","missingFonts":[],"outputPath":"/legacy/e2e-out/SampleDoc.pdf"}
+OK .doc -> /legacy/e2e-out/SampleDoc.pdf (21070 bytes)
+== .xls /legacy/1900DateWindowing.xls
+{"backend":"wasm","missingFonts":[],"outputPath":"/legacy/e2e-out/1900DateWindowing.pdf"}
+OK .xls -> /legacy/e2e-out/1900DateWindowing.pdf (10180 bytes)
+== .ppt /legacy/SampleShow.ppt
+{"backend":"wasm","missingFonts":[],"outputPath":"/legacy/e2e-out/SampleShow.pdf"}
+OK .ppt -> /legacy/e2e-out/SampleShow.pdf (28945 bytes)
+legacy Office conversions: PASS

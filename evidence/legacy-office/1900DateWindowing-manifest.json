@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "backend": "wasm",
+  "rasterEngine": "pdfium",
+  "source": "saved",
+  "inputPath": "/legacy/out/1900DateWindowing.pdf",
+  "sourceSha256": "0454c46255c6d166bc9754083c449031c77ef509ac99c45f626bc8864d84dd20",
+  "dpi": 110,
+  "pageCount": 1,
+  "images": [
+    {
+      "index": 1,
+      "page": 1,
+      "path": "/legacy/render/1900DateWindowing/page-0001.png",
+      "width": 935,
+      "height": 1210,
+      "rectangle": {
+        "x": 0,
+        "y": 0,
+        "width": 816,
+        "height": 1056
+      },
+      "byteLength": 9704
+    }
+  ],
+  "missingFonts": []
+}

@@ -1,30 +1,32 @@
-# Linux 架构
+# Linux architecture
 
-## 范围
+## Scope
 
-Linux x64/arm64 桌面 App，基于官方 `apps/desktop`（Electron）增加 Linux 构建与发布目标。
-不是重写 UI，也不是另做一个 Web 壳；目标是让官方桌面壳在 Linux 上产出可安装包并通过
-Xvfb 冒烟。
+A Linux x64/arm64 desktop app that adds Linux build and release targets on top of the official `apps/desktop` (Electron).
+It is not a UI rewrite, nor a separate web shell; the goal is to make the official desktop shell
+produce installable packages on Linux and pass the Xvfb smoke test.
 
-## 为什么是补丁而不是 fork
+## Why patches rather than a fork
 
-官方 Desktop 已内置 linux-x64/linux-arm64 的 primary runtime（Node 24、Python、pnpm 等），
-electron-builder 也有 Linux AppImage target；但发布目标只列 macOS/Windows，Linux 被
-`desktop-build-paths.mjs` 和 `package-target.ts` 排除。项目因此维护三个可审查补丁：
+The official Desktop already ships a linux-x64/linux-arm64 primary runtime (Node 24, Python, pnpm, etc.),
+and electron-builder also has a Linux AppImage target; but the release targets list only macOS/Windows, and Linux is
+excluded by `desktop-build-paths.mjs` and `package-target.ts`. The project therefore maintains four reviewable patches:
 
-| 补丁 | 作用 |
+| Patch | Purpose |
 |---|---|
-| `0001-linux-desktop-target.patch` | 注册 Linux target、Electron 路径、打包/冒烟脚本 |
-| `0002-linux-deb-rpm-flatpak.patch` | 增加 deb/rpm/Flatpak target 与 Flatpak 配置 |
-| `0003-primary-runtime-mirrors.patch` | primary runtime 走 npmmirror，减少 nodejs.org/GitHub 依赖 |
+| `0001-linux-desktop-target.patch` | Register the Linux target, Electron path, packaging/smoke scripts |
+| `0002-linux-deb-rpm-flatpak.patch` | Add deb/rpm/Flatpak targets and Flatpak 25.08 configuration |
+| `0004-flatpak-launch.patch` | Flatpak launcher: patch `PATH`, override metadata `command` |
+| `0003-primary-runtime-mirrors.patch` | Primary runtime uses npmmirror to reduce dependence on nodejs.org/GitHub |
 
-补丁只改构建/发布路径，不替换 dsh 内核或前端。上游移动后补丁可能需要重做。
+The patches only change build/release paths; they do not replace the dsh kernel or the frontend.
+If upstream moves, the patches may need to be redone.
 
-## 构建链路
+## Build pipeline
 
 ```
 Dockerfile (node:24-bookworm + Xvfb + flatpak/rpm)
-  └─ /src: 上游 deepseek-harness 克隆
+  └─ /src: upstream deepseek-harness clone
        ├─ git apply patches/
        ├─ pnpm install --frozen-lockfile
        └─ pnpm --filter @deepseek-ai/dsh-desktop package:linux:<arch>
@@ -32,20 +34,20 @@ Dockerfile (node:24-bookworm + Xvfb + flatpak/rpm)
                  AppImage / deb / rpm / flatpak
 ```
 
-`build-and-smoke.sh` 只构建 `--dir` unpacked 包并在 Xvfb 中启动；`package-formats.sh`
-生成安装包；`build-flatpak-x64.sh` 在预置 SDK 镜像中重建 x64 全格式并把产物取回
-`dist/linux-x64/`。
+`build-and-smoke.sh` only builds the `--dir` unpacked package and launches it in Xvfb; `package-formats.sh`
+produces installable packages; `build-flatpak-x64.sh` rebuilds all x64 formats in a preprovisioned SDK image and fetches the artifacts back into
+`dist/linux-x64/`.
 
-## 运行时
+## Runtime
 
-- Electron 壳启动内置 Node 的 `dsh web`，解析 token URL 后加载同一套 dsh Web UI；
-- 内置 Node 24 / pnpm / Python / ripgrep；`koffi`、`sharp`、`node-pty`、`grep`、`glob`
-  在 packaged smoke 中为 true；
-- Linux 上 Electron 需要 `--no-sandbox`（容器测试）；正式发行按要求配置 sandbox；
-- Office→PDF 缺少 Linux 原生 LibreOfficeKit，v1 显式跳过。
+- The Electron shell launches the bundled Node's `dsh web`, parses the token URL, and then loads the same dsh Web UI;
+- Bundled Node 24 / pnpm / Python / ripgrep; `koffi`, `sharp`, `node-pty`, `grep`, `glob`
+  are true in the packaged smoke test;
+- On Linux, Electron needs `--no-sandbox` (container tests); official releases configure the sandbox as required;
+- Office→PDF uses `@deepseek-ai/libreoffice-kit-wasm` (0.1.5) packaged into the runtime. Linux has no upstream native engine package, so `selectOfficeEngine()` selects WASM; GUI/CLI have been accepted against real conversions, and the Linux skip logic in the packaged smoke test has been removed from the patch (takes effect after the next rebuild).
 
-## 已知架构限制
+## Known architecture limitations
 
-- 上游没有官方 Linux 发布验收；补丁需要跟随上游变化。
-- 自动更新、代码签名、公证尚未接入；v1 为 unsigned 包 + 手动/自有更新。
-- Wayland、托盘、输入法、桌面集成尚未系统验证。
+- Upstream has no official Linux release acceptance; the patches need to follow upstream changes.
+- Auto-update, code signing and notarization are not yet integrated; v1 is unsigned packages + manual/self-hosted updates.
+- Wayland, tray, IME and desktop integration have not been systematically verified.

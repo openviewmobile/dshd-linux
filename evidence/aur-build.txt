@@ -1,0 +1,7 @@
+2a15229d5d846f591e58556871254c964474ec3d4028bc343941a5adce4e486e  dist/arch/deepseek-harness-bin-0.2.2_rc.1-1-x86_64.pkg.tar.zst
+package: deepseek-harness-bin-0.2.2_rc.1-1-x86_64.pkg.tar.zst
+installed: pacman -Udd -> deepseek-harness-bin 0.2.2_rc.1-1
+launch: /usr/bin/deepseek-harness --no-sandbox under Xvfb :99, CDP page + screenshot OK
+deps: nss gtk3 pango cairo alsa-lib mesa libxkbcommon libcups libxss at-spi2-core libxtst libsecret xdg-utils libx11 libxcomposite libxdamage libxrandr expat zlib libnotify xorg-server-xvfb
+note: package() now chmods launcher, crash handler and runtime bin/* so DSHD_APPDIR trees from non-Linux extractors stay runnable.
+screenshot: evidence/linux-arch-aur-start.png

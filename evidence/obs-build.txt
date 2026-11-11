@@ -1,0 +1,3 @@
+8ad2d6e81e178e8916eeb1222988e08ec597893067bed15e6a2fac14f5bf1d75  dist/obs/deepseek-harness-0.2.2~rc1-0.x86_64.rpm
+rpmbuild: Arch rpm-tools (rpm 4.x), --nodeps buildrequires
+payload: /opt/deepseek-harness, x86_64, 273 MB

@@ -1,72 +1,85 @@
-# Linux 发布
+# Linux release
 
-> 发行版/包格式的完整矩阵、分层建议与技术约束见
-> [distro-packages.md](distro-packages.md)。当前**只产出**了 AppImage / deb / rpm /
-> Flatpak（rpm 目前仅做元数据检查）；Snap、Arch/AUR、openSUSE OBS 是计划项，
-> Alpine 因 musl 与 Electron 官方 glibc 二进制不兼容而明确不支持。
+> For the complete distribution/package-format matrix, tier recommendations and technical constraints, see
+> [distro-packages.md](distro-packages.md); for the implemented channel files and per-item verification boundaries, see
+> [distro-packaging-implementation.md](distro-packaging-implementation.md).
+> x64/arm64 AppImage / deb / rpm / Flatpak have been produced; the AUR `-bin` package has been built, installed and launched;
+> the Snap `.snap` and OBS RPM have been built locally, but not `snap install`ed / built on the OBS server;
+> Nix / Gentoo have only templates and static checks. All release artifacts have detached GPG signatures. Alpine is
+> explicitly unsupported because musl is incompatible with Electron's official glibc binaries.
 
-## 产物
+## Artifacts
 
-`package-formats.sh` / `package:linux:<arch>` 生成：
+`package-formats.sh` / `package:linux:<arch>` produce:
 
-| 格式 | 用途 |
+| Format | Purpose |
 |---|---|
-| AppImage | 单文件，`chmod +x` 后运行 |
-| deb | Debian/Ubuntu 安装 |
-| rpm | Fedora/RHEL 安装 |
-| Flatpak | 单文件 bundle，手动 `flatpak install` |
+| AppImage | Single file, run after `chmod +x` |
+| deb | Debian/Ubuntu installation |
+| rpm | Fedora/RHEL installation |
+| Flatpak | Single-file bundle, manual `flatpak install` |
 
-arm64 与 x64 均已产出；x64 产物在 `dist/linux-x64/`，包含 `SHA256SUMS`。
+Both arm64 and x64 have been produced; the x64 artifacts are in `dist/linux-x64/` and include `SHA256SUMS`.
 
-## 构建
+## Build
 
 ```bash
 docker build -f Dockerfile -t dshd-linux-test .
 docker run --rm -it -v "$PWD:/work" -v dshd-linux-src:/src dshd-linux-test
-# 容器内
+# Inside the container
 /work/scripts/package-formats.sh
 ```
 
-x64 全格式重建：
+Full-format x64 rebuild:
 
 ```bash
 scripts/build-flatpak-x64.sh
 ```
 
-需要预置 `dshd-linux-test:flatpak-sdk` 镜像和 `dshd-linux-x64-src` 卷；脚本在宿主机
-启动 CONNECT 代理以加速 Flathub/Electron 下载。
+Requires the preprovisioned `dshd-linux-test:flatpak-sdk` image and the `dshd-linux-x64-src` volume; the script starts a CONNECT
+proxy on the host to speed up Flathub/Electron downloads.
 
-## 签名与校验
+## Signing and verification
 
 ```bash
+gpg --import keys/deepseek-harness-release-signing.asc
 scripts/verify-artifacts.sh
-DSHD_GPG_KEY=<release-fingerprint> scripts/sign-artifacts.sh
+DSHD_GPG_KEY=0E6023DF4DB8C68AA2202EF876CE5675AFF067FF scripts/sign-artifacts.sh
 ```
 
-`SHA256SUMS` 覆盖所有安装包；`evidence/SHA256SUMS.asc.test` 只是测试签名，不是发布签名。
+`SHA256SUMS` covers all x64/arm64 and AUR/Snap/OBS artifacts; every artifact and every
+`SHA256SUMS` has a detached `.asc`. For the release fingerprint, signing matrix and private key management, see
+[release-signing.md](release-signing.md); for the signature verification record of this release, see
+`evidence/release-signing.txt`.
 
-## 更新与分发
+## Updates and distribution
 
-- v1 是 unsigned 包，没有自动更新器；需要手动下载或自有 updater。
-- 正式发布应提供 GPG 签名、HTTPS 下载页和版本说明。
-- 不上架应用商店；通过 GitHub Releases/官网分发。
-- Flatpak runtime 当前为 24.08，但该分支已于 2026-09 EOL；在升级到 25.08/26.08
-  之前，Flatpak 只能作为内部/临时产物。系统依赖按 Electron 与目标 runtime 要求执行。
+- v1 has no platform code-signing certificate and no auto-updater; a manual download or a self-hosted updater is required.
+- GPG detached signatures, `SHA256SUMS` and release notes are provided; an official release still requires an HTTPS download page and an
+  offline release key.
+- Not listed in app stores; distributed via GitHub Releases/the official website.
+- The Flatpak manifest has been switched to the supported 25.08 (`patches/0002-linux-deb-rpm-flatpak.patch`;
+  `runtimeVersion`/`baseVersion` are both 25.08); **the x64 25.08 bundle has been rebuilt, installed and
+  launch-verified in Xvfb**, with runtime/sdk/base all at 25.08. Flatpak clears `PATH`, so
+  `patches/0004-flatpak-launch.patch` adds the `/app/lib/com.deepseek.harness/dsh-launch`
+  launcher and overrides the metadata `command`; **arm64 25.08 has also been built, installed and launched in Xvfb**;
+  the 24.08 bundle is a historical artifact only and must not be published externally.
+  Evidence: [evidence/flatpak-2508-verify.txt](../evidence/flatpak-2508-verify.txt).
 
-## 发行版支持分层
+## Distribution support tiers
 
-| 层级 | 渠道 | 状态 |
+| Tier | Channel | Status |
 |---|---|---|
-| Tier 1 | deb、rpm、AppImage、Flatpak bundle | 已产出；deb/AppImage/Flatpak 有启动验证，rpm 仅元数据 |
-| Tier 2 | Snap、Arch/AUR、openSUSE OBS | 研究/计划，尚未产出 |
-| Tier 3 | Gentoo、Nix | 机会性/社区驱动 |
-| 不支持 | Alpine（musl） | Electron 官方二进制为 glibc，无法直接运行 |
+| Tier 1 | deb, rpm, AppImage, Flatpak bundle | Produced for x64/arm64; deb/AppImage/Flatpak (25.08 on both architectures) have install/launch verification, while rpm has only metadata/unpack checks |
+| Tier 2 | Arch/AUR, Snap, openSUSE OBS | AUR `-bin` x86_64 has been built, installed with `pacman -Udd` and launched in Xvfb; Snap `.snap` has been produced (not `snap install`ed); OBS has been built locally with `rpmbuild` (not on the server) |
+| Tier 3 | Gentoo, Nix/NixOS | Templates written, static validation passes; not built on the respective distributions |
+| Unsupported | Alpine (musl) | Electron's official binaries are glibc-based and cannot run directly |
 
-完整矩阵、工作量估算和 CI 验证方式见 [distro-packages.md](distro-packages.md)。
+For the complete matrix, effort estimates and CI verification approach, see [distro-packages.md](distro-packages.md).
 
-## 当前限制
+## Current limitations
 
-- Office→PDF 缺 Linux 原生 LibreOfficeKit，明确跳过；
-- Flatpak 尚未提交 Flathub，且 24.08 runtime 已 EOL；
-- Snap / Arch / openSUSE OBS 尚未实现；
-- Wayland/托盘/输入法未验收。
+- Office→PDF uses the bundled WASM engine (no system LibreOffice dependency); DOCX/XLSX/PPTX and legacy DOC/XLS/PPT have been tested, though pixel-perfect fidelity is not guaranteed;
+- Flatpak x64/arm64 25.08 have both been verified; not submitted to Flathub;
+- Snap / OBS / Nix / Gentoo have only templates and static checks, with no native build/install;
+- Wayland/tray/IME have not been acceptance-tested; `desktopName` has been added but awaits confirmation on real hardware.

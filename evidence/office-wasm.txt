@@ -1,0 +1,17 @@
+# Linux Office to PDF via bundled WASM engine (2026-11-10)
+
+App: deepseek-harness 0.2.2-rc.1 (x64 deb, Xvfb, real provider deepseek-v4.1-flash)
+Engine: @deepseek-ai/libreoffice-kit 0.1.5, backend wasm
+
+docx -> 81fe3f11de01dd2dfa8f405f11539f907cde60b42cbbf6d7cb5024f6e5c456fb /tmp/out-docx.pdf
+  bytes: 12461
+xlsx -> b7283d17040e23bd8752f5c323d747b4ba70b68955c1064e0fddc27edc75c840 /tmp/out-xlsx.pdf
+  bytes: 11633
+pptx -> 1b01df0650fd42c3ee124e95f75a73e0651410a9a202557c8d00bf9f42e96a6a /tmp/out-pptx.pdf
+  bytes: 11479
+
+Agent E2E: prompt asked office-export-pdf for /root/input.docx;
+result /root/dshd-office-acceptance.pdf 12099 bytes, header %PDF-
+246cff2e8189e3daf3cf517a2c0bb7d3dc5178cd0b3a4f06a41dc6a4fd707931  /root/dshd-office-acceptance.pdf
+
+Screenshot: evidence/linux-pdf-export.png

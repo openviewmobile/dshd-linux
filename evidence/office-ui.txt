@@ -1,0 +1,25 @@
+# Office -> PDF through the packaged Linux UI (2026-11-10)
+
+Build: deb installed under /opt/DeepSeek Harness, provider deepseek-v4.1-flash.
+Skill: office-export-pdf (LibreOffice Kit wasm backend).
+Approvals: agent requested unconfined execution for file checks and conversion;
+each request was explicitly approved in the UI.
+
+| source | source bytes | PDF bytes | PDF signature | result |
+|---|---:|---:|---|---|
+| /root/input.docx | 37210 | 12099 | %PDF- | pass (pre-existing acceptance) |
+| /root/input.pptx | 28672 | 11479 | %PDF- | pass (this run) |
+| /root/input.xlsx | 4907 | 11633 | %PDF- | pass (this run) |
+
+UI evidence:
+- evidence/linux-pdf-pptx.png          conversation + input-ppt.pdf file card
+- evidence/linux-pdf-pptx-preview.png  right-side preview "DSHD Linux PPTX PDF 391"
+- evidence/linux-pdf-xlsx.png          conversation + input-xlsx.pdf file card
+- evidence/linux-pdf-xlsx-preview.png  right-side preview "DSHD Linux XLSX PDF 391"
+
+Notes:
+- PPTX conversion report: LibreOffice Kit (wasm), source file unchanged.
+- XLSX conversion report: wasm backend; missing Calibri replaced, Excel pagination/print
+  settings followed; text renders as "DSHD Linux XLSX PDF 391".
+- Approval dialogs are expected in this test image because workspace-write sandbox is
+  unavailable in the container; a normal desktop host uses its configured sandbox.

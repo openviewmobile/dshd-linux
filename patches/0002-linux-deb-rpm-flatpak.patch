@@ -2,11 +2,12 @@ diff --git a/apps/desktop/package.json b/apps/desktop/package.json
 index 453bf90c..828e5ba8 100644
 --- a/apps/desktop/package.json
 +++ b/apps/desktop/package.json
-@@ -2,6 +2,7 @@
+@@ -2,6 +2,8 @@
    "name": "@deepseek-ai/dsh-desktop",
    "description": "Electron desktop shell for a bundled dsh runtime and external plugins",
    "version": "0.2.2-rc.1",
 +  "homepage": "https://github.com/deepseek-ai/deepseek-harness",
++  "desktopName": "com.deepseek.harness",
    "private": true,
    "license": "MIT",
    "author": {
@@ -14,12 +15,13 @@ diff --git a/apps/desktop/scripts/electron-builder-config.mjs b/apps/desktop/scr
 index c47badd0..dadc6b4f 100644
 --- a/apps/desktop/scripts/electron-builder-config.mjs
 +++ b/apps/desktop/scripts/electron-builder-config.mjs
-@@ -257,7 +257,19 @@ export function createElectronBuilderConfig(
+@@ -257,7 +257,20 @@ export function createElectronBuilderConfig(
      linux: {
        executableName: 'deepseek-harness',
        category: 'Development',
 -      target: ['AppImage'],
 +      maintainer: 'DeepSeek Harness <support@deepseek.com>',
++      syncDesktopName: true,
 +      target: process.env.DSH_SKIP_FLATPAK === '1' ? ['AppImage', 'deb', 'rpm'] : ['AppImage', 'deb', 'rpm', 'flatpak'],
 +    },
 +    deb: {
@@ -29,8 +31,8 @@ index c47badd0..dadc6b4f 100644
 +      packageName: 'deepseek-harness',
 +    },
 +    flatpak: {
-+      runtimeVersion: '24.08',
-+      baseVersion: '24.08',
++      runtimeVersion: '25.08',
++      baseVersion: '25.08',
 +      useWaylandFlags: true,
      },
      nsis: {

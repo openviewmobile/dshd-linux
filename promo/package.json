@@ -1,0 +1,15 @@
+{
+  "name": "dshd-linux-promo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Deterministic Three.js/hyper-frame renderer for the DSHD for Linux promo video",
+  "scripts": {
+    "render": "node render.mjs",
+    "audio": "python3 make-audio.py"
+  },
+  "dependencies": {
+    "puppeteer-core": "24.10.2",
+    "three": "0.187.0"
+  }
+}

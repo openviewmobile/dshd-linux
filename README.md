@@ -1,165 +1,252 @@
-# DSHD for Linux（独立项目）
+# DSHD for Linux
 
-本目录是一个可单独复制、构建和测试的 Linux 桌面发行版项目：在官方
-`apps/desktop` 上增加 Linux x64/arm64 目标，并用 Docker + Xvfb 做可重复的打包/冒烟。
+> DSHD stands for **DeepSeek Harness Desktop**.
 
-- 补丁：`patches/`（Linux target、deb/rpm/Flatpak、运行时镜像）；
-- 构建：`Dockerfile` + `scripts/`；
-- 产物：AppImage / deb / rpm / Flatpak；
-- 证据：`evidence/`。
+English | [简体中文](README.zh-CN.md)
 
-## 目录
+![DSHD for Linux](promo/out/dshd-linux-social-preview.jpg)
+
+A standalone Linux desktop distribution project for DeepSeek Harness. It adds
+Linux x86_64/aarch64 targets to the official desktop application and provides
+reproducible packaging, smoke tests, acceptance evidence, and signed release
+artifacts.
+
+> This is a packaging and distribution repository, not the upstream application
+> source tree. The desktop runtime is bundled from the upstream release.
+
+## What is in this repository
+
+- Linux target patches in `patches/` (desktop target, deb/rpm/Flatpak, runtime
+  mirrors, Flatpak launcher);
+- AppImage, deb, rpm and Flatpak artifacts for x86_64 and aarch64;
+- Arch/AUR, Snap, openSUSE OBS, Nix/NixOS and Gentoo packaging definitions in
+  `packaging/`;
+- Docker + Xvfb build and smoke scripts in `scripts/`;
+- screen-by-screen acceptance evidence in `evidence/`;
+- Apache-2.0 project license plus the upstream MIT notice, contributor and
+  security guides, issue/PR templates, and CI;
+- detached GPG signatures for every release artifact and checksum file.
+
+## Repository layout
 
 ```
-Dockerfile              构建/测试镜像
-patches/                Linux target 与打包补丁
-scripts/                构建、打包、冒烟、签名与校验
-evidence/               Xvfb/GUI/产物证据
-dist/                   本地产物（gitignore）
+Dockerfile              build and test image
+patches/                Linux target and packaging patches
+scripts/                build, package, smoke, signing and verification
+evidence/               Xvfb/GUI/artifact evidence
+docs/                   design, acceptance, release and signing documentation
+dist/                   local artifacts (gitignored)
 ```
 
-## 快速开始
+## Quick start
 
 ```bash
-# 在项目根目录
+# From the repository root
 docker build -f Dockerfile -t dshd-linux-test .
 docker volume create dshd-linux-src
 docker run --rm -it -v "$PWD:/work" -v dshd-linux-src:/src dshd-linux-test
-# 容器内
+# Inside the container
 /work/scripts/build-and-smoke.sh
 ```
 
-完整设计、测试与发布文档见 [docs/](docs/README.md)；产物格式和平台限制见下方
-“Linux 安装包格式”和“已知风险”。
+See [docs/](docs/README.md) for the complete design, test and release
+documentation.
 
-## 发行版支持
+## Distribution support
 
-当前**已产出** AppImage / deb / rpm / Flatpak（arm64 与 x64）；其中 deb、AppImage、
-Flatpak 有安装/启动验证，rpm 目前只做了元数据检查。Snap、Arch/AUR、openSUSE OBS
-仍是计划项，尚未实现；Alpine 因 musl 与 Electron 官方 glibc 二进制不兼容而明确
-不支持。分层建议、技术约束与 CI 验证方式见
-[docs/distro-packages.md](docs/distro-packages.md)。Flatpak 当前使用的 24.08 runtime
-已 EOL，升级前只应作为临时产物。
+**Built:** AppImage, deb, rpm and Flatpak for both arm64 and x64. deb, AppImage
+and Flatpak have installation/startup verification; rpm has metadata and
+unpacking checks. The Flatpak manifest has moved from EOL 24.08 to 25.08 (see
+`patches/0002-linux-deb-rpm-flatpak.patch`); **x64 25.08 was rebuilt, installed
+and launched** (runtime/sdk/base all 25.08), and **both x64 and arm64 have
+installation/startup verification**. Evidence:
+[evidence/flatpak-2508-verify.txt](evidence/flatpak-2508-verify.txt),
+[evidence/flatpak-2508-arm64-verify.txt](evidence/flatpak-2508-arm64-verify.txt).
 
-目标：在官方 `apps/desktop` 基础上增加 **Linux x64/arm64 桌面发行版**，功能与 macOS/Windows 桌面端对齐；用 Docker 做可重复的构建/运行测试。
+**Added:** Arch/AUR `-bin`, Snap, openSUSE OBS, Nix/NixOS and Gentoo packaging
+files under `packaging/`. AUR x86_64 was built with `makepkg`, installed with
+`pacman -Udd`, and launched under Xvfb. The Snap `.snap` (manual squashfs) and
+the OBS spec (local `rpmbuild`) were built, but `snap install` and an OBS
+service build were not performed. Nix/Gentoo remain statically checked only.
+See [docs/distro-packaging-implementation.md](docs/distro-packaging-implementation.md)
+for per-channel status, commands and unverified boundaries, and
+[docs/distro-packages.md](docs/distro-packages.md) for format trade-offs.
+Alpine is explicitly unsupported because musl is incompatible with Electron's
+official glibc binaries.
 
-## 当前发现
+The goal is to add a **Linux x86_64/aarch64 desktop distribution** on top of the
+official `apps/desktop`, functionally aligned with the macOS and Windows desktop
+apps, with reproducible Docker-based build and runtime tests.
 
-- 官方 Desktop 已内置 **linux-x64 / linux-arm64** 的 primary runtime（Node 24、Python、pnpm、Office 依赖），见 `scripts/primary-runtime/lock.json`。
-- 官方 `electron-builder` 配置已有 `linux: { target: ['AppImage'] }`。
-- 但官方发布目标只列 `mac-arm64`、`mac-x64`、`win-x64`；Linux 被 `desktop-build-paths.mjs` 和 `package-target.ts` 明确排除。
-- 因此 Linux 不是“从零移植”，而是**把已有的运行时/打包能力接到发布目标上**，再补：
-  - Linux 目标注册；
-  - 打包/冒烟路径；
-  - Docker GUI 测试；
-  - updater/签名策略（v1 先 unsigned）。
+## What we found
 
-## 实机结果（2026-11-08）
+- The official Desktop already ships **linux-x64 / linux-arm64** primary
+  runtimes (Node 24, Python, pnpm, Office dependencies); see
+  `scripts/primary-runtime/lock.json`.
+- The official `electron-builder` configuration already has
+  `linux: { target: ['AppImage'] }`.
+- But the official release targets are only `mac-arm64`, `mac-x64` and
+  `win-x64`; Linux is explicitly excluded by `desktop-build-paths.mjs` and
+  `package-target.ts`.
+- Linux is therefore not a port from scratch: it wires the existing runtime and
+  packaging capability into release targets, then adds:
+  - Linux target registration;
+  - packaging and smoke-test paths;
+  - Docker GUI testing;
+  - updater policy; GPG detached signatures are implemented, platform code
+    signing is still not.
 
-**已在 Docker（`node:24-bookworm` / linux-arm64）+ Xvfb 中构建并启动 `linux-arm64` 桌面 App。**
+## Verified builds (2026-11-08)
 
-- 构建命令：`pnpm --filter @deepseek-ai/dsh-desktop package:linux:arm64:dir`
-- 产物：`.desktop-build/targets/linux-arm64/unsigned-artifacts/linux-arm64-unpacked/`
-- 启动：`./deepseek-harness --no-sandbox --disable-gpu`（Xvfb 1440×900）
-- 结果：欢迎页正常渲染，见 [evidence/linux-welcome.png](evidence/linux-welcome.png)。
-- AppImage 也已构建并同样启动验证：`deepseek-harness-0.2.2-rc.1-linux-arm64-unsigned.AppImage`（350 MB），见 [evidence/linux-appimage.png](evidence/linux-appimage.png)。
-- 本机可交付副本（已 gitignore）：`dist/linux-arm64/`，含 `SHA256SUMS`；SHA-256 `c93e1a4e9a8a67fe8f4d03e344911ac6bc1687acd7026a57f45cb2da2d4ec00d`。
-- Packaged runtime smoke 通过：`node 24.21.0`、`koffi`、`sharp`、`pty`、`pnpm`、`grep`、`glob` 均为 true；`dsh web` 能打印 token URL。
-- **限制**：上游没有 `libreoffice-kit-linux-arm64-glibc` 原生包，Office→PDF 在 Linux 上跳过；打包 smoke 已显式记录该 gap。v1 Linux 先不承诺 Office 导出。
+**The `linux-arm64` desktop app was built and launched in Docker
+(`node:24-bookworm` / linux-arm64) + Xvfb.**
 
-> AppImage 在容器内用 `--appimage-extract-and-run --no-sandbox` 验证；正式分发建议在目标发行版上直接双击/`chmod +x` 后运行。
+- Build command: `pnpm --filter @deepseek-ai/dsh-desktop package:linux:arm64:dir`
+- Output: `.desktop-build/targets/linux-arm64/unsigned-artifacts/linux-arm64-unpacked/`
+- Launch: `./deepseek-harness --no-sandbox --disable-gpu` under Xvfb 1440x900
+- Result: the welcome screen rendered correctly; see
+  [evidence/linux-welcome.png](evidence/linux-welcome.png).
+- The AppImage was also built and launch-verified:
+  `deepseek-harness-0.2.2-rc.1-linux-arm64-unsigned.AppImage` (350 MB); see
+  [evidence/linux-appimage.png](evidence/linux-appimage.png).
+- Local deliverable copy (gitignored): `dist/linux-arm64/` with `SHA256SUMS`;
+  SHA-256 `c93e1a4e9a8a67fe8f4d03e344911ac6bc1687acd7026a57f45cb2da2d4ec00d`.
+- Packaged runtime smoke passed: `node 24.21.0`, `koffi`, `sharp`, `pty`,
+  `pnpm`, `grep` and `glob` all true; `dsh web` prints a token URL.
+- **Office to PDF works.** The Linux package bundles
+  `@deepseek-ai/libreoffice-kit-wasm` (0.1.5, backend `wasm`) and requires no
+  system LibreOffice. DOCX/XLSX/PPTX to PDF was measured at 4-7 seconds and was
+  exercised in a real session through the `office-export-pdf` skill. All three
+  formats were converted through the packaged UI and previewed on the right.
+  Legacy DOC/XLS/PPT use the same WASM compatibility path and were verified per
+  format, with rendered-page evidence:
+  [evidence/legacy-office/README.txt](evidence/legacy-office/README.txt),
+  [evidence/office-ui.txt](evidence/office-ui.txt),
+  [evidence/linux-pdf-pptx-preview.png](evidence/linux-pdf-pptx-preview.png),
+  [evidence/linux-pdf-xlsx-preview.png](evidence/linux-pdf-xlsx-preview.png).
 
-> 这次验证说明 Linux 不是“改一行配置”：需要补目标注册、Electron 路径、打包/冒烟路径、record target 和类型声明；补丁已覆盖这些点。
+> AppImage was verified inside the container with
+> `--appimage-extract-and-run --no-sandbox`; for normal distribution, run it
+> directly or after `chmod +x` on the target distribution.
 
-## 与 macOS/Windows 桌面端的对齐度
+> Linux was not a one-line configuration change: target registration, Electron
+> paths, packaging/smoke paths, record targets and type declarations all needed
+> work. The patches cover those points.
 
-| 能力 | Linux 状态 |
+## Acceptance
+
+Real-provider chat, Office to PDF, plugins and settings are documented
+screen-by-screen in [docs/acceptance.md](docs/acceptance.md). The reproducible
+script is `scripts/e2e-provider.sh`.
+
+## Parity with the macOS/Windows desktop app
+
+| Capability | Linux status |
 |---|---|
-| Electron 壳、Host 启动、token→cookie、Web UI | ✅ 已启动截图 |
-| 内置 Node 24 / pnpm / Python / ripgrep | ✅ packaged smoke |
+| Electron shell, Host startup, token to cookie, Web UI | ✅ launched and screenshotted |
+| Bundled Node 24 / pnpm / Python / ripgrep | ✅ packaged smoke |
 | `koffi` / `sharp` / `node-pty` / `grep` / `glob` | ✅ true |
-| 首启欢迎页、Sign in / Add API Key | ✅ 已渲染；未做真实供应商 E2E |
-| 插件安装/启用/卸载 | ✅ deb GUI 实测（whale pet） |
-| 自动更新 / 签名 / 公证 | ❌ v1 无；unsigned AppImage |
-| Office→PDF | ❌ 缺 Linux 原生 LibreOfficeKit；会显式跳过 |
-| 托盘 / Wayland / 输入法 / 桌面集成 | ⏳ 未验证；`desktopName` 警告待修 |
-| x86_64 产物 | ⏳ 需在 x64 Linux 主机构建（脚本已支持） |
+| First-run welcome, Sign in / Add API Key | ✅ rendered; real-provider E2E passed ([acceptance](docs/acceptance.md)) |
+| Plugin install/enable/uninstall | ✅ deb GUI tested (whale pet) |
+| Auto-update / platform signing / notarization | ❌ none in v1; ✅ detached GPG signatures (`dist/*/*.asc`) |
+| Office to PDF | ✅ built-in WASM engine; DOCX/XLSX/PPTX and legacy DOC/XLS/PPT tested |
+| Tray / Wayland / IME / desktop integration | ⏳ unverified; `desktopName` added, needs real hardware |
+| x86_64 artifacts | ✅ deb/AppImage/rpm/Flatpak built and launch-verified |
 
+## Linux package formats (AppImage / deb / rpm / Flatpak)
 
-## Linux 安装包格式（AppImage / deb / rpm / Flatpak）
-
-`patches/0002-linux-deb-rpm-flatpak.patch` 在 Linux 目标上追加：
+`patches/0002-linux-deb-rpm-flatpak.patch` adds on top of the Linux target:
 
 ```js
 linux: {
+  maintainer: 'DeepSeek Harness <support@deepseek.com>',
+  syncDesktopName: true,
   target: ['AppImage', 'deb', 'rpm', 'flatpak'],
 },
 flatpak: {
-  runtimeVersion: '24.08',
-  baseVersion: '24.08',
+  runtimeVersion: '25.08',
+  baseVersion: '25.08',
   useWaylandFlags: true,
 },
 ```
 
-应用顺序：
+Patch order:
 
 ```bash
 git apply patches/0001-linux-desktop-target.patch
 git apply patches/0002-linux-deb-rpm-flatpak.patch
-pnpm --filter @deepseek-ai/dsh-desktop package:linux:arm64   # 或 linux:x64
+git apply patches/0004-flatpak-launch.patch
+pnpm --filter @deepseek-ai/dsh-desktop package:linux:arm64   # or linux:x64
 ```
 
-产物在 `.desktop-build/targets/linux-<arch>/unsigned-artifacts/`：
+Artifacts are written to
+`.desktop-build/targets/linux-<arch>/unsigned-artifacts/`:
 
-| 格式 | 产物 | 安装/运行 |
+| Format | Artifact | Install / run |
 |---|---|---|
-| AppImage | `...AppImage` | `chmod +x` 后直接运行 |
+| AppImage | `...AppImage` | `chmod +x` then run |
 | deb | `...deb` | `sudo apt install ./...deb` |
 | rpm | `...rpm` | `sudo dnf install ./...rpm` |
 | Flatpak | `...flatpak` | `flatpak install --user ./...flatpak` |
-| Flatpak x64 | 239 MB | `flatpak install --user` 成功；GUI 需真机 |
+| Flatpak x64 | 240 MB | 25.08 bundle; `flatpak install --user --bundle` succeeded; GUI launched under Xvfb (welcome screen), see acceptance evidence |
 
-**2026-11-08 arm64 实测**（Docker `dshd-linux-test:flatpak`）：
+**arm64 verification, 2026-11-08** (Docker `dshd-linux-test:flatpak`):
 
-| 格式 | 大小 | 验证 |
+| Format | Size | Verification |
 |---|---|---|
-| deb | 262 MB | `dpkg-deb -I`：Package `deepseek-harness`、Architecture `arm64`、Depends/Maintainer/Homepage 正常 |
-| rpm | 216 MB | `rpm -qpi`：Name `deepseek-harness`、Architecture `aarch64`、License/URL 正常 |
-| Flatpak | 226 MB | `flatpak install --user --no-deps` 成功；`flatpak run --command=sh ...` 沙箱执行成功 |
-| AppImage | 349 MB | 既有 Xvfb 启动验证 |
+| deb | 262 MB | `dpkg-deb -I`: Package `deepseek-harness`, Architecture `arm64`, Depends/Maintainer/Homepage OK |
+| rpm | 216 MB | `rpm -qpi`: Name `deepseek-harness`, Architecture `aarch64`, License/URL OK |
+| Flatpak | 226 MB | 24.08 historical artifact; `flatpak install` and sandbox execution passed (25.08 covered on x64) |
+| AppImage | 349 MB | existing Xvfb launch verification |
 
-SHA-256 见 [dist/linux-arm64/SHA256SUMS](dist/linux-arm64/SHA256SUMS)（本机产物目录已 gitignore）。
+SHA-256 values are in `dist/linux-arm64/SHA256SUMS`
+(local artifact directory is gitignored).
 
-> Docker 内安装/校验 Flatpak runtime 需要 `--privileged`（bubblewrap 创建 namespace）；普通 Linux 桌面不需要。首次构建 Flatpak 会从 Flathub 下载 `org.freedesktop.Platform` / `Sdk` / `Electron2.BaseApp` 24.08，约数 GB。
+> Installing/verifying the Flatpak runtime inside Docker requires `--privileged`
+> (bubblewrap creates namespaces); a normal Linux desktop does not. The first
+> Flatpak build downloads `org.freedesktop.Platform` / `Sdk` /
+> `Electron2.BaseApp` 25.08 from Flathub, several GB; 24.08 is EOL and retained
+> only as historical artifact documentation.
 
-Flatpak 由 electron-builder 26 的 `flatpak` target + `@malept/flatpak-bundler` 生成；构建机需要 `flatpak`、`flatpak-builder` 和 Flathub remote。Dockerfile 已包含这些依赖。Flatpak target 会按 `flatpak.runtimeVersion/baseVersion` 自动安装 `org.freedesktop.Platform`、`org.freedesktop.Sdk`、`org.electronjs.Electron2.BaseApp` 24.08；首次构建需要较大下载。
+Flatpak is produced by electron-builder 26's `flatpak` target plus
+`@malept/flatpak-bundler`; the build host needs `flatpak`, `flatpak-builder` and
+the Flathub remote, which the Dockerfile includes. The target installs
+`org.freedesktop.Platform`, `org.freedesktop.Sdk` and
+`org.electronjs.Electron2.BaseApp` 25.08 automatically. The first build needs a
+large download. `patches/0004-flatpak-launch.patch` adds
+`/app/lib/com.deepseek.harness/dsh-launch` because Flatpak clears `PATH`; the
+BaseApp `electron-wrapper` cannot find `zypak-wrapper` otherwise. The launcher
+explicitly adds `/app/bin` and overrides the metadata `command`.
 
-> deb/rpm 依赖 electron-builder 的 fpm 工具链；Flatpak 包是单文件 bundle，适合手动 `flatpak install`，尚未提交 Flathub。v1 仍 unsigned。
+> deb/rpm depend on electron-builder's fpm toolchain. The Flatpak output is a
+> single-file bundle intended for manual `flatpak install`; it is not submitted
+> to Flathub. GPG detached signatures are provided; platform code signing is not.
 
-## 补丁
+## Patches
 
-`patches/0001-linux-desktop-target.patch` 增加：
+`patches/0001-linux-desktop-target.patch` adds:
 
-- `linux-x64`、`linux-arm64` 构建目标；
-- `package:linux:*` 脚本；
-- Linux unsigned 本地环境；
-- Linux Electron 路径；
-- Linux packaged smoke 路径；
-- Linux 跳过 macOS/Windows 专有签名/策略。
+- `linux-x64` and `linux-arm64` build targets;
+- `package:linux:*` scripts;
+- Linux local environment (GPG detached signing, not platform code signing);
+- Linux Electron paths;
+- Linux packaged smoke paths;
+- Linux skips for macOS/Windows proprietary signing and policy.
 
-应用方式：
+Apply:
 
 ```bash
 git clone --depth 1 https://github.com/deepseek-ai/deepseek-harness.git /src
 cd /src
 git apply /work/patches/0001-linux-desktop-target.patch
 git apply /work/patches/0002-linux-deb-rpm-flatpak.patch
+git apply /work/patches/0004-flatpak-launch.patch
 ```
 
-## Docker 测试
+## Docker tests
 
 ```bash
-# 在项目根目录执行
+# From the repository root
 docker build -f Dockerfile -t dshd-linux-test .
 docker volume create dshd-linux-src
 
@@ -169,39 +256,47 @@ docker run --rm -it \
   dshd-linux-test
 ```
 
-容器内：
+Inside the container:
 
 ```bash
 /work/scripts/build-and-smoke.sh
 ```
 
-> 必须把 `/src` 放在 Docker named volume 里；macOS bind mount（如 `/tmp`）在 electron-builder 复制 Windows `node.cmd` 时会触发 `EACCES: permission denied, chmod`。
+> `/src` must be a Docker named volume. A macOS bind mount such as `/tmp` makes
+> electron-builder fail with `EACCES: permission denied, chmod` when copying the
+> Windows `node.cmd`.
 
-脚本会：
+The script:
 
-1. clone/更新上游到 `/src`；
-2. 应用补丁；
-3. `pnpm install`；
-4. `pnpm --filter @deepseek-ai/dsh-desktop package:linux:arm64:dir`（arm64 主机；`linux-x64` 同理）；
-5. 在 Xvfb 中启动 `linux-arm64-unpacked/deepseek-harness --no-sandbox`；
-6. 截图并检查窗口/日志。
+1. clones/updates upstream into `/src`;
+2. applies the patches;
+3. runs `pnpm install`;
+4. runs `pnpm --filter @deepseek-ai/dsh-desktop package:linux:arm64:dir`
+   (or `linux-x64`);
+5. launches `linux-arm64-unpacked/deepseek-harness --no-sandbox` under Xvfb;
+6. captures a screenshot and checks the window/log.
 
-生成 deb/rpm/Flatpak（不是 `--dir` 冒烟包）：
+Build deb/rpm/Flatpak (not the `--dir` smoke package):
 
 ```bash
 /work/scripts/package-formats.sh
 ```
 
-## 已知风险
+## Known risks
 
-- 首次 `pnpm install` 需要下载 Electron/Node/Python wheels，耗时较长。
-- Docker 内 Electron 需要 `--no-sandbox`；仅测试用。
-- Linux 更新器/签名未做；v1 为 unsigned AppImage/deb/rpm/Flatpak + 手动更新/自有 updater。
-- 官方 Desktop 的 Linux 代码路径存在，但没有官方发布验收，需要逐项补测试。
+- The first `pnpm install` downloads Electron/Node/Python wheels and can take a
+  long time.
+- Electron inside Docker needs `--no-sandbox`; test use only.
+- Linux auto-update and platform code signing are not implemented. Detached GPG
+  signatures and `SHA256SUMS` are available; updates remain manual or use a
+  custom updater.
+- The upstream Desktop has Linux code paths but no official Linux release
+  acceptance; each capability must be tested here.
 
-## x64 构建（2026-11-08）
+## x64 build (2026-11-08)
 
-Dockerfile 已参数化，可用国内源在 arm64 主机上构建 x86_64 工具链：
+The Dockerfile is parameterized so an x86_64 toolchain can be built on an arm64
+host with regional mirrors:
 
 ```bash
 docker build --platform linux/amd64 \
@@ -211,58 +306,85 @@ docker build --platform linux/amd64 \
   -t dshd-linux-test:amd64 -f Dockerfile .
 ```
 
-x64 依赖重装、Host/Desktop/Client/Web 构建门禁（10/10）、x64 Electron 和 primary
-runtime 均已通过；primary runtime 的 Node/Python 资产默认走 npmmirror（补丁 0003），
-不再依赖 nodejs.org/GitHub。已产出 x64 AppImage/deb/rpm/Flatpak。deb 在 amd64 Docker + Xvfb 中安装启动，
-窗口与本地 Host 正常；Flatpak bundle 安装验证通过，GUI 需真机（Docker 内 bwrap
-受 seccomp 限制）。
+x64 dependency installation, the Host/Desktop/Client/Web build gates (10/10),
+x64 Electron and the primary runtime all passed. Primary runtime Node/Python
+assets default to npmmirror (patch 0003), so nodejs.org/GitHub are not required.
+x64 AppImage/deb/rpm/Flatpak were produced. The deb was installed and launched
+under amd64 Docker + Xvfb with a working window and local Host. The Flatpak
+bundle installed successfully; 25.08 x64 completed GUI startup under Docker +
+Xvfb (with a test-only bwrap seccomp bypass; real desktops do not need it).
 
 ```bash
 pnpm --filter @deepseek-ai/dsh-desktop package:linux:x64
 ```
 
-x64 Flatpak：239 MiB，SHA-256 `74b27f86…`，安装后 ref 为
-`com.deepseek.harness/x86_64/master`、runtime 为
-`org.freedesktop.Platform/x86_64/24.08`；详见
-[evidence/x64-flatpak.txt](evidence/x64-flatpak.txt)。构建时容器 HTTPS 走宿主机
-CONNECT 代理，解决 Docker NAT 下载慢的问题。
+x64 Flatpak: 25.08 bundle, 240 MiB, SHA-256 `e3aadf99...` (use
+`dist/linux-x64/SHA256SUMS` as the source of truth). Installed ref is
+`com.deepseek.harness/x86_64/master`, runtime is
+`org.freedesktop.Platform/x86_64/25.08`; installation and GUI evidence is in
+[evidence/flatpak-2508-verify.txt](evidence/flatpak-2508-verify.txt). The build
+used a host CONNECT proxy to avoid slow Docker NAT downloads.
 
-重复 GUI 冒烟：
+Repeat the GUI smoke test:
 
 ```bash
 scripts/smoke-deb-x64.sh
 ```
 
-它会安装 x64 deb、启动 Xvfb、拉起 Electron 并截图到
-`evidence/deb-x64-smoke.png`。记录与截图见
-[evidence/x64-artifacts.txt](evidence/x64-artifacts.txt)、
-[evidence/linux-x64-gui.png](evidence/linux-x64-gui.png)。
+It installs the x64 deb, starts Xvfb, launches Electron and writes
+`evidence/deb-x64-smoke.png`. See
+[evidence/x64-artifacts.txt](evidence/x64-artifacts.txt) and
+[evidence/linux-x64-gui.png](evidence/linux-x64-gui.png).
 
-## GUI 冒烟
+## GUI smoke test
 
 ```bash
 scripts/smoke-flatpak-x64.sh
 ```
 
-脚本安装 Flatpak bundle，启动 Xvfb + dbus，验证窗口和 `dsh web:` 日志，并输出
-`evidence/flatpak-x64-smoke.png`。它只为 Docker 测试服务，不能作为发行版补丁。
+The script installs the Flatpak bundle, starts Xvfb + dbus, verifies the window
+and the `dsh web:` log line, and writes `evidence/flatpak-x64-smoke.png`. It
+exists only for Docker testing and is not a distribution patch.
 
-## x64 全格式重建
+## Rebuild all x64 formats
 
 ```bash
 scripts/build-flatpak-x64.sh
 ```
 
-脚本会在宿主机启动 CONNECT 代理，让 Docker 内的 Flathub/Electron 下载走宿主机网络，
-然后运行 `package:linux:x64` 并把 AppImage/deb/rpm/Flatpak + `SHA256SUMS` 取回 `dist/linux-x64`。
-需要预置好 `dshd-linux-test:flatpak-sdk` 镜像和 `dshd-linux-x64-src` 卷。
+The script starts a CONNECT proxy on the host so Flathub/Electron downloads from
+Docker use the host network, then runs `package:linux:x64` and copies
+AppImage/deb/rpm/Flatpak + `SHA256SUMS` back to `dist/linux-x64`. It expects the
+`dshd-linux-test:flatpak-sdk` image and the `dshd-linux-x64-src` volume to exist.
 
-## 校验与签名
+## Promo video
+
+A 50-second YouTube promo, thumbnail, subtitles and upload copy are in
+[`promo/`](promo/README.md); the storyboard and render pipeline are documented
+in [`docs/promo.md`](docs/promo.md). The video uses Three.js and deterministic
+hyper-frame transitions rather than a screen recording.
+
+## Verification and signing
 
 ```bash
+gpg --import keys/deepseek-harness-release-signing.asc
 scripts/verify-artifacts.sh
-DSHD_GPG_KEY=<release-fingerprint> scripts/sign-artifacts.sh
+DSHD_GPG_KEY=0E6023DF4DB8C68AA2202EF876CE5675AFF067FF scripts/sign-artifacts.sh
 ```
 
-`SHA256SUMS` 覆盖 AppImage/deb/rpm/Flatpak；签名脚本需要发布者 GPG 密钥。仓库里的
-`evidence/SHA256SUMS.asc.test` 只是测试签名，不是发布签名。
+`SHA256SUMS` and every artifact have detached `.asc` signatures. The public key
+fingerprint is `0E6023DF4DB8C68AA2202EF876CE5675AFF067FF`; see
+[docs/release-signing.md](docs/release-signing.md). The private key is not in the
+repository; replace it with an offline, passphrase-protected key before a
+production release. The `unsigned` filename suffix only means there is no
+platform code-signing certificate; it does not mean the detached signature is
+missing.
+
+## License
+
+Apache-2.0 for this repository. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
+Upstream DeepSeek Harness is MIT-licensed; the full upstream notice is in
+[LICENSES/MIT-DeepSeek-Harness.txt](LICENSES/MIT-DeepSeek-Harness.txt).
+Third-party components, including Electron, the bundled runtime,
+LibreOfficeKit WASM and Apache POI test fixtures, remain under their respective
+licenses.

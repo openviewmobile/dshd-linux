@@ -1,0 +1,34 @@
+1
+00:00:00,700 --> 00:00:05,300
+DSHD. DeepSeek Harness Desktop.
+Now on Linux.
+
+2
+00:00:05,900 --> 00:00:12,300
+A complete AI workspace.
+Real providers, sessions, files, and a terminal.
+
+3
+00:00:13,800 --> 00:00:18,000
+Bring your own API key.
+Keep the workspace on your machine.
+
+4
+00:00:21,400 --> 00:00:26,900
+Plugins, models, permissions, settings.
+One coherent desktop.
+
+5
+00:00:29,000 --> 00:00:36,000
+Office to PDF, with a bundled WASM engine.
+No system LibreOffice. No cloud round trip.
+
+6
+00:00:37,000 --> 00:00:43,950
+One app. AppImage, deb, rpm, Flatpak.
+X86 and ARM64.
+
+7
+00:00:45,000 --> 00:00:49,400
+DSHD for Linux.
+Release candidate, on GitHub.

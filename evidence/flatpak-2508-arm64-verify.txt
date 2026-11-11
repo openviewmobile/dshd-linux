@@ -1,0 +1,52 @@
+# Flatpak 25.08 arm64 verification (2026-11-10)
+
+bundle-sha256: 9885ddbf08535ab282f1eb1aa2ee63ce30f75f1b79bd5d147932956497fa8f58
+bundle-bytes: 237708616
+
+          ID: com.deepseek.harness
+         Ref: app/com.deepseek.harness/aarch64/master
+        Arch: aarch64
+      Branch: master
+      Origin: harness-origin
+  Collection: 
+Installation: user
+   Installed: 1.1?GB
+     Runtime: org.freedesktop.Platform/aarch64/25.08
+         Sdk: org.freedesktop.Sdk/aarch64/25.08
+
+      Commit: 6e512a44c24c93966decfd7850669962c67ecfcd7c9c8f697a19cc6b4fda6da7
+     Subject: Export com.deepseek.harness
+        Date: 2026-11-10 12:04:25 +0000
+
+[Application]
+name=com.deepseek.harness
+runtime=org.freedesktop.Platform/aarch64/25.08
+sdk=org.freedesktop.Sdk/aarch64/25.08
+base=app/org.electronjs.Electron2.BaseApp/aarch64/25.08
+command=/app/lib/com.deepseek.harness/dsh-launch
+
+[Context]
+shared=network;ipc;
+sockets=x11;wayland;pulseaudio;
+devices=dri;
+filesystems=home;
+
+[Session Bus Policy]
+org.freedesktop.Notifications=talk
+
+[Extension com.deepseek.harness.Debug]
+directory=lib/debug
+autodelete=true
+no-autodownload=true
+
+[Build]
+built-extensions=com.deepseek.harness.Debug;
+harness	com.deepseek.harness		master	harness-origin	user
+Electron2 application base	org.electronjs.Electron2.BaseApp		25.08	flathub	user
+Freedesktop Platform	org.freedesktop.Platform	freedesktop-sdk-25.08.19	25.08	flathub	user
+Freedesktop SDK	org.freedesktop.Sdk	freedesktop-sdk-25.08.19	25.08	flathub	user
+
+aarch64
+    PID     ELAPSED CMD
+    431       00:24 /app/lib/com.deepseek.harness/deepseek-harness --no-sandbox --disable-gpu --disable-dev-shm-usage --remote-debugging-port=9222
+    443       00:24 /app/lib/com.deepseek.harness/deepseek-harness --type=zygote --no-zygote-sandbox --no-sandbox

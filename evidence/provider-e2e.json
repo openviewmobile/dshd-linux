@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "expect": "391",
+  "elapsedSeconds": 4,
+  "model": "Select model, current deepseek-v4.1-flash",
+  "tail": "DSH Local Build\n0.2.2-rc.1-9e6b612-dirty\nNew Session\nCtrl\nN\nPlugins\nAutomation tasks\nMore\nWorkspaces\nroot\n验证 Provider 并计算乘积\nnow\nMore\n验证 Provider 并计算乘积\nStandard mode\nChat\nTrajectory\n请只回复一行：DSHD-LINUX-PROVIDER-OK，然后写出 17*23 的结果。\n07:49\nCompleted\nCompleted in 2s\n\nDSHD-LINUX-PROVIDER-OK 391\n\nUsage 9.8K tok\n07:49\nMessage or run a task, / commands, @ files or sessions\nWorkspace Write\ndeepseek-v4.1-flash\n1 turns 1 steps·268 tok/s\n9.8K tok·Cache hit 95%\n1%"
+}
+screenshot: evidence/linux-provider-e2e.png

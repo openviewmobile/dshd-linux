@@ -1,0 +1,7 @@
+Exact prompt sent to the real provider (verbatim, for forensic reference):
+
+请只回复一行：DSHD-LINUX-PROVIDER-OK，然后写出 17*23 的结果。
+
+English translation:
+
+Reply with only one line: DSHD-LINUX-PROVIDER-OK, then write out the result of 17*23.

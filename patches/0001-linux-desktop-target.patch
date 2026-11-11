@@ -584,59 +584,6 @@ index 6c3c12c..c624e54 100644
  const descriptor = await verifyDesktopRuntime(paths.dsh, readDesktopRuntime(paths.dsh).release.version,
    resolveDesktopPackageTarget(target))
  if (windows && !values.unsigned) await verifyWindowsCode(application)
-diff --git a/apps/desktop/scripts/smoke-runtime.ts b/apps/desktop/scripts/smoke-runtime.ts
-index bbc2d3e..9184259 100644
---- a/apps/desktop/scripts/smoke-runtime.ts
-+++ b/apps/desktop/scripts/smoke-runtime.ts
-@@ -165,26 +165,32 @@ export function apply(ctx) {
-     if (!installation.ok || !installed.ok || await installed.text() !== 'installed plugin ready') {
-       throw new Error(`desktop runtime: bundled pnpm plugin installation failed: ${installationResult}`)
-     }
--    for (const { extension } of inputs) {
--      const converted = await fetch(new URL(`/desktop-smoke-office/${extension}`, ready.url), {
-+    if (runtime.platform === 'linux') {
-+      // Upstream does not publish a native LibreOfficeKit engine for Linux; the WASM fallback is not
-+      // accepted by the packaged office skill yet. Keep the packaged smoke honest about the gap.
-+      console.log('desktop runtime: Office conversion skipped on Linux (no native LibreOfficeKit package)')
-+    } else {
-+      for (const { extension } of inputs) {
-+        const converted = await fetch(new URL(`/desktop-smoke-office/${extension}`, ready.url), {
-+          headers: { cookie }, signal: AbortSignal.timeout(120_000),
-+        })
-+        if (!converted.ok) throw new Error(`desktop runtime: ${extension} conversion failed: ${await converted.text()}`)
-+        const pdf = Buffer.from(await converted.arrayBuffer())
-+        if (!/^%PDF-\d\.\d/u.test(pdf.subarray(0, 8).toString())
-+          || !pdf.subarray(-1024).toString().trimEnd().endsWith('%%EOF')) {
-+          throw new Error(`desktop runtime: invalid ${extension} PDF output`)
-+        }
-+      }
-+      const cliResponse = await fetch(new URL('/desktop-smoke-office-cli', ready.url), {
-         headers: { cookie }, signal: AbortSignal.timeout(120_000),
-       })
--      if (!converted.ok) throw new Error(`desktop runtime: ${extension} conversion failed: ${await converted.text()}`)
--      const pdf = Buffer.from(await converted.arrayBuffer())
--      if (!/^%PDF-\d\.\d/u.test(pdf.subarray(0, 8).toString())
--        || !pdf.subarray(-1024).toString().trimEnd().endsWith('%%EOF')) {
--        throw new Error(`desktop runtime: invalid ${extension} PDF output`)
-+      if (!cliResponse.ok) throw new Error(`desktop runtime: skill CLI failed: ${await cliResponse.text()}`)
-+      const cliResult = await cliResponse.json() as { capabilities: { runtime: { cliPath: string } }; pdf: string }
-+      if (!cliResult.capabilities.runtime.cliPath.endsWith('cli.js') || Buffer.from(cliResult.pdf, 'base64').subarray(0, 5).toString() !== '%PDF-') {
-+        throw new Error('desktop runtime: skill CLI did not return capabilities and a PDF')
-       }
-+      console.log('desktop runtime: DOCX, XLSX, PPTX to PDF and skill CLI discovery passed')
-     }
--    const cliResponse = await fetch(new URL('/desktop-smoke-office-cli', ready.url), {
--      headers: { cookie }, signal: AbortSignal.timeout(120_000),
--    })
--    if (!cliResponse.ok) throw new Error(`desktop runtime: skill CLI failed: ${await cliResponse.text()}`)
--    const cliResult = await cliResponse.json() as { capabilities: { runtime: { cliPath: string } }; pdf: string }
--    if (!cliResult.capabilities.runtime.cliPath.endsWith('cli.js') || Buffer.from(cliResult.pdf, 'base64').subarray(0, 5).toString() !== '%PDF-') {
--      throw new Error('desktop runtime: skill CLI did not return capabilities and a PDF')
--    }
--    console.log('desktop runtime: DOCX, XLSX, PPTX to PDF and skill CLI discovery passed')
-   } finally {
-     clearTimeout(timer)
-     try { await host.stop() } finally {
 diff --git a/apps/desktop/scripts/upload-target.ts b/apps/desktop/scripts/upload-target.ts
 index a1afdb3..433636a 100644
 --- a/apps/desktop/scripts/upload-target.ts

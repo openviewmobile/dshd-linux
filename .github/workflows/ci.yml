@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs-and-scripts:
+    name: Docs, shell syntax and manifests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install manifest validator
+        run: python -m pip install --disable-pip-version-check pyyaml
+
+      - name: Check relative Markdown links
+        run: python3 scripts/check-doc-links.py
+
+      - name: Shell syntax
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' f; do
+            bash -n "$f"
+          done < <(find scripts packaging -type f \( -name '*.sh' -o -name 'PKGBUILD' -o -name '*.ebuild' \) -print0)
+
+      - name: Validate YAML manifests
+        run: |
+          python3 - <<'PY'
+          import pathlib, yaml
+          for path in sorted(pathlib.Path(".").rglob("*.yml")) + sorted(pathlib.Path(".").rglob("*.yaml")):
+              if ".git" in path.parts:
+                  continue
+              yaml.safe_load(path.read_text(encoding="utf-8"))
+              print(f"ok {path}")
+          PY
+
+      - name: Check Apache-2.0 headers and required release files
+        run: |
+          set -euo pipefail
+          for f in LICENSE NOTICE LICENSES/MIT-DeepSeek-Harness.txt CHANGELOG.md CONTRIBUTING.md SECURITY.md CODE_OF_CONDUCT.md; do
+            test -s "$f" || { echo "missing $f"; exit 1; }
+          done
+          test -s keys/deepseek-harness-release-signing.asc
+          test -s docs/release-signing.md
+          echo "release files present"

@@ -1,0 +1,39 @@
+# Release artifact signing (2026-11-10)
+
+key-id: 0E6023DF4DB8C68AA2202EF876CE5675AFF067FF
+key-uid: DeepSeek Harness Linux Release Signing (release artifacts only) <linux-release@deepseek-harness.invalid>
+key-type: ed25519 (sign) / cv25519 (encrypt)
+created: 2026-11-09 (GPG timestamp)
+expires: 2028-11-08
+public-key-sha256: 45d32a3b0285a3007513b45a670d1067d57aa441fe70b3f7209eae3dadf5ebcd
+
+## Detached signatures
+dist/arch/deepseek-harness-bin-0.2.2_rc.1-1-x86_64.pkg.tar.zst.asc: OK
+dist/arch/SHA256SUMS.asc: OK
+dist/linux-arm64/deepseek-harness-0.2.2-rc.1-linux-aarch64-unsigned.flatpak.asc: OK
+dist/linux-arm64/deepseek-harness-0.2.2-rc.1-linux-aarch64-unsigned.rpm.asc: OK
+dist/linux-arm64/deepseek-harness-0.2.2-rc.1-linux-arm64-unsigned.AppImage.asc: OK
+dist/linux-arm64/deepseek-harness-0.2.2-rc.1-linux-arm64-unsigned.deb.asc: OK
+dist/linux-arm64/SHA256SUMS.asc: OK
+dist/linux-x64/deepseek-harness-0.2.2-rc.1-linux-amd64-unsigned.deb.asc: OK
+dist/linux-x64/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.AppImage.asc: OK
+dist/linux-x64/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.flatpak.asc: OK
+dist/linux-x64/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.rpm.asc: OK
+dist/linux-x64/SHA256SUMS.asc: OK
+dist/obs/deepseek-harness-0.2.2~rc1-0.x86_64.rpm.asc: OK
+dist/obs/SHA256SUMS.asc: OK
+dist/snap/deepseek-harness_0.2.2-rc.1_amd64.snap.asc: OK
+dist/snap/SHA256SUMS.asc: OK
+
+## Checksums
+dist/linux-x64/deepseek-harness-0.2.2-rc.1-linux-amd64-unsigned.deb: OK
+dist/linux-x64/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.AppImage: OK
+dist/linux-x64/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.flatpak: OK
+dist/linux-x64/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.rpm: OK
+dist/linux-arm64/deepseek-harness-0.2.2-rc.1-linux-aarch64-unsigned.flatpak: OK
+dist/linux-arm64/deepseek-harness-0.2.2-rc.1-linux-aarch64-unsigned.rpm: OK
+dist/linux-arm64/deepseek-harness-0.2.2-rc.1-linux-arm64-unsigned.AppImage: OK
+dist/linux-arm64/deepseek-harness-0.2.2-rc.1-linux-arm64-unsigned.deb: OK
+dist/arch/deepseek-harness-bin-0.2.2_rc.1-1-x86_64.pkg.tar.zst: OK
+dist/snap/deepseek-harness_0.2.2-rc.1_amd64.snap: OK
+dist/obs/deepseek-harness-0.2.2~rc1-0.x86_64.rpm: OK

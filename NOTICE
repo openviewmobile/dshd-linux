@@ -1,0 +1,28 @@
+DSHD for Linux
+Copyright 2026 DSHD for Linux contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+This distribution bundles or repackages the following third-party components.
+Their licenses apply to those components; see the upstream notices shipped in
+the AppImage payload and the package metadata for the complete list.
+
+- DeepSeek Harness desktop runtime and CLI (upstream project), MIT License,
+  Copyright (c) 2026 DeepSeek. The full upstream license text is in
+  `LICENSES/MIT-DeepSeek-Harness.txt`.
+- Electron, Chromium, Node.js and their transitive dependencies, under their
+  respective upstream licenses (MIT/BSD/Apache-2.0 and others).
+- LibreOfficeKit WASM build used by @deepseek-ai/libreoffice-kit, Mozilla
+  Public License 2.0 (LibreOffice) and the licenses of its bundled components.
+- Apache POI test-data fixtures used only for interoperability testing in
+  evidence/legacy-office/ are Apache-2.0, Copyright The Apache Software
+  Foundation. They are test fixtures, not part of the shipped application.
+- Distribution packaging files may embed project names and icons that are
+  trademarks of their respective owners. No trademark license is granted.
+
+The release signing public key in keys/ is distributed under the same
+Apache-2.0 terms as this repository. The private key is not distributed.

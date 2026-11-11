@@ -1,81 +1,81 @@
-# ADR-0003：分叉上游仓库，而不是从零重写桌面壳
+# ADR-0003: Fork the Upstream Repository Instead of Rewriting the Desktop Shell from Scratch
 
-> 说明：本 ADR 来自跨端仓库；未随本项目迁移的文档引用以纯文本保留。
+> Note: This ADR comes from the cross-platform repository; references to documents that were not migrated with this project are retained as plain text.
 
-- 状态：提议（Proposed）
-- 日期：2026-11-08
-- 决策者：架构组
-- 相关：[ADR-0001](0001-electron-desktop.md)、[目标架构](../architecture.md)
+- Status: Proposed
+- Date: 2026-11-08
+- Deciders: Architecture Group
+- Related: [ADR-0001](0001-electron-desktop.md), [Target Architecture](../architecture.md)
 
-## 背景
+## Context
 
-上游 `deepseek-ai/deepseek-harness` 是 MIT 许可的 monorepo，包含：
+The upstream `deepseek-ai/deepseek-harness` is an MIT-licensed monorepo containing:
 
-- `apps/desktop`：Electron 壳，macOS/Windows 生产化；
-- `apps/desktop-host`：Electron RunAsNode 的私有 Host；
-- `apps/cli`：dsh CLI；
-- `packages/*`：300+ 包（Agent、工具、Web UI、插件）；
-- 打包脚本：运行时准备、Python/pnpm、签名、公证、更新、恢复。
+- `apps/desktop`: the Electron shell, productionized for macOS/Windows;
+- `apps/desktop-host`: the private Host for Electron RunAsNode;
+- `apps/cli`: the dsh CLI;
+- `packages/*`: 300+ packages (agent, tools, Web UI, plugins);
+- Packaging scripts: runtime preparation, Python/pnpm, signing, notarization, updates, recovery.
 
-从零写一个 Electron 壳只需几百行，但要达到“消费级可发布”需要重做上述所有平台工作。
+Writing an Electron shell from scratch takes only a few hundred lines, but reaching "consumer-grade releasable" requires redoing all of the above platform work.
 
-## 决策
+## Decision
 
-1. 以 **fork + 上游 remote** 的方式维护代码：
-   - `upstream` 指向 `deepseek-ai/deepseek-harness`；
-   - 固定 tag（如 `dsh-v0.2.2-rc.1`）；
-   - 产品化改动尽量放在 `products/dshd` 或 `patches/`。
-2. 不把上游代码复制成“无历史的新仓库”；保留 git 历史以便 rebase。
-3. 每个上游版本升级跑桌面冒烟与签名验证。
-4. 如果上游 license/维护策略变化，保留“最小自研壳”作为退出路径。
+1. Maintain the code using **fork + upstream remote**:
+   - `upstream` points to `deepseek-ai/deepseek-harness`;
+   - Pin a tag (e.g., `dsh-v0.2.2-rc.1`);
+   - Keep productization changes in `products/dshd` or `patches/` wherever possible.
+2. Do not copy the upstream code into a "new repository with no history"; retain the git history to enable rebasing.
+3. Run desktop smoke tests and signing verification for every upstream version upgrade.
+4. If the upstream license/maintenance policy changes, keep a "minimal in-house shell" as the exit path.
 
-## 理由
+## Rationale
 
-- **时间**：复用生产化壳，桌面 MVP 2–3 个月；从零 6–10 个月。
-- **质量**：上游已处理签名、公证、更新、恢复、单实例、登录 shell、运行时校验。
-- **成本**：少维护 70+ 平台文件与 CI 脚本。
-- **风险**：MIT 允许分叉；但品牌/官方服务需替换。
+- **Time**: reusing the productionized shell gives a desktop MVP in 2–3 months; from scratch takes 6–10 months.
+- **Quality**: upstream already handles signing, notarization, updates, recovery, single instance, login shell, and runtime verification.
+- **Cost**: 70+ platform files and CI scripts that do not need to be maintained.
+- **Risk**: MIT permits forking; however, branding/official services must be replaced.
 
-## 后果
+## Consequences
 
-### 正面
+### Positive
 
-- 快速交付；平台细节有上游背书。
-- 上游安全/兼容修复可通过 rebase 获得。
-- 团队聚焦品牌、引导、移动端、分发。
+- Fast delivery; platform details are backed by upstream.
+- Upstream security/compatibility fixes can be obtained through rebasing.
+- The team focuses on branding, onboarding, mobile, and distribution.
 
-### 负面
+### Negative
 
-- 需要维护补丁集；上游重构会造成冲突。
-- 上游 monorepo 大（pnpm workspace、数百包），构建慢。
-- 上游可能耦合官方账号/遥测/更新策略，需要剥离。
-- 品牌与官方服务不在 MIT 范围内。
+- Requires maintaining a patch set; upstream refactors will cause conflicts.
+- The upstream monorepo is large (pnpm workspace, hundreds of packages), so builds are slow.
+- Upstream may be coupled to official accounts/telemetry/update policies, which must be stripped out.
+- Branding and official services are not covered by the MIT license.
 
-### 缓解
+### Mitigation
 
-- 补丁最小化；产品代码独立 package；CI 检查补丁可应用。
-- 固定上游版本，按季度升级；不追 master。
-- 建立“上游变更看板”：安全、API、桌面、Web。
-- 法务审查品牌/第三方许可证（Electron、Python、LibreOffice、字体）。
+- Minimize patches; keep product code in a separate package; have CI check that patches apply.
+- Pin upstream versions and upgrade quarterly; do not track master.
+- Establish an "upstream change board": security, API, desktop, Web.
+- Legal review of branding/third-party licenses (Electron, Python, LibreOffice, fonts).
 
-## 备选方案
+## Alternatives
 
-| 方案 | 优点 | 缺点 |
+| Option | Pros | Cons |
 |---|---|---|
-| 从零写 Electron 壳 | 代码可控、包体可裁剪 | 6–10 个月；平台坑多；更新/签名/恢复要重做 |
-| 直接使用官方 Desktop + 插件 | 最快 | 无法品牌化/定制首启/移动端；依赖官方服务 |
-| 只做 Web + PWA | 最简单 | 没有本地文件/终端；不符合桌面 App 需求 |
-| Tauri 重写 | 包体小 | 需要 Node sidecar；上游资产不可复用 |
+| Write an Electron shell from scratch | Code is controllable; package size can be trimmed | 6–10 months; many platform pitfalls; updates/signing/recovery must be redone |
+| Use the official Desktop directly + plugins | Fastest | Cannot rebrand/customize first-run/mobile; depends on official services |
+| Web + PWA only | Simplest | No local files/terminal; does not meet desktop app requirements |
+| Tauri rewrite | Small package size | Requires a Node sidecar; upstream assets cannot be reused |
 
-## 验证方式
+## Validation
 
-- M0：克隆上游、构建 macOS desktop、打未签名 DMG。
-- 打一个品牌补丁（应用名/图标/关于页），确认补丁集可维护。
-- 升级到下一个 rc，测量 rebase 冲突与冒烟时间。
+- M0: clone upstream, build the macOS desktop, and produce an unsigned DMG.
+- Apply one branding patch (app name/icon/about page) and confirm that the patch set is maintainable.
+- Upgrade to the next rc and measure rebase conflicts and smoke-test time.
 
-## 复审条件
+## Review Conditions
 
-- 上游 desktop 不再维护/许可变更；
-- 补丁冲突成本超过自研成本；
-- 产品需要大规模裁剪（如去掉 Python/Office/插件），分叉反而累赘；
-- 品牌/法务要求完全独立代码库。
+- Upstream desktop is no longer maintained/license changes;
+- Patch conflict costs exceed the cost of in-house development;
+- The product requires large-scale trimming (e.g., removing Python/Office/plugins), making the fork a burden instead;
+- Branding/legal requirements demand a fully independent codebase.

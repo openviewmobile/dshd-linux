@@ -1,0 +1,60 @@
+# Flatpak 25.08 verification (2026-11-10)
+
+bundle: deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.flatpak
+bundle-sha256: e3aadf99d9a00abe8151a6f43c85a3d453ed21545a3c6779918f9cd0f27fc1e1
+bundle-bytes: 251574488
+
+## flatpak info
+          ID: com.deepseek.harness
+         Ref: app/com.deepseek.harness/x86_64/master
+        Arch: x86_64
+      Branch: master
+      Origin: harness1-origin
+  Collection: 
+Installation: user
+   Installed: 1.2?GB
+     Runtime: org.freedesktop.Platform/x86_64/25.08
+         Sdk: org.freedesktop.Sdk/x86_64/25.08
+
+      Commit: 3895882c1cc3391e09742b07b93c0936bd8c5a96669d061d4c67592994d4c205
+     Subject: Export com.deepseek.harness
+        Date: 2026-11-10 09:11:24 +0000
+
+## metadata
+[Application]
+name=com.deepseek.harness
+runtime=org.freedesktop.Platform/x86_64/25.08
+sdk=org.freedesktop.Sdk/x86_64/25.08
+base=app/org.electronjs.Electron2.BaseApp/x86_64/25.08
+command=/app/lib/com.deepseek.harness/dsh-launch
+
+[Context]
+shared=network;ipc;
+sockets=x11;wayland;pulseaudio;
+devices=dri;
+filesystems=home;
+
+[Session Bus Policy]
+org.freedesktop.Notifications=talk
+
+[Extension com.deepseek.harness.Debug]
+directory=lib/debug
+autodelete=true
+no-autodownload=true
+
+[Build]
+built-extensions=com.deepseek.harness.Debug;
+## installed runtime refs
+harness	com.deepseek.harness		master	harness1-origin	user
+Electron2 application base	org.electronjs.Electron2.BaseApp		25.08	flathub	user
+Freedesktop Platform	org.freedesktop.Platform	freedesktop-sdk-25.08.19	25.08	flathub	user
+Mesa	org.freedesktop.Platform.GL.default	26.2.5	25.08	flathub	user
+Mesa (Extra)	org.freedesktop.Platform.GL.default	26.2.5	25.08-extra	flathub	user
+Codecs Extra Extension	org.freedesktop.Platform.codecs-extra		25.08-extra	flathub	user
+Freedesktop SDK	org.freedesktop.Sdk	freedesktop-sdk-25.08.19	25.08	flathub	user
+freedesktop development platform translations	org.freedesktop.Sdk.Locale		25.08	flathub	user
+
+## running process
+    PID     ELAPSED CMD
+    149       00:43 deepseek-harness --no-sandbox --disable-gpu --disable-dev-shm-usage --remote-debugging-port=9222
+    161       00:43 /app/lib/com.deepseek.harness/deepseek-harness --type=zygote --no-zygote-sandbox --no-sandbox

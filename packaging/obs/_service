@@ -1,0 +1,36 @@
+<services>
+  <!--
+    openSUSE OBS source service.
+
+    This is a BINARY REPACKAGE: the service downloads the unsigned Fedora-style
+    RPMs produced by electron-builder and the spec unpacks them with
+    rpm2cpio/cpio, then installs the payload under /opt/deepseek-harness with
+    OBS-owned wrapper/desktop files.  There is no compilation.
+
+    Pin both architectures so `osc service run` / OBS workers fetch exactly the
+    reviewed artifacts.  Update the version, filenames and checksums together
+    with deepseek-harness.spec.
+  -->
+  <service name="download_url">
+    <param name="protocol">https</param>
+    <param name="host">github.com</param>
+    <param name="path">/deepseek-ai/deepseek-harness/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.rpm</param>
+    <param name="filename">deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.rpm</param>
+  </service>
+  <service name="verify_file">
+    <param name="file">deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.rpm</param>
+    <param name="verifier">sha256</param>
+    <param name="checksum">6568a2e6dd75854409683b938b00c1a44a33c6c8483253ab818b065db75b5670</param>
+  </service>
+  <service name="download_url">
+    <param name="protocol">https</param>
+    <param name="host">github.com</param>
+    <param name="path">/deepseek-ai/deepseek-harness/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-aarch64-unsigned.rpm</param>
+    <param name="filename">deepseek-harness-0.2.2-rc.1-linux-aarch64-unsigned.rpm</param>
+  </service>
+  <service name="verify_file">
+    <param name="file">deepseek-harness-0.2.2-rc.1-linux-aarch64-unsigned.rpm</param>
+    <param name="verifier">sha256</param>
+    <param name="checksum">cac2bd37d5f711e5205c133e43709b53c5d0a28a4caa2361e5f9e8469425b1ca</param>
+  </service>
+</services>

@@ -1,17 +1,30 @@
-# Linux 项目文档
+# Linux project documentation
 
-| 文档 | 内容 |
+Language: [English README](../README.md) | [Chinese README](../README.zh-CN.md)
+
+| Document | Contents |
 |---|---|
-| [architecture.md](architecture.md) | 上游 desktop 分叉、Linux target、运行时与打包链路 |
-| [testing.md](testing.md) | Docker/Xvfb 冒烟、格式验证、证据 |
-| [release.md](release.md) | AppImage/deb/rpm/Flatpak、签名、更新与限制 |
-| [distro-packages.md](distro-packages.md) | 发行版/包格式矩阵、分层建议、技术约束与 CI 验证 |
-| [research/official-desktop-audit.md](research/official-desktop-audit.md) | 官方桌面端审计与 Linux 发布缺口 |
-| [adr/](adr/) | 相关 ADR（Electron、分叉上游、开源分发、全本地范围） |
+| [architecture.md](architecture.md) | Upstream desktop fork, Linux target, runtime and packaging pipeline |
+| [testing.md](testing.md) | Docker/Xvfb smoke test, real-provider E2E, format verification, evidence |
+| [acceptance.md](acceptance.md) | Screen-by-screen acceptance of real conversations, Office→PDF, plugins and settings |
+| [distro-packaging-implementation.md](distro-packaging-implementation.md) | AUR/Snap/OBS/Nix/Gentoo files, commands and verification boundaries |
+| [release.md](release.md) | AppImage/deb/rpm/Flatpak, signing, updates and limitations |
+| [release-signing.md](release-signing.md) | Release key, signing matrix, verification and private key management |
+| [release-checklist.md](release-checklist.md) | Pre-release/post-release checklist |
+| [github-release.md](github-release.md) | GitHub repository settings, tags and Release upload |
+| [github-release-materials.md](github-release-materials.md) | Ready materials and the remaining publish blockers |
+| [releases/v0.2.2-rc.1.md](releases/v0.2.2-rc.1.md) | Release notes and checksums for the current version |
+| [promo.md](promo.md) | YouTube promo storyboard, render pipeline and accuracy boundaries |
+| [distro-packages.md](distro-packages.md) | Distribution/package-format matrix, tier recommendations, technical constraints and CI verification |
+| [research/official-desktop-audit.md](research/official-desktop-audit.md) | Audit of the official desktop app and Linux release gaps |
+| [adr/](adr/) | Related ADRs (Electron, forking upstream, open-source distribution, fully local scope) |
 
-发行版支持分三层：Tier 1 为已产出的 AppImage/deb/rpm/Flatpak；Tier 2 为计划中的
-Snap、Arch/AUR、openSUSE OBS；Tier 3 为 Gentoo、Nix（机会性），Alpine 因 musl 与
-Electron 官方 glibc 二进制不兼容而**明确不支持**。详见
-[distro-packages.md](distro-packages.md)。
+Distribution support has three tiers: Tier 1 covers the AppImage/deb/rpm/Flatpak
+already produced; Tier 2 covers Arch/AUR (package built, installed and launched),
+Snap (`.snap` produced, not `snap install`ed), and openSUSE OBS (local `rpmbuild`
+only, no OBS server-side build); Tier 3 covers Gentoo and Nix (templates written,
+statically validated), while Alpine is **explicitly unsupported** because musl is
+incompatible with Electron's official glibc binaries. See
+[distro-packaging-implementation.md](distro-packaging-implementation.md).
 
-项目入口与命令见 [../README.md](../README.md)。
+Project entry point and commands: [../README.md](../README.md).

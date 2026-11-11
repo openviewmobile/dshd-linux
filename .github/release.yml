@@ -1,0 +1,10 @@
+changelog:
+  categories:
+    - title: Packaging and distributions
+      labels: ["packaging", "flatpak", "snap", "obs", "aur", "nix", "gentoo"]
+    - title: Desktop and office
+      labels: ["desktop", "office", "pdf"]
+    - title: Documentation and CI
+      labels: ["documentation", "ci"]
+    - title: Other changes
+      labels: ["*"]

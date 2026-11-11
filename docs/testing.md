@@ -1,55 +1,93 @@
-# Linux 测试
+# Linux testing
 
 ## Docker + Xvfb
 
 ```bash
-# 项目根目录
+# Project root
 docker build -f Dockerfile -t dshd-linux-test .
 docker volume create dshd-linux-src
 docker run --rm -it \
   -v "$PWD:/work" \
   -v dshd-linux-src:/src \
   dshd-linux-test
-# 容器内
+# Inside the container
 /work/scripts/build-and-smoke.sh
 ```
 
-脚本会克隆上游、应用补丁、`pnpm install`、构建 `linux-<arch>:dir`，在 Xvfb 1440×900
-中启动 App，检查进程存活并截图。
+The script clones upstream, applies the patches, runs `pnpm install`, builds `linux-<arch>:dir`, launches the app in Xvfb at 1440×900,
+checks that the process is alive, and takes a screenshot.
 
-> `/src` 必须使用 Docker named volume；macOS bind mount 会在 electron-builder 复制
-> Windows `node.cmd` 时触发 `EACCES: permission denied, chmod`。
+> `/src` must use a Docker named volume; a macOS bind mount triggers `EACCES: permission denied, chmod`
+> when electron-builder copies the Windows `node.cmd`.
 
-## 格式验证
+## Format verification
 
 ```bash
-# 在项目根目录
+# In the project root
+gpg --import keys/deepseek-harness-release-signing.asc
 scripts/verify-artifacts.sh
 
-# deb GUI 冒烟（x64）
+# deb GUI smoke test (x64)
 scripts/smoke-deb-x64.sh
 
-# Flatpak GUI 冒烟（x64，Docker 需要能创建 namespace）
+# Flatpak 25.08 GUI smoke test (x64; inside Docker a test-only bwrap wrapper is needed to bypass seccomp)
+flatpak install --user --bundle dist/linux-x64/*.flatpak
+flatpak info --show-metadata com.deepseek.harness | grep -E '^(runtime|base|command)='
+Xvfb :99 -screen 0 1440x900x24 &
+DISPLAY=:99 flatpak run com.deepseek.harness --no-sandbox --disable-gpu --disable-dev-shm-usage
 scripts/smoke-flatpak-x64.sh
 ```
 
-已验证：
+Verified:
 
-- arm64 deb/rpm/Flatpak 结构检查；
-- deb 在 amd64 Docker + Xvfb 中安装并启动，窗口与本地 Host 正常；
-- Flatpak bundle 安装验证通过，GUI 需真机（Docker seccomp 限制 bwrap）；
-- AppImage 在 arm64/ x64 的 Xvfb 中启动；
-- x64 `verify-artifacts.sh` 对现有 AppImage/deb/rpm/Flatpak 全部 `OK`。
+- arm64 deb/rpm/Flatpak structure checks; arm64 Flatpak 25.08 has completed install + Xvfb launch;
+- deb installs and starts in amd64 Docker + Xvfb, with the window and local host working normally;
+- Flatpak 25.08 x64/arm64 bundle install, metadata/runtime checks and Xvfb GUI launch pass (inside Docker a test-only bwrap wrapper is needed to bypass seccomp; not needed on real hardware);
+- AppImage launches in Xvfb on arm64/x64;
+- `SHA256SUMS` and 16 detached signatures for x64/arm64, AUR, Snap and OBS all pass
+  `verify-artifacts.sh`; the record is in `evidence/release-signing.txt`;
+- legacy `.doc/.xls/.ppt` converted format by format and render-checked; reproducible script
+  `scripts/e2e-legacy-office.sh <fixtures-dir>`, see
+  `evidence/legacy-office/README.txt` and `e2e.txt`.
 
-## 证据
+## Real-provider E2E
 
-- `../evidence/linux-ui-*.png`：欢迎页、Provider、插件安装/启用/卸载、设置；
-- `../evidence/x64-*.txt`、`../evidence/deb-x64-smoke.png`；
-- `../evidence/flatpak-*.txt`、`../evidence/SHA256SUMS.*`。
+`scripts/e2e-provider.sh` installs the deb in an amd64 container, starts Xvfb + Electron, sends one real model request over CDP
+and asserts the reply, then takes a screenshot.
 
-## 未覆盖
+```bash
+# One-time preparation of a test image with the deb runtime dependencies
+docker commit dshd-e2e dshd-linux-test:amd64-e2e
 
-- 真实 Linux 桌面（非容器）的长期运行；
-- Wayland/输入法/托盘；
-- 自动更新；
-- Office→PDF。
+DSH_TEST_HOME=/tmp/dshd-provider-home \
+  scripts/e2e-provider.sh dist/linux-x64/*.deb
+# On success it outputs {"ok":true,...} and writes evidence/linux-provider-e2e.png
+```
+
+`DSH_TEST_HOME` must contain `profiles/desktop/cordis.patch.yml` and credentials;
+the script does not print the key. The default CDP port is 9222; `PORT=9333` can be used to avoid conflicts with existing instances.
+
+The screen-by-screen checklist and screenshot index are in [acceptance.md](acceptance.md).
+
+## Distribution packaging static validation
+
+```bash
+scripts/package-distro-formats.sh
+```
+
+Runs the available static checks on the AUR/Snap/OBS/Nix/Gentoo files under `packaging/`; by default it does not download or
+build. The real `makepkg` record for AUR is in
+[distro-packaging-implementation.md](distro-packaging-implementation.md) §3.1.
+
+## Evidence
+
+- `../evidence/linux-ui-*.png`: first-run welcome screen, Provider, plugin install/enable/uninstall, settings;
+- `../evidence/x64-*.txt`, `../evidence/deb-x64-smoke.png`;
+- `../evidence/flatpak-*.txt`, `../evidence/SHA256SUMS.*`.
+
+## Not covered
+
+- Long-running operation on a real Linux desktop (non-container);
+- Wayland/IME/tray;
+- Auto-update;
+- Pixel-perfect rendering fidelity for legacy DOC/XLS/PPT beyond the sampled fixtures;

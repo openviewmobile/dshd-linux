@@ -1,0 +1,15 @@
+  • electron-builder  version=26.17.0 os=7.0.14-linuxkit
+  • loaded configuration  file=/src/apps/desktop/electron-builder.config.mjs
+  • packageManager not detected by file, falling back to environment detection  resolvedPackageManager=pnpm detected=/src/apps/desktop
+  • detected workspace root for project using packageManager field  pm=pnpm config=pnpm@11.28.5 resolved=/src projectDir=/src/apps/desktop
+  • executing @electron/rebuild  electronVersion=44.7.0 arch=arm64 buildFromSource=false workspaceRoot=/src projectDir=./ appDir=./
+  • installing native dependencies  arch=arm64
+  • completed installing native dependencies
+  • packaging       platform=linux arch=arm64 electron=44.7.0 appOutDir=.desktop-build/targets/linux-arm64/unsigned-artifacts/linux-arm64-unpacked
+  • using custom unpacked Electron distribution  electronDist=.desktop-build/targets/linux-arm64/electron
+  • copying unpacked Electron  source=/src/apps/desktop/.desktop-build/targets/linux-arm64/electron destination=/src/apps/desktop/.desktop-build/targets/linux-arm64/unsigned-artifacts/linux-arm64-unpacked
+  • searching for node modules  pm=pnpm searchDir=/src/apps/desktop
+  • duplicate dependency references  dependencies=["js-yaml@4.3.2","@deepseek-ai/schemastery@link:../../vendor/schemastery"]
+  • executing @electron/fuses  electronPath=.desktop-build/targets/linux-arm64/unsigned-artifacts/linux-arm64-unpacked/deepseek-harness
+  • skipping "afterSign" hook as no signing occurred, perhaps you intended "afterPack"?
+  • building        target=flatpak arch=arm64 file=.desktop-build/targets/linux-arm64/unsigned-artifacts/deepseek-harness-0.2.2-rc.1-linux-aarch64-unsigned.flatpak

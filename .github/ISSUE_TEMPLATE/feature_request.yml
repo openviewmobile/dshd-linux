@@ -1,0 +1,44 @@
+name: Feature request
+description: Suggest a packaging, distro, or desktop integration improvement
+title: "[feat] "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is hard or impossible today, and for whom?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: If this is a new distro channel, list the build host and test plan.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Packaging / distro
+        - Flatpak
+        - Office / PDF export
+        - UI / accessibility
+        - Documentation
+        - CI / release engineering
+        - other
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and the documentation.
+        - label: I can help test this on a real machine.

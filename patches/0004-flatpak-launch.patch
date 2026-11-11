@@ -1,0 +1,40 @@
+diff --git a/apps/desktop/scripts/electron-builder-config.mjs b/apps/desktop/scripts/electron-builder-config.mjs
+index 6c6859a2..029e5a1a 100644
+--- a/apps/desktop/scripts/electron-builder-config.mjs
++++ b/apps/desktop/scripts/electron-builder-config.mjs
+@@ -271,6 +271,18 @@ export function createElectronBuilderConfig(
+       runtimeVersion: '25.08',
+       baseVersion: '25.08',
+       useWaylandFlags: true,
++      finishArgs: [
++        '--socket=wayland',
++        '--socket=x11',
++        '--share=ipc',
++        '--device=dri',
++        '--socket=pulseaudio',
++        '--filesystem=home',
++        '--share=network',
++        '--talk-name=org.freedesktop.Notifications',
++        '--command=/app/lib/com.deepseek.harness/dsh-launch',
++      ],
++      files: [[fileURLToPath(new URL('../../../packaging/flatpak/dsh-launch', import.meta.url)), '/lib/com.deepseek.harness/dsh-launch']],
+     },
+     nsis: {
+       uninstallDisplayName: '${productName}',
+diff --git a/packaging/flatpak/dsh-launch b/packaging/flatpak/dsh-launch
+new file mode 100755
+index 00000000..fa2d34ae
+--- /dev/null
++++ b/packaging/flatpak/dsh-launch
+@@ -0,0 +1,11 @@
++#!/bin/sh
++# Flatpak strips PATH from the sandbox environment; keep /app/bin visible so
++# zypak-wrapper and the app binary can be resolved.
++export PATH="/app/bin:/usr/bin:/bin${PATH:+:$PATH}"
++export TMPDIR="${XDG_RUNTIME_DIR}/app/${FLATPAK_ID}"
++
++if [ "${XDG_SESSION_TYPE}" = "wayland" ]; then
++  exec zypak-wrapper deepseek-harness --enable-features=UseOzonePlatform --ozone-platform=wayland "$@"
++else
++  exec zypak-wrapper deepseek-harness "$@"
++fi

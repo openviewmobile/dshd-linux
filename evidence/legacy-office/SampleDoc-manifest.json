@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "backend": "wasm",
+  "rasterEngine": "pdfium",
+  "source": "saved",
+  "inputPath": "/legacy/out/SampleDoc.pdf",
+  "sourceSha256": "6bad5f7c7dda0e72f78eaf097a092b429984f6800f02f9e6f343bc600d5ce566",
+  "dpi": 110,
+  "pageCount": 2,
+  "images": [
+    {
+      "index": 1,
+      "page": 1,
+      "path": "/legacy/render/SampleDoc/page-0001.png",
+      "width": 910,
+      "height": 1287,
+      "rectangle": {
+        "x": 0,
+        "y": 0,
+        "width": 793.7333333333333,
+        "height": 1122.5333333333333
+      },
+      "byteLength": 16992
+    },
+    {
+      "index": 2,
+      "page": 2,
+      "path": "/legacy/render/SampleDoc/page-0002.png",
+      "width": 910,
+      "height": 1287,
+      "rectangle": {
+        "x": 0,
+        "y": 0,
+        "width": 793.7333333333333,
+        "height": 1122.5333333333333
+      },
+      "byteLength": 21169
+    }
+  ],
+  "missingFonts": []
+}

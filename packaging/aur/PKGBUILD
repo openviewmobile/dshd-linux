@@ -1,0 +1,178 @@
+# Maintainer: DeepSeek Harness Linux packaging <noreply@deepseek.com>
+#
+# AUR -bin package: repackages the upstream unsigned AppImage.  The Electron
+# runtime (and Node/Python) must stay bundled because the desktop shell starts
+# its Host with ELECTRON_RUN_AS_NODE; Arch's /usr/bin/electron cannot be used.
+#
+# Configurable inputs (all optional):
+#   DSHD_PKGVER              Arch pkgver, default 0.2.2_rc.1
+#   DSHD_PKGREL              pkgrel, default 1
+#   DSHD_UPSTREAM_VER        GitHub release version, default pkgver with "_" -> "-"
+#   DSHD_APPIMAGE_X86_64     local AppImage for x86_64 (offline build), overrides URL
+#   DSHD_APPIMAGE_AARCH64    local AppImage for aarch64 (offline build), overrides URL
+#   DSHD_APPDIR              already-extracted AppDir (skip executing the AppImage)
+#   DSHD_SHA256_X86_64       sha256 for the x86_64 file, default release checksum
+#   DSHD_SHA256_AARCH64      sha256 for the aarch64 file, default release checksum
+#
+# Offline build example:
+#   DSHD_APPIMAGE_X86_64="$PWD/dist/linux-x64/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.AppImage" \
+#     makepkg -si --skipinteg   # prepare() verifies the override's sha256
+#
+# Regenerate .SRCINFO after changing pkgver:
+#   makepkg --printsrcinfo > .SRCINFO
+
+pkgname=deepseek-harness-bin
+pkgver="${DSHD_PKGVER:-0.2.2_rc.1}"
+pkgrel="${DSHD_PKGREL:-1}"
+_upstream_ver="${DSHD_UPSTREAM_VER:-${pkgver//_/-}}"
+pkgdesc="Electron desktop shell for a bundled dsh runtime and external plugins (binary AppImage repackage)"
+arch=('x86_64' 'aarch64')
+url="https://github.com/deepseek-ai/deepseek-harness"
+license=('MIT')
+depends=(
+  'gtk3'
+  'nss'
+  'libnotify'
+  'libxss'
+  'at-spi2-core'
+  'libxtst'
+  'libsecret'
+  'util-linux-libs'
+  'xdg-utils'
+  'libx11'
+  'libxcomposite'
+  'libxdamage'
+  'libxrandr'
+  'libxkbcommon'
+  'libcups'
+  'pango'
+  'cairo'
+  'alsa-lib'
+  'mesa'
+  'expat'
+  'zlib'
+)
+optdepends=(
+  'libappindicator-gtk3: tray icon support'
+  'xdg-desktop-portal: portal-based file pickers on Wayland'
+)
+provides=('deepseek-harness')
+conflicts=('deepseek-harness')
+options=('!strip' '!debug')
+
+_release_url="https://github.com/deepseek-ai/deepseek-harness/releases/download/v${_upstream_ver}"
+_appimage_x86_64="deepseek-harness-${_upstream_ver}-linux-x86_64-unsigned.AppImage"
+_appimage_aarch64="deepseek-harness-${_upstream_ver}-linux-arm64-unsigned.AppImage"
+
+source_x86_64=("${_release_url}/${_appimage_x86_64}")
+source_aarch64=("${_release_url}/${_appimage_aarch64}")
+sha256sums_x86_64=("${DSHD_SHA256_X86_64:-cd9f8fc968d1278b6fc6919970c472064dc3d2e796315d36447ed323666a738d}")
+sha256sums_aarch64=("${DSHD_SHA256_AARCH64:-c93e1a4e9a8a67fe8f4d03e344911ac6bc1687acd7026a57f45cb2da2d4ec00d}")
+
+# makepkg only resolves local source entries relative to $startdir/$SRCDEST, so
+# an absolute offline override cannot live in source_*.  Drop the download and
+# checksum entries; prepare() reads the override path and verifies it itself.
+if [[ -n ${DSHD_APPIMAGE_X86_64:-} ]]; then
+  source_x86_64=()
+  sha256sums_x86_64=()
+fi
+if [[ -n ${DSHD_APPIMAGE_AARCH64:-} ]]; then
+  source_aarch64=()
+  sha256sums_aarch64=()
+fi
+
+prepare() {
+  local appimage=""
+  local expected_sha=""
+  local actual_sha=""
+
+  case "$CARCH" in
+    x86_64)
+      appimage="${DSHD_APPIMAGE_X86_64:-$srcdir/$_appimage_x86_64}"
+      expected_sha="${DSHD_SHA256_X86_64:-cd9f8fc968d1278b6fc6919970c472064dc3d2e796315d36447ed323666a738d}"
+      ;;
+    aarch64)
+      appimage="${DSHD_APPIMAGE_AARCH64:-$srcdir/$_appimage_aarch64}"
+      expected_sha="${DSHD_SHA256_AARCH64:-c93e1a4e9a8a67fe8f4d03e344911ac6bc1687acd7026a57f45cb2da2d4ec00d}"
+      ;;
+    *) error "unsupported architecture: $CARCH" ;;
+  esac
+
+  # A local DSHD_APPIMAGE_* override may have a different basename.
+  if [[ ! -f $appimage ]]; then
+    appimage="$(find "$srcdir" -maxdepth 1 -type f -name '*.AppImage' -print -quit)"
+  fi
+  [[ -n $appimage && -f $appimage ]] || error "AppImage not found: $appimage"
+
+  # Offline overrides bypass makepkg's checksum array, so verify here.  For
+  # remote sources this is a second check of the same file (inexpensive enough
+  # for a release build and protects DSHD_APPDIR-only invocations).
+  actual_sha="$(sha256sum "$appimage" | awk '{print $1}')"
+  [[ $actual_sha == "$expected_sha" ]] \
+    || error "sha256 mismatch for $appimage: expected $expected_sha, got $actual_sha"
+
+  # Escape hatch for build hosts that cannot execute the AppImage runtime (for
+  # example an emulated foreign architecture).  The caller is responsible for
+  # extracting the same artifact.
+  if [[ -n ${DSHD_APPDIR:-} ]]; then
+    [[ -x ${DSHD_APPDIR}/deepseek-harness ]] \
+      || error "DSHD_APPDIR does not look like an extracted AppDir: $DSHD_APPDIR"
+    rm -rf "$srcdir/squashfs-root"
+    ln -s "$DSHD_APPDIR" "$srcdir/squashfs-root"
+    return
+  fi
+
+  chmod +x "$appimage"
+  rm -rf "$srcdir/squashfs-root"
+  ( cd "$srcdir" && "$appimage" --appimage-extract >/dev/null )
+  [[ -x "$srcdir/squashfs-root/deepseek-harness" ]] \
+    || error "unexpected AppImage layout: squashfs-root/deepseek-harness missing"
+}
+
+package() {
+  install -dm755 "$pkgdir/opt/deepseek-harness"
+  cp -a "$srcdir/squashfs-root/." "$pkgdir/opt/deepseek-harness/"
+  # Some archive extractors (and DSHD_APPDIR trees produced on non-Linux hosts)
+  # lose the executable bit; the launcher and crash handler must stay runnable.
+  chmod 755 "$pkgdir/opt/deepseek-harness/deepseek-harness" \
+            "$pkgdir/opt/deepseek-harness/chrome_crashpad_handler"
+  find "$pkgdir/opt/deepseek-harness/resources/runtime" -type f -path '*/bin/*' \
+    -exec chmod 755 {} +
+
+  # chrome-sandbox must be root-owned and setuid when user namespaces are not
+  # available.  This mirrors the deb/rpm install and is why the package has to
+  # be installed by pacman (fakeroot applies the mode, root owns the file).
+  chmod 4755 "$pkgdir/opt/deepseek-harness/chrome-sandbox"
+
+  install -dm755 "$pkgdir/usr/bin"
+  cat >"$pkgdir/usr/bin/deepseek-harness" <<'WRAPPER'
+#!/bin/sh
+# Wrapper for the repackaged AppImage runtime under /opt/deepseek-harness.
+set -eu
+APPDIR=/opt/deepseek-harness
+export APPDIR
+export PATH="$APPDIR${PATH:+:$PATH}"
+export LD_LIBRARY_PATH="$APPDIR/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export XDG_DATA_DIRS="$APPDIR/usr/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+export GSETTINGS_SCHEMA_DIR="$APPDIR/usr/share/glib-2.0/schemas${GSETTINGS_SCHEMA_DIR:+:$GSETTINGS_SCHEMA_DIR}"
+exec "$APPDIR/deepseek-harness" "$@"
+WRAPPER
+  chmod 755 "$pkgdir/usr/bin/deepseek-harness"
+
+  install -Dm644 "$srcdir/squashfs-root/usr/share/icons/hicolor/1024x1024/apps/deepseek-harness.png" \
+    "$pkgdir/usr/share/icons/hicolor/1024x1024/apps/deepseek-harness.png"
+
+  install -dm755 "$pkgdir/usr/share/applications"
+  cat >"$pkgdir/usr/share/applications/deepseek-harness.desktop" <<'DESKTOP'
+[Desktop Entry]
+Name=DeepSeek Harness
+Comment=Electron desktop shell for a bundled dsh runtime and external plugins
+Exec=/usr/bin/deepseek-harness %U
+Icon=deepseek-harness
+Terminal=false
+Type=Application
+StartupWMClass=DeepSeek Harness
+MimeType=x-scheme-handler/dsh;
+Categories=Development;
+DESKTOP
+}

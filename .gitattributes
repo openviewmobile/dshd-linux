@@ -1,0 +1,12 @@
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.pdf binary
+*.AppImage binary
+*.deb binary
+*.rpm binary
+*.flatpak binary
+*.snap binary
+*.zst binary
+*.asc text eol=lf

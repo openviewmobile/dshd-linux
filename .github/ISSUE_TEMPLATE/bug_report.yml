@@ -1,0 +1,84 @@
+name: Bug report
+description: Report a reproducible Linux desktop or packaging problem
+title: "[bug] "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Please do not include API keys, provider
+        credentials, or private logs. For security issues use SECURITY.md.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `deepseek-harness --version` or the artifact filename.
+      placeholder: 0.2.2-rc.1
+    validations:
+      required: true
+  - type: dropdown
+    id: channel
+    attributes:
+      label: Installation channel
+      options:
+        - AppImage
+        - deb
+        - rpm
+        - Flatpak
+        - Snap
+        - Arch/AUR
+        - Nix
+        - Gentoo
+        - other / built from source
+    validations:
+      required: true
+  - type: input
+    id: distro
+    attributes:
+      label: Distribution and version
+      placeholder: Ubuntu 24.04, Fedora 41, Arch rolling, ...
+    validations:
+      required: true
+  - type: dropdown
+    id: arch
+    attributes:
+      label: Architecture
+      options: ["x86_64", "aarch64", "other"]
+    validations:
+      required: true
+  - type: dropdown
+    id: session
+    attributes:
+      label: Session type
+      options: ["X11", "Wayland", "Xvfb / headless", "unknown"]
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Exact commands and clicks. Mention whether a third-party plugin is enabled.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and logs
+      description: Redact tokens and personal data before pasting.
+      render: shell
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I verified the artifact signature and SHA256SUMS.
+        - label: I tried the latest release candidate.
+        - label: I can reproduce this without private credentials.

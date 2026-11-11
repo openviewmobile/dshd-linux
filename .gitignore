@@ -1,2 +1,34 @@
+# Build outputs and local artifacts
+.desktop-build/
+snapbuild/
 dist/
 out/
+*.AppImage
+*.deb
+*.rpm
+*.flatpak
+*.snap
+*.pkg.tar.zst
+
+# Local test homes, credentials and secrets
+.dsh/
+.credentials*
+.env
+.env.*
+*.pem
+*.p12
+*.pfx
+*.key
+
+# Tooling caches
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Keep the finished promo deliverables (frames and stems stay ignored)
+!promo/out/
+!promo/out/*.mp4
+!promo/out/*.jpg
+!promo/out/*.png

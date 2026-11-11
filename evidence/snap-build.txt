@@ -1,0 +1,17 @@
+5a51c778202193084f648bfa06bd9934118a1c1cf528803f1d791c529aeda544  dist/snap/deepseek-harness_0.2.2-rc.1_amd64.snap
+squashfs-root
+squashfs-root/bin
+squashfs-root/bin/deepseek-harness
+squashfs-root/meta
+squashfs-root/meta/gui
+squashfs-root/meta/gui/icon.png
+squashfs-root/meta/snap.yaml
+squashfs-root/opt
+squashfs-root/bin/deepseek-harness
+squashfs-root/meta/snap.yaml
+squashfs-root/opt/deepseek-harness/deepseek-harness
+squashfs-root/opt/deepseek-harness/deepseek-harness.desktop
+squashfs-root/opt/deepseek-harness/deepseek-harness.png
+build: squashfs assembled from installed AUR payload (snapcraft unavailable on this network)
+verified: meta/snap.yaml, bin wrapper, desktop/icon and /opt payload present
+not verified: `snap install`/`snap run` (no snapd in build container)
