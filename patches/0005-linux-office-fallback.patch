@@ -1,0 +1,14 @@
+--- a/apps/desktop/scripts/electron-builder-config.mjs
++++ b/apps/desktop/scripts/electron-builder-config.mjs
+@@ -152,9 +152,9 @@
+       'package.json',
+       '!node_modules/**/*.{js,cjs,mjs,ts,cts,mts,css}.map',
+       '!node_modules/**/*.tsbuildinfo',
+-      { from: buildPaths.dsh, to: 'dsh', filter: ['**/*'] },
++      { from: buildPaths.dsh, to: 'dsh', filter: ['**/*', '!**/node_modules/@deepseek-ai/libreoffice-kit-linux-*'] },
+       // electron-builder excludes a source directory's root node_modules.
+-      { from: join(buildPaths.dsh, 'node_modules'), to: 'dsh/node_modules', filter: ['**/*'] },
++      { from: join(buildPaths.dsh, 'node_modules'), to: 'dsh/node_modules', filter: ['**/*', '!**/node_modules/@deepseek-ai/libreoffice-kit-linux-*'] },
+     ],
+     asarUnpack: unpack,
+     extraResources: [
