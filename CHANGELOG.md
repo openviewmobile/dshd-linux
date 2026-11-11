@@ -17,6 +17,8 @@ version.
   storyboard/render notes.
 - Added a 50-second Three.js/hyper-frame YouTube promo, thumbnail, English and
   Chinese captions, and upload metadata under `promo/`.
+- Added a GitHub Actions workflow that builds and signs Linux release assets
+  for x86_64 and arm64 on hosted runners.
 
 ## [0.2.2-rc.1] - 2026-11-10
 

@@ -39,6 +39,23 @@ scripts/build-flatpak-x64.sh
 Requires the preprovisioned `dshd-linux-test:flatpak-sdk` image and the `dshd-linux-x64-src` volume; the script starts a CONNECT
 proxy on the host to speed up Flathub/Electron downloads.
 
+## GitHub Actions release build
+
+The release workflow builds both architectures on GitHub-hosted runners:
+
+```text
+.github/workflows/release.yml
+```
+
+Trigger it by pushing a `v*` tag or with **Actions → Build Linux release assets
+→ Run workflow**. It builds AppImage, deb, rpm and Flatpak inside the packaging
+container, downloads the per-architecture artifacts into one release job,
+creates a combined `SHA256SUMS`, signs every asset with the
+`GPG_PRIVATE_KEY` repository secret, and publishes a pre-release.
+
+Do not upload locally built binaries to the release. The workflow is the source
+of truth for release assets; local `dist/` remains gitignored.
+
 ## Signing and verification
 
 ```bash
