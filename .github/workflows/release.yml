@@ -76,6 +76,7 @@ jobs:
             -v "$RUNNER_TEMP/src:/src" \
             dshd-linux-build bash -lc '
               set -euo pipefail
+              git config --global --add safe.directory /src
               /work/scripts/package-formats.sh
               case "$(uname -m)" in
                 aarch64|arm64) suffix=arm64 ;;
