@@ -1,5 +1,14 @@
 --- a/apps/desktop/scripts/electron-builder-config.mjs
 +++ b/apps/desktop/scripts/electron-builder-config.mjs
+@@ -1,7 +1,7 @@
+ import { readInstallerLocales, renderInstallerStrings } from './installer-locales.mjs'
+ import { officePackageDirectories } from '../../../scripts/libreoffice-packages.mjs'
+ import { X509Certificate } from 'node:crypto'
+-import { readFileSync } from 'node:fs'
++import { readFileSync, rmSync } from 'node:fs'
+ import { readFile, writeFile } from 'node:fs/promises'
+ import { join, relative, sep } from 'node:path'
+ import { fileURLToPath } from 'node:url'
 @@ -152,9 +152,9 @@
        'package.json',
        '!node_modules/**/*.{js,cjs,mjs,ts,cts,mts,css}.map',
@@ -12,11 +21,16 @@
      ],
      asarUnpack: unpack,
      extraResources: [
-@@ -189,7 +189,7 @@
+@@ -189,7 +189,12 @@
      },
      beforePack: async context => {
        const office = await officePackageDirectories(buildPaths.dsh, { platform: resolvedPlatform, arch: resolvedArch })
 -      const patterns = office.map(directory => `**/${relative(buildPaths.dsh, directory).split(sep).join('/')}/**/*`)
++      if (resolvedPlatform === 'linux') {
++        for (const directory of office) {
++          if (directory.includes('libreoffice-kit-linux-')) rmSync(directory, { recursive: true, force: true })
++        }
++      }
 +      const patterns = resolvedPlatform === 'linux' ? [] : office.map(directory => `**/${relative(buildPaths.dsh, directory).split(sep).join('/')}/**/*`)
        const existing = context.packager.config.asarUnpack ?? []
        context.packager.config.asarUnpack = [...(typeof existing === 'string' ? [existing] : existing), ...patterns]
