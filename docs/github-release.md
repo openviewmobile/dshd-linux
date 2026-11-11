@@ -12,8 +12,9 @@ upstream source tree.
 Suggested metadata:
 
 - Description: `DSHD (DeepSeek Harness Desktop) for Linux: AppImage, deb, rpm, Flatpak and distro packaging`
-- Topics: `linux`, `electron`, `flatpak`, `appimage`, `deb`, `rpm`, `aur`,
-  `snap`, `office`, `pdf`
+- Topics: `dsh`, `deepseek-harness`, `deepseek`, `ai`, `linux`, `appimage`,
+  `deb`, `rpm`, `flatpak`, `archlinux`, `aur`, `debian`, `ubuntu`, `fedora`,
+  `rhel`, `rocky-linux`, `opensuse`, `nixos`, `gentoo`
 - License: Apache-2.0
 - Default branch: `main`
 
@@ -46,35 +47,28 @@ private keys, provider credentials, or `/tmp` test homes.
   preview (Settings → General → Social preview); do not rely on the README image
   alone.
 
-## 4. Create the release
+## 4. Publish from GitHub Actions only
+
+The public Release is produced by
+[`.github/workflows/release.yml`](../.github/workflows/release.yml). Pushing a
+`v*` tag triggers x86_64 and aarch64 runners to build AppImage, deb, rpm and
+Flatpak, sign the combined checksums, and upload the assets. The same workflow
+can be run manually from **Actions → Build Linux release assets**.
 
 ```bash
 tag=v0.2.2-rc.1
 git tag -a "$tag" -m "DSHD for Linux $tag"
 git push origin "$tag"
-
-gh release create "$tag" \
-  --title "DSHD for Linux $tag" \
-  --notes-file docs/releases/v0.2.2-rc.1.md \
-  --prerelease \
-  dist/linux-x64/*.AppImage dist/linux-x64/*.AppImage.asc \
-  dist/linux-x64/*.deb dist/linux-x64/*.deb.asc \
-  dist/linux-x64/*.rpm dist/linux-x64/*.rpm.asc \
-  dist/linux-x64/*.flatpak dist/linux-x64/*.flatpak.asc \
-  dist/linux-x64/SHA256SUMS dist/linux-x64/SHA256SUMS.asc \
-  dist/linux-arm64/*.AppImage dist/linux-arm64/*.AppImage.asc \
-  dist/linux-arm64/*.deb dist/linux-arm64/*.deb.asc \
-  dist/linux-arm64/*.rpm dist/linux-arm64/*.rpm.asc \
-  dist/linux-arm64/*.flatpak dist/linux-arm64/*.flatpak.asc \
-  dist/linux-arm64/SHA256SUMS dist/linux-arm64/SHA256SUMS.asc \
-  dist/arch/*.zst dist/arch/*.zst.asc dist/arch/SHA256SUMS dist/arch/SHA256SUMS.asc \
-  dist/snap/*.snap dist/snap/*.snap.asc dist/snap/SHA256SUMS dist/snap/SHA256SUMS.asc \
-  dist/obs/*.rpm dist/obs/*.rpm.asc dist/obs/SHA256SUMS dist/obs/SHA256SUMS.asc \
-  dist/keys/*.asc
 ```
 
-If `gh release create` expands both `*.rpm` and the OBS RPM with the same base
-name, upload the OBS asset separately with an explicit name.
+**Do not** create the public Release with local files, and do not upload
+locally built binaries or local `dist/` content. The workflow is the source of
+truth; local artifacts are development outputs only. If the workflow fails,
+fix the workflow or rerun it — do not publish a partial local release.
+
+The workflow requires the `GPG_PRIVATE_KEY` repository secret. It publishes a
+pre-release with the eight primary-format packages, their `.asc` files, the
+combined `SHA256SUMS`/`SHA256SUMS.asc`, and the public key.
 
 ## 5. Verify the published release
 

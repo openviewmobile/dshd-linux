@@ -53,9 +53,10 @@ corresponding command/output exists in `evidence/` or in the release PR.
 ## 6. Publish
 
 - [ ] Create tag `v0.2.2-rc.1` (annotated) from the release commit.
-- [ ] Draft GitHub Release with notes from `docs/releases/`.
-- [ ] Upload artifacts + `.asc` + `SHA256SUMS` + `SHA256SUMS.asc` + the public key.
-- [ ] Mark as “pre-release” for an rc.
+- [ ] Trigger **Build Linux release assets**; do not upload local binaries.
+- [ ] Confirm the workflow attached the eight primary-format packages, their
+  `.asc` files, `SHA256SUMS`, `SHA256SUMS.asc` and the public key.
+- [ ] Confirm the workflow marked the release as a pre-release for an rc.
 - [ ] Verify a fresh download with the published key.
 - [ ] Announce with the known-limitations section included.
 
