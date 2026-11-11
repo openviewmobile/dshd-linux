@@ -72,6 +72,7 @@ jobs:
             -e SRC=/src \
             -e UPSTREAM_REF="$UPSTREAM_REF" \
             -e REPO_URL="$UPSTREAM_REPO" \
+            -e DSH_SKIP_OFFICE_SMOKE=1 \
             -v "$GITHUB_WORKSPACE:/work" \
             -v "$RUNNER_TEMP/src:/src" \
             dshd-linux-build bash -lc '

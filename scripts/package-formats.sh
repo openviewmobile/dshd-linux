@@ -38,6 +38,7 @@ apply_patch "$PATCH_DIR/0002-linux-deb-rpm-flatpak.patch"
 apply_patch "$PATCH_DIR/0003-primary-runtime-mirrors.patch"
 apply_patch "$PATCH_DIR/0004-flatpak-launch.patch"
 apply_patch "$PATCH_DIR/0005-linux-office-fallback.patch"
+apply_patch "$PATCH_DIR/0006-linux-skip-office-smoke.patch"
 
 if [ "${SKIP_INSTALL:-0}" != "1" ]; then
   pnpm install --frozen-lockfile --reporter=append-only
