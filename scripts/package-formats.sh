@@ -50,6 +50,17 @@ if [ "$(uname -s)" = "Linux" ]; then
     -prune -exec rm -rf {} +
   find "$SRC" -path '*/node_modules/.pnpm/@deepseek-ai+libreoffice-kit-linux-*-glibc*' \
     -prune -exec rm -rf {} +
+  # Some pnpm/electron-builder layouts recreate an empty native package
+  # directory. Force the library to skip the native target on Linux so it
+  # selects the bundled WASM engine even if that directory reappears.
+  while IFS= read -r -d '' kit; do
+    target="$(readlink -f "$kit")"
+    sed -i 's/if (target !== void 0) {/if (false \&\& target !== void 0) {/' "$target"
+    grep -q 'if (false && target !== void 0)' "$target" || {
+      echo "failed to force WASM engine: $target" >&2
+      exit 1
+    }
+  done < <(find "$SRC" -path '*/node_modules/@deepseek-ai/libreoffice-kit/lib/index.js' -print0)
 fi
 
 pnpm --filter @deepseek-ai/dsh-desktop "package:linux:${SUFFIX}"
