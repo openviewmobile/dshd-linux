@@ -46,9 +46,9 @@ fi
 # incomplete directories behind. Remove them so the runtime uses the bundled
 # WASM engine instead of failing in the packaged smoke test.
 if [ "$(uname -s)" = "Linux" ]; then
-  find "$SRC" -type d -path '*/node_modules/@deepseek-ai/libreoffice-kit-linux-*-glibc' \
+  find "$SRC" -path '*/node_modules/@deepseek-ai/libreoffice-kit-linux-*-glibc' \
     -prune -exec rm -rf {} +
-  find "$SRC" -type d -path '*/node_modules/.pnpm/@deepseek-ai+libreoffice-kit-linux-*-glibc*' \
+  find "$SRC" -path '*/node_modules/.pnpm/@deepseek-ai+libreoffice-kit-linux-*-glibc*' \
     -prune -exec rm -rf {} +
 fi
 
