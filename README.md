@@ -32,7 +32,9 @@ Choose the asset for your architecture:
 | Arch/AUR | x86_64 | — | `makepkg -si` or `pacman -U` |
 
 Every Release asset is accompanied by a detached `.asc` signature; each release
-also has a signed `SHA256SUMS`. If the latest Release page does not yet show
+also has a signed `SHA256SUMS`. The CI release currently attaches the eight
+primary-format packages; AUR and local Snap/OBS packaging remain in the
+repository. If the latest Release page does not yet show
 binary assets, use the **Build Linux release assets** GitHub Actions workflow
 (or build from source below); the workflow is the supported release builder.
 

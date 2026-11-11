@@ -1,9 +1,9 @@
 # GitHub release materials
 
-Status: **source and tag published** at
-<https://github.com/openviewmobile/dshd-linux>; CI passed and the GitHub Release
-asset upload is still pending. The remaining items below are the post-push
-gaps.
+Status: **published** at
+<https://github.com/openviewmobile/dshd-linux> — tag `v0.2.2-rc.1`, CI green,
+and the GitHub Release has eight signed primary-format assets. The remaining
+items below are post-release follow-ups.
 
 ## Ready in the tree
 
@@ -28,29 +28,24 @@ gaps.
    uses an `.invalid` UID. Generate an offline, passphrase-protected release key,
    publish its fingerprint, re-sign all artifacts, and archive the revocation
    certificate.
-3. **Upload the GitHub Release assets.** The annotated tag
-   `v0.2.2-rc.1` is pushed; upload the artifacts listed in
-   [github-release.md](github-release.md), mark the release as a pre-release,
-   and verify a fresh download.
-4. **Finish the CI matrix.** Current CI validates docs, shell syntax, YAML, and
+3. **Finish the CI matrix.** Current CI validates docs, shell syntax, YAML, and
    required files. It does not build the packages or run install/launch tests in
    distribution images, and there is no automated release/signing workflow.
-5. **Configure GitHub.** Protect `main`, enable private vulnerability reporting,
+4. **Configure GitHub.** Protect `main`, enable private vulnerability reporting,
    add the labels used by `.github/release.yml`, set the description/topics, and
    upload `promo/out/dshd-linux-social-preview.jpg` as the social preview.
-6. **Resolve brand/trademark use.** `NOTICE` grants no trademark license. Confirm
+5. **Resolve brand/trademark use.** `NOTICE` grants no trademark license. Confirm
    that the DeepSeek name/logo may be used in the repository and promo, or add a
    clear independence disclaimer approved by the trademark owner.
-7. **Decide the YouTube owner.** Upload requires a Google account/channel with
+6. **Decide the YouTube owner.** Upload requires a Google account/channel with
    permission to publish; no credentials or channel are configured here.
 
 ## Release assets
 
-The local `dist/` tree is 3.0 GB and contains 17 `.asc` files: one public key
-plus 16 artifact/checksum signatures. Upload the per-format artifacts and their
-signatures as described in
-[github-release.md](github-release.md#4-create-the-release). Keep `dist/` out of
-git.
+The published Release contains the eight x86_64/aarch64 primary packages
+(AppImage, deb, rpm, Flatpak), their `.asc` signatures, `SHA256SUMS`,
+`SHA256SUMS.asc` and the public key. The local `dist/` tree still has the older
+AUR/Snap/OBS artifacts; they are not part of the CI Release.
 
 The promo video (`promo/out/dshd-linux-promo-1080p.mp4`, 8.8 MB) is a YouTube
 asset, not a required GitHub Release asset. It can be attached to the release
