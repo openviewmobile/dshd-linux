@@ -10,14 +10,16 @@ produce installable packages on Linux and pass the Xvfb smoke test.
 
 The official Desktop already ships a linux-x64/linux-arm64 primary runtime (Node 24, Python, pnpm, etc.),
 and electron-builder also has a Linux AppImage target; but the release targets list only macOS/Windows, and Linux is
-excluded by `desktop-build-paths.mjs` and `package-target.ts`. The project therefore maintains four reviewable patches:
+excluded by `desktop-build-paths.mjs` and `package-target.ts`. The project therefore maintains six reviewable patches:
 
 | Patch | Purpose |
 |---|---|
 | `0001-linux-desktop-target.patch` | Register the Linux target, Electron path, packaging/smoke scripts |
 | `0002-linux-deb-rpm-flatpak.patch` | Add deb/rpm/Flatpak targets and Flatpak 25.08 configuration |
-| `0004-flatpak-launch.patch` | Flatpak launcher: patch `PATH`, override metadata `command` |
 | `0003-primary-runtime-mirrors.patch` | Primary runtime uses npmmirror to reduce dependence on nodejs.org/GitHub |
+| `0004-flatpak-launch.patch` | Flatpak launcher: patch `PATH`, override metadata `command` |
+| `0005-linux-office-fallback.patch` | Keep the incomplete Linux native Office package out of the app archive; use WASM |
+| `0006-linux-skip-office-smoke.patch` | Optional Office smoke skip for the CI release build |
 
 The patches only change build/release paths; they do not replace the dsh kernel or the frontend.
 If upstream moves, the patches may need to be redone.
