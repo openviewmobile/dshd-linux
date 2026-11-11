@@ -1,0 +1,154 @@
+name: Build Linux release assets
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to build and release
+        required: true
+        default: v0.2.2-rc.1
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  TAG: ${{ github.event.inputs.tag || github.ref_name }}
+  UPSTREAM_REPO: https://github.com/deepseek-ai/deepseek-harness.git
+  UPSTREAM_REF: fcc0ad462172522aaf5c93a7b2e01f6b9f0b0159
+
+jobs:
+  build:
+    name: Package ${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            runner: ubuntu-24.04
+            suffix: x64
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+            suffix: arm64
+    steps:
+      - name: Check out the release tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref_name }}
+
+      - name: Free runner disk space
+        run: |
+          set -euo pipefail
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+            /opt/hostedtoolcache/CodeQL /opt/hostedtoolcache/Python \
+            /opt/hostedtoolcache/node /opt/hostedtoolcache/go
+          df -h /
+
+      - name: Build the packaging container
+        run: |
+          set -euo pipefail
+          docker build \
+            --build-arg NODE_IMAGE=node:24-bookworm \
+            --build-arg APT_MIRROR= \
+            --build-arg NPM_REGISTRY=https://registry.npmjs.org \
+            --build-arg ELECTRON_MIRROR=https://github.com/electron/electron/releases/download/ \
+            -t dshd-linux-build .
+
+      - name: Build AppImage, deb, rpm and Flatpak
+        env:
+          SUFFIX: ${{ matrix.suffix }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/src" "$GITHUB_WORKSPACE/dist/linux-$SUFFIX"
+          docker run --rm --privileged \
+            -e SRC=/src \
+            -e UPSTREAM_REF="$UPSTREAM_REF" \
+            -e REPO_URL="$UPSTREAM_REPO" \
+            -v "$GITHUB_WORKSPACE:/work" \
+            -v "$RUNNER_TEMP/src:/src" \
+            dshd-linux-build bash -lc '
+              set -euo pipefail
+              /work/scripts/package-formats.sh
+              case "$(uname -m)" in
+                aarch64|arm64) suffix=arm64 ;;
+                x86_64|amd64) suffix=x64 ;;
+                *) echo "unsupported arch" >&2; exit 1 ;;
+              esac
+              src="/src/apps/desktop/.desktop-build/targets/linux-${suffix}/unsigned-artifacts"
+              test -d "$src"
+              cp -a "$src/." "/work/dist/linux-${suffix}/"
+              chmod -R a+rX "/work/dist"
+            '
+
+      - name: Upload architecture artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dshd-linux-${{ matrix.suffix }}
+          path: dist/linux-${{ matrix.suffix }}
+          if-no-files-found: error
+          retention-days: 7
+
+  release:
+    name: Sign and publish GitHub Release
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out the release tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref_name }}
+
+      - name: Download both architecture artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: dshd-linux-*
+          merge-multiple: true
+          path: dist/release
+
+      - name: Import the release signing key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GPG_PRIVATE_KEY:-}" ]; then
+            echo "::error::Set the GPG_PRIVATE_KEY repository secret before releasing."
+            exit 1
+          fi
+          printf '%s' "$GPG_PRIVATE_KEY" | gpg --batch --import
+          gpg --batch --list-secret-keys --with-colons > /tmp/gpg-keys
+          awk -F: '$1 == "fpr" { print $10; exit }' /tmp/gpg-keys > /tmp/gpg-fpr
+          test -s /tmp/gpg-fpr
+
+      - name: Build combined checksums and signatures
+        run: |
+          set -euo pipefail
+          cd dist/release
+          find . -maxdepth 1 -type f ! -name 'SHA256SUMS' ! -name '*.asc' -printf '%f\n' \
+            | sort | xargs -r sha256sum > SHA256SUMS
+          cp ../../keys/deepseek-harness-release-signing.asc .
+          FPR="$(cat /tmp/gpg-fpr)"
+          for f in *; do
+            gpg --batch --yes --armor --local-user "$FPR" --detach-sign "$f"
+          done
+          gpg --verify SHA256SUMS.asc SHA256SUMS
+          sha256sum -c SHA256SUMS
+
+      - name: Publish prerelease
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          name: DSHD for Linux ${{ env.TAG }}
+          body_path: docs/releases/v0.2.2-rc.1.md
+          prerelease: true
+          draft: false
+          files: dist/release/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

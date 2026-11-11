@@ -1,0 +1,10 @@
+.git
+.github
+dist
+promo
+evidence
+docs
+node_modules
+**/node_modules
+__pycache__
+.DS_Store

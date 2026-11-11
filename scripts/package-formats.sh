@@ -4,6 +4,7 @@
 set -euo pipefail
 SRC="${SRC:-/src}"
 REPO_URL="${REPO_URL:-https://github.com/deepseek-ai/deepseek-harness.git}"
+UPSTREAM_REF="${UPSTREAM_REF:-}"
 PATCH_DIR="${PATCH_DIR:-/work/patches}"
 ARCH="$(uname -m)"
 case "$ARCH" in
@@ -16,6 +17,10 @@ if [ ! -d "$SRC/.git" ]; then
   git clone --depth 1 "$REPO_URL" "$SRC"
 fi
 cd "$SRC"
+if [ -n "$UPSTREAM_REF" ]; then
+  git fetch --depth 1 origin "$UPSTREAM_REF"
+  git checkout --detach FETCH_HEAD
+fi
 git reset --hard HEAD >/dev/null
 git clean -fd >/dev/null
 apply_patch() {
