@@ -376,6 +376,7 @@ built binaries to the Release page. See
 - [Release and signing](docs/release.md)
 - [Distro package matrix](docs/distro-packages.md)
 - [YouTube promo and thumbnail](promo/README.md)
+- [0.2.2-rc.1.3 announcement](https://github.com/openviewmobile/dshd-linux/discussions/7)
 - [Community support](SUPPORT.md) and [governance](GOVERNANCE.md)
 - [Roadmap](ROADMAP.md) and [versioning policy](docs/versioning.md)
 - [Code of conduct](CODE_OF_CONDUCT.md) and [security policy](SECURITY.md)
