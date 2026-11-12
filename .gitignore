@@ -32,3 +32,5 @@ __pycache__/
 !promo/out/*.mp4
 !promo/out/*.jpg
 !promo/out/*.png
+
+promo/launch-kit/assets/
