@@ -32,7 +32,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: Check out the static site
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install repository tooling and the release key
         env:
@@ -105,13 +105,13 @@ jobs:
           REPO
 
       - name: Configure Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: site
 
       - name: Deploy Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
