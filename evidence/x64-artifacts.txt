@@ -8,9 +8,9 @@ cd9f8fc968d1278b6fc6919970c472064dc3d2e796315d36447ed323666a738d  dist/linux-x64
 6568a2e6dd75854409683b938b00c1a44a33c6c8483253ab818b065db75b5670  dist/linux-x64/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.rpm
 
 total 1762440
--rw-r--r--@ 1 figotan  staff   278M Nov  9 00:11 deepseek-harness-0.2.2-rc.1-linux-amd64-unsigned.deb
--rwxr-xr-x@ 1 figotan  staff   354M Nov  9 00:11 deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.AppImage
--rw-r--r--@ 1 figotan  staff   229M Nov  9 00:11 deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.rpm
+-rw-r--r--@ 1 user  group   278M Nov  9 00:11 deepseek-harness-0.2.2-rc.1-linux-amd64-unsigned.deb
+-rwxr-xr-x@ 1 user  group   354M Nov  9 00:11 deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.AppImage
+-rw-r--r--@ 1 user  group   229M Nov  9 00:11 deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.rpm
 ```
 
 ## Package metadata
