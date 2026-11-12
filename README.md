@@ -11,7 +11,7 @@ English | [简体中文](README.zh-CN.md)
 
 **DSHD brings DeepSeek Harness Desktop to Linux as a normal desktop app** — a
 native window with sessions, a local workspace, plugins, a terminal, and
-Office-to-PDF conversion. Download a signed package, or install from the
+Office-to-PDF conversion. **Current status: `0.2.2-rc.1` release candidate.** Download a signed package, or install from the
 signed APT/DNF repositories.
 
 <p>
@@ -48,6 +48,9 @@ All packages are built and signed by GitHub Actions and attached to the
 |---|---|---|---|---|
 | **x86_64** (Intel/AMD) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.AppImage) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-amd64-unsigned.deb) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.rpm) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.flatpak) |
 | **aarch64** (ARM64) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-arm64-unsigned.AppImage) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-arm64-unsigned.deb) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-aarch64-unsigned.rpm) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-aarch64-unsigned.flatpak) |
+
+The `unsigned` in a filename means “no platform code-signing certificate”; the
+packages still have detached GPG signatures and a signed checksum file.
 
 **Which file do I need?**
 
