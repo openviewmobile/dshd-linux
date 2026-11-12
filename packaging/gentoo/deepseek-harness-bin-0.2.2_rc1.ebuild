@@ -14,11 +14,14 @@ S="${WORKDIR}"
 
 DESCRIPTION="Electron desktop shell for a bundled dsh runtime and external plugins (binary AppImage repackage)"
 HOMEPAGE="https://github.com/openviewmobile/dshd-linux"
-SRC_URI="https://github.com/openviewmobile/dshd-linux/releases/download/v${UPSTREAM_PV}/${MY_PN}-${UPSTREAM_PV}-linux-x86_64-unsigned.AppImage -> ${P}-amd64.AppImage"
+SRC_URI="
+	amd64? ( https://github.com/openviewmobile/dshd-linux/releases/download/v${UPSTREAM_PV}/${MY_PN}-${UPSTREAM_PV}-linux-x86_64-unsigned.AppImage -> ${P}-amd64.AppImage )
+	arm64? ( https://github.com/openviewmobile/dshd-linux/releases/download/v${UPSTREAM_PV}/${MY_PN}-${UPSTREAM_PV}-linux-arm64-unsigned.AppImage -> ${P}-arm64.AppImage )
+"
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~arm64"
 IUSE=""
 
 # The AppImage already contains Electron 44, Node 24 and Python.  System
@@ -56,7 +59,8 @@ src_unpack() {
 	local appimage_arch
 	case ${ARCH} in
 		amd64) appimage_arch=amd64 ;;
-		*) die "this ebuild currently supports x86_64 only; see packaging/gentoo for arm64 status" ;;
+		arm64) appimage_arch=arm64 ;;
+		*) die "unsupported ARCH: ${ARCH}" ;;
 	esac
 
 	local appimage="${P}-${appimage_arch}.AppImage"
