@@ -73,6 +73,8 @@ jobs:
             -e UPSTREAM_REF="$UPSTREAM_REF" \
             -e REPO_URL="$UPSTREAM_REPO" \
             -e DSH_SKIP_OFFICE_SMOKE=1 \
+            -e DSH_DESKTOP_UPDATE_CHANNEL=stable \
+            -e DSHD_APPIMAGE_UPDATE_URL="https://github.com/openviewmobile/dshd-linux/releases/download/appimage-${{ matrix.suffix }}-latest/" \
             -v "$GITHUB_WORKSPACE:/work" \
             -v "$RUNNER_TEMP/src:/src" \
             dshd-linux-build bash -lc '

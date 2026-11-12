@@ -1,0 +1,82 @@
+name: Publish AppImage update feed
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag that contains the AppImages
+        required: true
+        default: v0.2.2-rc.1
+  workflow_run:
+    workflows: ["Build Linux release assets"]
+    types: [completed]
+
+permissions:
+  contents: write
+
+jobs:
+  feed:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            pattern: "*-linux-x86_64-unsigned.AppImage"
+            feed_tag: appimage-x64-latest
+          - arch: arm64
+            pattern: "*-linux-arm64-unsigned.AppImage"
+            feed_tag: appimage-arm64-latest
+    env:
+      TAG: ${{ github.event.inputs.tag || github.event.workflow_run.head_branch }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Download the AppImage from the release
+        run: |
+          set -euo pipefail
+          test -n "$TAG"
+          mkdir -p assets
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" \
+            --pattern "${{ matrix.pattern }}" --dir assets
+          test "$(find assets -maxdepth 1 -name '*.AppImage' | wc -l)" -eq 1
+
+      - name: Generate latest-linux.yml
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, hashlib, pathlib, re, os
+          app = next(pathlib.Path('assets').glob('*.AppImage'))
+          digest = base64.b64encode(hashlib.sha512(app.read_bytes()).digest()).decode()
+          version = os.environ['TAG'].removeprefix('v')
+          if not re.fullmatch(r'[0-9A-Za-z.+_-]+', version):
+              raise SystemExit('invalid version from tag')
+          yml = f"""version: {version}
+          files:
+            - url: {app.name}
+              sha512: {digest}
+              size: {app.stat().st_size}
+          path: {app.name}
+          sha512: {digest}
+          releaseDate: '{__import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat()}'
+          """
+          pathlib.Path('assets/latest-linux.yml').write_text(yml)
+          PY
+
+      - name: Create or update the fixed feed release
+        run: |
+          set -euo pipefail
+          FEED="${{ matrix.feed_tag }}"
+          if gh release view "$FEED" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release delete-asset "$FEED" latest-linux.yml --repo "$GITHUB_REPOSITORY" --yes || true
+            for f in assets/*.AppImage; do
+              gh release delete-asset "$FEED" "$(basename "$f")" --repo "$GITHUB_REPOSITORY" --yes || true
+            done
+          else
+            gh release create "$FEED" --repo "$GITHUB_REPOSITORY" \
+              --title "DSHD AppImage update feed (${{ matrix.arch }})" \
+              --notes "Rolling electron-updater feed; assets are replaced for each release." \
+              --prerelease
+          fi
+          gh release upload "$FEED" assets/latest-linux.yml assets/*.AppImage \
+            --repo "$GITHUB_REPOSITORY" --clobber

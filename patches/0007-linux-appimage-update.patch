@@ -1,0 +1,58 @@
+--- a/apps/desktop/scripts/desktop-auto-update-environment.mjs
++++ b/apps/desktop/scripts/desktop-auto-update-environment.mjs
+@@ -33,7 +33,7 @@
+   },
+ }
+ 
+-const UPDATE_TARGETS = new Set(['mac-arm64', 'mac-x64', 'win-x64'])
++const UPDATE_TARGETS = new Set(['mac-arm64', 'mac-x64', 'win-x64', 'linux-x64', 'linux-arm64'])
+ 
+ /**
+  * Name the fixed installer object shared by uploading and cache refresh.
+@@ -42,6 +42,9 @@
+  */
+ export function desktopLatestInstallerFilename(target) {
+   if (!UPDATE_TARGETS.has(target)) throw new Error(`desktop upload: unsupported target ${target}`)
++  if (target.startsWith('linux-')) {
++    return target === 'linux-arm64' ? 'dsh-latest-linux-arm64.AppImage' : 'dsh-latest-linux-x64.AppImage'
++  }
+   const windows = target === 'win-x64'
+   return `dsh-latest-${windows ? 'windows' : 'macos'}-${target === 'mac-arm64' ? 'arm64' : 'x64'}.${windows ? 'exe' : 'dmg'}`
+ }
+@@ -106,10 +109,11 @@
+   if (valid(version) === null) {
+     throw new Error(`desktop auto-update: invalid Desktop version ${JSON.stringify(version)}`)
+   }
++  resolveDesktopUpdateChannel({ DSH_DESKTOP_UPDATE_CHANNEL: channel })
++  if (platform === 'linux') return 'latest-linux.yml'
+   if (platform !== 'darwin' && platform !== 'win32') {
+     throw new Error(`desktop auto-update: unsupported metadata platform ${platform}`)
+   }
+-  resolveDesktopUpdateChannel({ DSH_DESKTOP_UPDATE_CHANNEL: channel })
+   return `${channel}${platform === 'darwin' ? '-mac' : ''}.yml`
+ }
+ 
+@@ -162,8 +166,22 @@
+  */
+ export function resolveDesktopAutoUpdateConfig(env, platform, arch) {
+   const channel = resolveDesktopUpdateChannel(env)
+-  const environment = resolveDesktopAutoUpdateEnvironment(env)
+   const target = resolveDesktopAutoUpdateTarget(platform, arch)
++  if (platform === 'linux') {
++    const candidate = requiredEnvironmentValue(env, 'DSHD_APPIMAGE_UPDATE_URL')
++    let parsed
++    try { parsed = new URL(candidate) }
++    catch { throw new Error('desktop auto-update: DSHD_APPIMAGE_UPDATE_URL must be an absolute URL') }
++    if (parsed.protocol !== 'https:' || parsed.username !== '' || parsed.password !== '') {
++      throw new Error('desktop auto-update: DSHD_APPIMAGE_UPDATE_URL must be HTTPS without credentials')
++    }
++    const publicUrl = parsed.href.endsWith('/') ? parsed.href : `${parsed.href}/`
++    return {
++      environment: 'test', channel, target, origin: parsed.origin, publicUrl,
++      keyPrefix: '', binaryKeyPrefix: '',
++    }
++  }
++  const environment = resolveDesktopAutoUpdateEnvironment(env)
+   const deployment = UPDATE_ENVIRONMENTS[environment]
+   let origin = deployment.fixedOrigin
+   if (origin === undefined) {

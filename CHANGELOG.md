@@ -25,6 +25,7 @@ version.
   CODEOWNERS, Dependabot, CodeQL and dependency review.
 - Added a distribution support matrix for high-value Debian/Ubuntu, RPM, ARM64,
   immutable and Arch-family derivatives.
+- Added the Linux AppImage update-feed patch and fixed GitHub Release feed workflow.
 
 ## [0.2.2-rc.1] - 2026-11-10
 
