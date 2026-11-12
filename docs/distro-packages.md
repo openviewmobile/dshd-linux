@@ -46,7 +46,7 @@ format configuration lives in
 | Arch `pkg.tar.zst` / AUR | — | — | — | ✅ Package produced, installed, and launched |
 | openSUSE OBS repository | — | — | — | 🟡 Local rpmbuild produced a package; no server-side OBS build |
 | Alpine `apk` | — | — | — | ⛔ Incompatible (musl) |
-| Gentoo ebuild | — | — | — | ⚪ Not implemented (research) |
+| Gentoo ebuild | — | — | — | 🟡 x86_64 overlay ebuild + Manifest; not emerge-tested |
 | Nix / NixOS | — | — | — | ⚪ Not implemented (research) |
 
 Evidence:

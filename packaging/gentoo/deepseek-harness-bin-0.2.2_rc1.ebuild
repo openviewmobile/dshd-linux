@@ -10,16 +10,15 @@ MY_PN="deepseek-harness"
 
 inherit desktop xdg-utils
 
+S="${WORKDIR}"
+
 DESCRIPTION="Electron desktop shell for a bundled dsh runtime and external plugins (binary AppImage repackage)"
-HOMEPAGE="https://github.com/deepseek-ai/deepseek-harness"
-SRC_URI="
-	amd64? ( https://github.com/deepseek-ai/deepseek-harness/releases/download/v${UPSTREAM_PV}/${MY_PN}-${UPSTREAM_PV}-linux-x86_64-unsigned.AppImage -> ${P}-amd64.AppImage )
-	arm64? ( https://github.com/deepseek-ai/deepseek-harness/releases/download/v${UPSTREAM_PV}/${MY_PN}-${UPSTREAM_PV}-linux-arm64-unsigned.AppImage -> ${P}-arm64.AppImage )
-"
+HOMEPAGE="https://github.com/openviewmobile/dshd-linux"
+SRC_URI="https://github.com/openviewmobile/dshd-linux/releases/download/v${UPSTREAM_PV}/${MY_PN}-${UPSTREAM_PV}-linux-x86_64-unsigned.AppImage -> ${P}-amd64.AppImage"
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~amd64 ~arm64"
+KEYWORDS="~amd64"
 IUSE=""
 
 # The AppImage already contains Electron 44, Node 24 and Python.  System
@@ -28,7 +27,7 @@ IUSE=""
 RDEPEND="
 	app-accessibility/at-spi2-core
 	dev-libs/expat
-	dev-libs/libsecret
+	app-crypt/libsecret
 	dev-libs/nss
 	media-libs/alsa-lib
 	media-libs/mesa
@@ -57,8 +56,7 @@ src_unpack() {
 	local appimage_arch
 	case ${ARCH} in
 		amd64) appimage_arch=amd64 ;;
-		arm64) appimage_arch=arm64 ;;
-		*) die "unsupported ARCH: ${ARCH}" ;;
+		*) die "this ebuild currently supports x86_64 only; see packaging/gentoo for arm64 status" ;;
 	esac
 
 	local appimage="${P}-${appimage_arch}.AppImage"
