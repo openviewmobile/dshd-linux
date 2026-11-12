@@ -21,6 +21,7 @@ Language: [English README](../README.md) | [Chinese README](../README.zh-CN.md)
 | [flathub.md](flathub.md) | Flathub requirements, app ID, manifest and submission plan |
 | [appimage-update.md](appimage-update.md) | Fixed AppImage update feed, trust boundaries and test plan |
 | [supply-chain.md](supply-chain.md) | SBOM, build provenance, verification and release-key rotation |
+| [promotion-plan.md](promotion-plan.md) | Launch positioning, channels, copy, metrics and 30-day plan |
 | [distro-packages.md](distro-packages.md) | Distribution/package-format matrix, tier recommendations, technical constraints and CI verification |
 | [research/official-desktop-audit.md](research/official-desktop-audit.md) | Audit of the official desktop app and Linux release gaps |
 | [adr/](adr/) | Related ADRs (Electron, forking upstream, open-source distribution, fully local scope) |
