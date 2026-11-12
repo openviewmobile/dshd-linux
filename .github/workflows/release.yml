@@ -70,7 +70,12 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/src" "$GITHUB_WORKSPACE/dist/linux-$SUFFIX"
+          BUILD_ARGS=()
+          if [[ "${TAG}" == v0.2.2-rc.1.* ]]; then
+            BUILD_ARGS+=(-e "DSH_DESKTOP_BUILD_VERSION=${TAG#v}")
+          fi
           docker run --rm --privileged \
+            "${BUILD_ARGS[@]}" \
             -e SRC=/src \
             -e UPSTREAM_REF="$UPSTREAM_REF" \
             -e REPO_URL="$UPSTREAM_REPO" \
@@ -174,7 +179,7 @@ jobs:
         with:
           tag_name: ${{ env.TAG }}
           name: DSHD for Linux ${{ env.TAG }}
-          body_path: docs/releases/v0.2.2-rc.1.md
+          body_path: docs/releases/${{ env.TAG }}.md
           prerelease: true
           draft: false
           files: dist/release/*

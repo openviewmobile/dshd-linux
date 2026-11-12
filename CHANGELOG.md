@@ -7,6 +7,11 @@ version.
 
 ## [Unreleased]
 
+### Added
+
+- `v0.2.2-rc.1.1` packaging rebuild with AppImage update feed, SBOM,
+  provenance and the production signing key.
+
 ### Changed
 
 - English is now the primary project README (`README.md`); the complete Chinese
