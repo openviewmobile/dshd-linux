@@ -29,7 +29,7 @@ Choose the asset for your architecture:
 | deb | yes | yes | `sudo apt install ./<file>.deb` |
 | rpm | yes | yes | `sudo dnf install ./<file>.rpm` |
 | Flatpak | yes | yes | `flatpak install --user --bundle ./<file>.flatpak` |
-| Arch/AUR | x86_64 | — | `makepkg -si` or `pacman -U` |
+| Arch/AUR | x86_64 | — | source recipe in `packaging/aur`; not a Release asset |
 
 Every Release asset is accompanied by a detached `.asc` signature; each release
 also has a signed `SHA256SUMS`. The CI release currently attaches the eight
@@ -38,27 +38,35 @@ repository. If the latest Release page does not yet show
 binary assets, use the **Build Linux release assets** GitHub Actions workflow
 (or build from source below); the workflow is the supported release builder.
 
-## Supported Linux platforms
+## Supported Linux platforms and how to install
 
 The packages bundle Electron, Node.js, Python and the application runtime. The
-host only needs a glibc-based Linux desktop (glibc **2.32 or newer**).
+host only needs a glibc-based Linux desktop (glibc **2.32 or newer**) and the
+architecture must be **x86_64** or **aarch64**.
 
-| Distribution | Version | Status | Notes |
-|---|---|---|---|
-| Debian | 12, 13 | ✅ supported | deb installed and launched in amd64 Docker + Xvfb |
-| Ubuntu | 22.04, 24.04 | ✅ supported | deb; Ubuntu 24.04 t64 dependencies measured |
-| Fedora | 41, 42 | ✅ supported | rpm produced; install on target recommended |
-| RHEL / Rocky Linux | 9 | ⚠️ rpm available | glibc baseline is sufficient; install on target recommended |
-| Arch Linux / Manjaro | rolling | ✅ supported | AUR `-bin` package built and launched |
-| openSUSE Leap / Tumbleweed | 15.6 / current | ⚠️ packaging available | spec + `_service`; local `rpmbuild` tested, OBS service build not verified |
-| NixOS | current | ⚠️ flake template | static checks only; not built on NixOS in the reference environment |
-| Gentoo | current | ⚠️ ebuild template | static checks only; not built on Gentoo in the reference environment |
-| Any glibc distribution | — | ✅ Flatpak | Flatpak 25.08 bundle for x86_64/aarch64 |
-| Alpine Linux | — | ❌ unsupported | musl/Electron incompatibility |
+The first four formats are attached to the CI Release. AUR, openSUSE, Nix and
+Gentoo are source recipes in this repository, not binary Release assets.
 
-`x86_64` and `aarch64` are the supported architectures. `armv7`, 32-bit x86 and
-musl-based distributions are not supported. Wayland-native sessions, tray icons
-and IME behavior are not yet verified on physical desktops.
+| Distribution | Version | How to get it | Install command | Verification |
+|---|---|---|---|---|
+| Debian | 12, 13 | Release → `*-linux-amd64-unsigned.deb` (x64) or `*-linux-arm64-unsigned.deb` | `sudo apt install ./deepseek-harness-*.deb` | deb installed/launched in amd64 Docker + Xvfb; arm64 structure checked |
+| Ubuntu | 22.04, 24.04 | Same `.deb` assets as Debian | `sudo apt install ./deepseek-harness-*.deb` | x64 deb path verified; 24.04 t64 dependency names measured |
+| Fedora | 41, 42 | Release → `*-linux-x86_64-unsigned.rpm` or `*-linux-aarch64-unsigned.rpm` | `sudo dnf install ./deepseek-harness-*.rpm` | rpm metadata/unpack checked; full Fedora install still to verify |
+| RHEL / Rocky Linux | 9 | Same `.rpm` assets as Fedora | `sudo dnf install ./deepseek-harness-*.rpm` | glibc baseline sufficient; install on target still to verify |
+| Arch Linux / Manjaro | rolling | Source recipe: [`packaging/aur`](packaging/aur) (not yet published to AUR) | `DSHD_APPIMAGE_X86_64=/path/to/dshd.AppImage makepkg -si` (or `pacman -U`) | x86_64 built, installed with `pacman -Udd`, launched under Xvfb |
+| openSUSE Leap / Tumbleweed | 15.6 / current | No OBS repository yet. Build [`packaging/obs`](packaging/obs) or evaluate the generic x86_64 `.rpm` | `sudo zypper install ./deepseek-harness-*.rpm` (not verified) | local `rpmbuild` only; OBS service build not done |
+| NixOS | current | Source recipe: [`packaging/nix`](packaging/nix) (flake) | `cd packaging/nix && nix build .#default` | template/static checks only; not built on NixOS in the reference environment |
+| Gentoo | current | Source recipe: [`packaging/gentoo`](packaging/gentoo) (local overlay) | Add the ebuild to a local overlay, then `emerge deepseek-harness-bin` | ebuild/static checks only; not built on Gentoo in the reference environment |
+| Any glibc distribution | — | Release → `*.flatpak` | `flatpak install --user --bundle ./deepseek-harness-*.flatpak` | Flatpak 25.08 x86_64/aarch64 installed and launched |
+| Snap | — | Source recipe: [`packaging/snap`](packaging/snap) (PoC, not in Snap Store) | `snapcraft pack` | `.snap` assembled manually; no `snap install` verification |
+| Alpine Linux | — | None | — | ❌ unsupported: musl/Electron incompatibility |
+
+The CI Release currently contains **8 primary packages**: AppImage, deb, rpm and
+Flatpak for x86_64 and aarch64. Snap, openSUSE OBS, AUR, Nix and Gentoo remain
+source/packaging recipes until they are built and verified in their native
+channels. `armv7`, 32-bit x86 and musl distributions are not supported.
+Wayland-native sessions, tray icons and IME behavior still need verification on
+physical desktops.
 
 ## Install and first run
 
