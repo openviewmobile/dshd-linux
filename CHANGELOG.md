@@ -19,6 +19,8 @@ version.
   Chinese captions, and upload metadata under `promo/`.
 - Added a GitHub Actions workflow that builds and signs Linux release assets
   for x86_64 and arm64 on hosted runners.
+- Added signed APT (Debian/Ubuntu) and DNF (Fedora/RHEL/Rocky) repositories
+  hosted on GitHub Pages for x86_64, plus a package landing page.
 
 ## [0.2.2-rc.1] - 2026-11-10
 

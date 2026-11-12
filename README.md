@@ -38,6 +38,38 @@ repository. If the latest Release page does not yet show
 binary assets, use the **Build Linux release assets** GitHub Actions workflow
 (or build from source below); the workflow is the supported release builder.
 
+## APT and DNF repositories (x86_64)
+
+GitHub Pages hosts signed APT and DNF repositories generated from the Release by
+GitHub Actions:
+
+<https://openviewmobile.github.io/dshd-linux/>
+
+Debian / Ubuntu:
+
+```bash
+curl -fsSL https://openviewmobile.github.io/dshd-linux/key.asc \
+  | sudo gpg --dearmor -o /usr/share/keyrings/dshd-linux.gpg
+echo "deb [signed-by=/usr/share/keyrings/dshd-linux.gpg] https://openviewmobile.github.io/dshd-linux/apt stable main" \
+  | sudo tee /etc/apt/sources.list.d/dshd-linux.list
+sudo apt update
+sudo apt install deepseek-harness
+```
+
+Fedora / RHEL / Rocky Linux:
+
+```bash
+sudo curl -fsSL https://openviewmobile.github.io/dshd-linux/dshd-linux.repo \
+  -o /etc/yum.repos.d/dshd-linux.repo
+sudo dnf install deepseek-harness
+```
+
+These repositories are **x86_64 only** and are hosted as static GitHub Pages
+(under the 1 GB Pages limit). aarch64 users should use the `.deb`/`.rpm` Release
+assets; AppImage and Flatpak remain direct Release downloads for all
+architectures. The APT `InRelease` and DNF `repomd.xml.asc` are signed by the
+release key.
+
 ## Supported Linux platforms and how to install
 
 The packages bundle Electron, Node.js, Python and the application runtime. The
@@ -49,10 +81,10 @@ Gentoo are source recipes in this repository, not binary Release assets.
 
 | Distribution | Version | How to get it | Install command | Verification |
 |---|---|---|---|---|
-| Debian | 12, 13 | Release → `*-linux-amd64-unsigned.deb` (x64) or `*-linux-arm64-unsigned.deb` | `sudo apt install ./deepseek-harness-*.deb` | deb installed/launched in amd64 Docker + Xvfb; arm64 structure checked |
-| Ubuntu | 22.04, 24.04 | Same `.deb` assets as Debian | `sudo apt install ./deepseek-harness-*.deb` | x64 deb path verified; 24.04 t64 dependency names measured |
-| Fedora | 41, 42 | Release → `*-linux-x86_64-unsigned.rpm` or `*-linux-aarch64-unsigned.rpm` | `sudo dnf install ./deepseek-harness-*.rpm` | rpm metadata/unpack checked; full Fedora install still to verify |
-| RHEL / Rocky Linux | 9 | Same `.rpm` assets as Fedora | `sudo dnf install ./deepseek-harness-*.rpm` | glibc baseline sufficient; install on target still to verify |
+| Debian | 12, 13 | Release `.deb` (x64/arm64) or **APT repo** (x64) | `sudo apt install ./deepseek-harness-*.deb` | deb installed/launched in amd64 Docker + Xvfb; arm64 structure checked |
+| Ubuntu | 22.04, 24.04 | Release `.deb` (x64/arm64) or **APT repo** (x64) | `sudo apt install ./deepseek-harness-*.deb` | x64 deb path verified; 24.04 t64 dependency names measured |
+| Fedora | 41, 42 | Release `.rpm` (x86_64/aarch64) or **DNF repo** (x64) | `sudo dnf install ./deepseek-harness-*.rpm` | rpm metadata/unpack checked; full Fedora install still to verify |
+| RHEL / Rocky Linux | 9 | Release `.rpm` (x86_64/aarch64) or **DNF repo** (x64) | `sudo dnf install ./deepseek-harness-*.rpm` | glibc baseline sufficient; install on target still to verify |
 | Arch Linux / Manjaro | rolling | Source recipe: [`packaging/aur`](packaging/aur) (not yet published to AUR) | `cd packaging/aur && DSHD_APPIMAGE_X86_64=/path/to/dshd.AppImage makepkg -si` (or `pacman -U`) | x86_64 built, installed with `pacman -Udd`, launched under Xvfb |
 | openSUSE Leap / Tumbleweed | 15.6 / current | No OBS repository yet. Release → `*-linux-x86_64-unsigned.rpm`, or build [`packaging/obs`](packaging/obs) | `sudo zypper install ./deepseek-harness-*.rpm` (not verified) | local `rpmbuild` only; OBS service build not done |
 | NixOS | current | Source recipe: [`packaging/nix`](packaging/nix) (flake) | `cd packaging/nix && nix build .#default` | template/static checks only; not built on NixOS in the reference environment |
