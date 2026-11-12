@@ -6,10 +6,10 @@
  
 -const UPDATE_TARGETS = new Set(['mac-arm64', 'mac-x64', 'win-x64'])
 +const UPDATE_TARGETS = new Set(['mac-arm64', 'mac-x64', 'win-x64', 'linux-x64', 'linux-arm64'])
- 
- /**
-  * Name the fixed installer object shared by uploading and cache refresh.
-@@ -42,6 +42,9 @@
+ // Linux builds are unsigned/local for now, so they have no upload target, but packaging still
+ // records completion and must be able to name the record for a Linux target.
+ const RECORD_TARGETS = new Set([...UPDATE_TARGETS, 'linux-arm64', 'linux-x64'])
+@@ -45,6 +45,9 @@
   */
  export function desktopLatestInstallerFilename(target) {
    if (!UPDATE_TARGETS.has(target)) throw new Error(`desktop upload: unsupported target ${target}`)
@@ -19,7 +19,7 @@
    const windows = target === 'win-x64'
    return `dsh-latest-${windows ? 'windows' : 'macos'}-${target === 'mac-arm64' ? 'arm64' : 'x64'}.${windows ? 'exe' : 'dmg'}`
  }
-@@ -106,10 +109,11 @@
+@@ -109,10 +112,11 @@
    if (valid(version) === null) {
      throw new Error(`desktop auto-update: invalid Desktop version ${JSON.stringify(version)}`)
    }
@@ -32,7 +32,7 @@
    return `${channel}${platform === 'darwin' ? '-mac' : ''}.yml`
  }
  
-@@ -162,8 +166,22 @@
+@@ -165,8 +169,22 @@
   */
  export function resolveDesktopAutoUpdateConfig(env, platform, arch) {
    const channel = resolveDesktopUpdateChannel(env)
