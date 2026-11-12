@@ -67,12 +67,12 @@ jobs:
         run: |
           set -euo pipefail
           FPR="$(cat /tmp/gpg-fpr)"
-          GPG_ARGS=(--batch --yes)
+          GPG=(gpg --batch --yes)
           RPM_SIGN_ARGS=()
           if [ -n "${GPG_PASSPHRASE:-}" ]; then
             printf '%s' "$GPG_PASSPHRASE" > /tmp/gpg-pass
             chmod 600 /tmp/gpg-pass
-            GPG_ARGS+=(--pinentry-mode loopback --passphrase-file /tmp/gpg-pass)
+            GPG+=(--pinentry-mode loopback --passphrase-file /tmp/gpg-pass)
             RPM_SIGN_ARGS+=(--define "__gpg_sign_cmd %{__gpg} gpg --batch --no-armor --pinentry-mode loopback --passphrase-file /tmp/gpg-pass -u %{_gpg_name} -sbo %{__signature_filename} %{__plaintext_filename}")
           fi
           rm -rf site/apt site/rpm site/dshd-linux.repo site/key.asc
@@ -93,8 +93,8 @@ jobs:
               -o APT::FTPArchive::Release::Architectures=amd64 \
               -o APT::FTPArchive::Release::Components=main \
               release dists/stable > dists/stable/Release
-            "${GPG_ARGS[@]}" --clearsign -o dists/stable/InRelease dists/stable/Release
-            "${GPG_ARGS[@]}" --armor --detach-sign -o dists/stable/Release.gpg dists/stable/Release
+            "${GPG[@]}" --clearsign -o dists/stable/InRelease dists/stable/Release
+            "${GPG[@]}" --armor --detach-sign -o dists/stable/Release.gpg dists/stable/Release
           )
 
           mkdir -p site/rpm/x86_64
@@ -103,7 +103,7 @@ jobs:
             rpmsign "${RPM_SIGN_ARGS[@]}" --define "_gpg_name $FPR" --define "_gpg_path $HOME/.gnupg" --addsign "$rpm"
           done
           createrepo_c --database site/rpm/x86_64
-          "${GPG_ARGS[@]}" --armor --detach-sign -o site/rpm/x86_64/repodata/repomd.xml.asc site/rpm/x86_64/repodata/repomd.xml
+          "${GPG[@]}" --armor --detach-sign -o site/rpm/x86_64/repodata/repomd.xml.asc site/rpm/x86_64/repodata/repomd.xml
           cat > site/dshd-linux.repo <<REPO
           [dshd-linux]
           name=DSHD for Linux
