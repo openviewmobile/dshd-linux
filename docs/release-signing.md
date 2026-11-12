@@ -19,7 +19,7 @@ the published public key to the bytes they install.
 | Public key | [`keys/dshd-linux-release-signing.asc`](../keys/dshd-linux-release-signing.asc) |
 | Private key | offline, passphrase-protected, not in this repository |
 
-### Historical key (`v0.2.2-rc.1` only)
+### Historical key (`v0.2.2-rc.1.1` and earlier)
 
 | Field | Value |
 |---|---|
@@ -28,7 +28,7 @@ the published public key to the bytes they install.
 | Public key | [`keys/deepseek-harness-release-signing.asc`](../keys/deepseek-harness-release-signing.asc) |
 
 The historical key was the passphrase-less reference key used before the
-production key rotation. Keep it for the existing `v0.2.2-rc.1` release; do not
+production key rotation. Keep it for the existing earlier releases; do not
 use it for new releases.
 
 The `.invalid` domain is intentional: this is a project release identity, not a

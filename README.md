@@ -16,7 +16,7 @@ Office-to-PDF conversion. **Current status: `0.2.2-rc.1` release candidate.** Do
 signed APT/DNF repositories.
 
 <p>
-<a href="https://github.com/openviewmobile/dshd-linux/releases/tag/v0.2.2-rc.1"><b>Download the latest release</b></a>
+<a href="https://github.com/openviewmobile/dshd-linux/releases/tag/v0.2.2-rc.1.3"><b>Download the latest release</b></a>
 &nbsp;·&nbsp;
 <a href="#apt-and-dnf-repositories-x86_64">Install with apt/dnf</a>
 &nbsp;·&nbsp;
@@ -47,12 +47,12 @@ signed APT/DNF repositories.
 ## Download
 
 All packages are built and signed by GitHub Actions and attached to the
-[GitHub Release](https://github.com/openviewmobile/dshd-linux/releases/tag/v0.2.2-rc.1).
+[GitHub Release](https://github.com/openviewmobile/dshd-linux/releases/tag/v0.2.2-rc.1.3).
 
 | Architecture | AppImage | deb | rpm | Flatpak |
 |---|---|---|---|---|
-| **x86_64** (Intel/AMD) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.AppImage) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-amd64-unsigned.deb) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.rpm) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.flatpak) |
-| **aarch64** (ARM64) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-arm64-unsigned.AppImage) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-arm64-unsigned.deb) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-aarch64-unsigned.rpm) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-aarch64-unsigned.flatpak) |
+| **x86_64** (Intel/AMD) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.3/deepseek-harness-0.2.2-rc.1.3-linux-x86_64-unsigned.AppImage) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.3/deepseek-harness-0.2.2-rc.1.3-linux-amd64-unsigned.deb) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.3/deepseek-harness-0.2.2-rc.1.3-linux-x86_64-unsigned.rpm) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.3/deepseek-harness-0.2.2-rc.1.3-linux-x86_64-unsigned.flatpak) |
+| **aarch64** (ARM64) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.3/deepseek-harness-0.2.2-rc.1.3-linux-arm64-unsigned.AppImage) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.3/deepseek-harness-0.2.2-rc.1.3-linux-arm64-unsigned.deb) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.3/deepseek-harness-0.2.2-rc.1.3-linux-aarch64-unsigned.rpm) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.3/deepseek-harness-0.2.2-rc.1.3-linux-aarch64-unsigned.flatpak) |
 
 The `unsigned` in a filename means “no platform code-signing certificate”; the
 packages still have detached GPG signatures and a signed checksum file.
@@ -258,8 +258,7 @@ For security issues, use the private advisory flow in [SECURITY.md](SECURITY.md)
 Verify a download before installing:
 
 ```bash
-# v0.2.2-rc.1 uses the historical key; new releases use the production key.
-gpg --import keys/deepseek-harness-release-signing.asc
+gpg --import keys/dshd-linux-release-signing.asc
 gpg --verify SHA256SUMS.asc SHA256SUMS
 sha256sum -c SHA256SUMS
 ```
@@ -451,8 +450,7 @@ hyper-frame transitions rather than a screen recording.
 ## Verification and signing
 
 ```bash
-gpg --import keys/dshd-linux-release-signing.asc   # next releases
-gpg --import keys/deepseek-harness-release-signing.asc  # v0.2.2-rc.1 only
+gpg --import keys/dshd-linux-release-signing.asc   # current and future releases
 scripts/verify-artifacts.sh
 DSHD_GPG_KEY=2D4C2CFD4F1C3B5F8AF0DA481C9A912742C70369 scripts/sign-artifacts.sh
 ```
