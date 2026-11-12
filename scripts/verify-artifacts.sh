@@ -5,7 +5,8 @@
 #   DIR=dist/linux-x64 scripts/verify-artifacts.sh
 #
 # Import the release public key first, for example:
-#   gpg --import keys/deepseek-harness-release-signing.asc
+#   gpg --import keys/dshd-linux-release-signing.asc
+#   gpg --import keys/deepseek-harness-release-signing.asc  # v0.2.2-rc.1 only
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 

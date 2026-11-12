@@ -75,7 +75,7 @@ Shared caveats:
 | Snap | `0.2.2-rc.1` | `source-checksum: sha256/<hex>` |
 | OBS | `0.2.2~rc1` (RPM `Version`) | `verify_file` in `_service` pins the sha256 |
 | Nix | `0.2.2-rc.1` | `fetchurl` SRI hash |
-| Gentoo | `0.2.2_rc1` | `Manifest` committed for x86_64 |
+| Gentoo | `0.2.2_rc1` | `Manifest` committed for x86_64 and aarch64 |
 
 The AUR GitHub Releases URL has the form:
 
@@ -375,7 +375,7 @@ nix run .#
 
 **Behavior.**
 
-- `EAPI=8`; `KEYWORDS="~amd64"`; x86_64 only for now;
+- `EAPI=8`; `KEYWORDS="~amd64 ~arm64"`; dual architecture;
 - `SRC_URI` points at the DSHD GitHub Release (not the upstream
   `deepseek-ai/deepseek-harness` release, which has no Linux assets) and renames
   the AppImage with `->`;
@@ -396,19 +396,23 @@ cp packaging/gentoo/deepseek-harness-bin-0.2.2_rc1.ebuild \
   packaging/gentoo/Manifest \
   /var/db/repos/dshd/app-misc/deepseek-harness-bin/
 cd /var/db/repos/dshd/app-misc/deepseek-harness-bin
+# Regenerate after changing the ebuild or version:
+# ebuild deepseek-harness-bin-0.2.2_rc1.ebuild manifest
+emerge -av dev-util/pkgcheck
 pkgcheck scan
 emerge -av app-misc/deepseek-harness-bin
 ```
 
-The committed `Manifest` contains only the x86_64 AppImage and its
-SHA-256/SHA-512/BLAKE2B values. It was generated from the published DSHD
-release asset; no arm64 source is fetched for an amd64 manifest.
+The committed `Manifest` contains both the x86_64 and aarch64 AppImages and
+their SHA-256/SHA-512/BLAKE2B values. Manifest generation downloads both
+conditional sources, which is normal for a multiarch ebuild; a user `emerge`
+fetches only the AppImage selected by the current architecture.
 
 **Verified.**
 
 - ✅ `bash -n` passes;
 - ✅ source URL returns HTTP 302 to the DSHD release asset;
-- ✅ Manifest size/SHA-256/SHA-512/BLAKE2B match the published x86_64 AppImage;
+- ✅ Manifest includes the EBUILD entry and both DIST entries; sizes and SHA-256/SHA-512/BLAKE2B match the published AppImages;
 - ✅ structural checks: `EAPI=8`, `RESTRICT="strip"`, `QA_PREBUILT`, `S="${WORKDIR}"`,
   `fperms 4755`, `doicon -s 1024` are present;
 - ❌ no `ebuild`/`emerge`/`pkgcheck`; no launch verification.
@@ -421,8 +425,8 @@ release asset; no arm64 source is fetched for an amd64 manifest.
   the Portage sandbox;
 - `RDEPEND` uses common atoms; `CHOST`/`USE`/`SLOT` combinations are not covered;
 - `chrome-sandbox` setuid may conflict with Gentoo's `suid` policy/`FEATURES`;
-- arm64 is intentionally not in this ebuild yet; a separate arm64 ebuild/manifest is needed before
-  claiming dual-architecture Gentoo support.
+- `pkgdev manifest` downloads both arch AppImages once; normal `emerge` downloads only
+  the current architecture.
 
 ---
 

@@ -142,7 +142,7 @@ Gentoo are source recipes in this repository, not binary Release assets.
 | Arch Linux / Manjaro | rolling | Source recipe: [`packaging/aur`](packaging/aur) (not yet published to AUR) | `cd packaging/aur && DSHD_APPIMAGE_X86_64=/path/to/dshd.AppImage makepkg -si` (or `pacman -U`) | x86_64 built, installed with `pacman -Udd`, launched under Xvfb |
 | openSUSE Leap / Tumbleweed | 15.6 / current | No OBS repository yet. Release → `*-linux-x86_64-unsigned.rpm`, or build [`packaging/obs`](packaging/obs) | `sudo zypper install ./deepseek-harness-*.rpm` (not verified) | local `rpmbuild` only; OBS service build not done |
 | NixOS | current | Source recipe: [`packaging/nix`](packaging/nix) (flake) | `cd packaging/nix && nix build .#default` | template/static checks only; not built on NixOS in the reference environment |
-| Gentoo | current | Source recipe: [`packaging/gentoo`](packaging/gentoo) (x86_64 only; arm64 pending) | Add the ebuild to a local overlay, then `emerge deepseek-harness-bin` | ebuild syntax checked; not built on Gentoo in the reference environment |
+| Gentoo | current | Source recipe: [`packaging/gentoo`](packaging/gentoo) (x86_64/aarch64) | Add the ebuild to a local overlay, then `emerge deepseek-harness-bin` | ebuild syntax, Manifest and `StartupWMClass` checked; not built on Gentoo |
 | Any glibc distribution (AppImage) | — | Release → `*.AppImage` | `chmod +x deepseek-harness-*.AppImage && ./deepseek-harness-*.AppImage` | AppImage launched under Xvfb on x86_64/aarch64 |
 | Any glibc distribution (Flatpak) | — | Release → `*.flatpak` | `flatpak install --user --bundle ./deepseek-harness-*.flatpak` | Flatpak 25.08 x86_64/aarch64 installed and launched |
 | Snap | — | Source recipe: [`packaging/snap`](packaging/snap) (PoC, not in Snap Store) | `snapcraft pack` | `.snap` assembled manually; no `snap install` verification |
@@ -258,6 +258,7 @@ For security issues, use the private advisory flow in [SECURITY.md](SECURITY.md)
 Verify a download before installing:
 
 ```bash
+# v0.2.2-rc.1 uses the historical key; new releases use the production key.
 gpg --import keys/deepseek-harness-release-signing.asc
 gpg --verify SHA256SUMS.asc SHA256SUMS
 sha256sum -c SHA256SUMS
@@ -450,9 +451,10 @@ hyper-frame transitions rather than a screen recording.
 ## Verification and signing
 
 ```bash
-gpg --import keys/deepseek-harness-release-signing.asc
+gpg --import keys/dshd-linux-release-signing.asc   # next releases
+gpg --import keys/deepseek-harness-release-signing.asc  # v0.2.2-rc.1 only
 scripts/verify-artifacts.sh
-DSHD_GPG_KEY=0E6023DF4DB8C68AA2202EF876CE5675AFF067FF scripts/sign-artifacts.sh
+DSHD_GPG_KEY=2D4C2CFD4F1C3B5F8AF0DA481C9A912742C70369 scripts/sign-artifacts.sh
 ```
 
 `SHA256SUMS` and every artifact have detached `.asc` signatures. The public key

@@ -13,6 +13,8 @@ on:
 
 permissions:
   contents: write
+  id-token: write
+  attestations: write
 
 concurrency:
   group: release-${{ github.event.inputs.tag || github.ref_name }}
@@ -68,7 +70,12 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/src" "$GITHUB_WORKSPACE/dist/linux-$SUFFIX"
+          BUILD_ARGS=()
+          if [[ "${TAG}" == v0.2.2-rc.1.* ]]; then
+            BUILD_ARGS+=(-e "DSH_DESKTOP_BUILD_VERSION=${TAG#v}")
+          fi
           docker run --rm --privileged \
+            "${BUILD_ARGS[@]}" \
             -e SRC=/src \
             -e UPSTREAM_REF="$UPSTREAM_REF" \
             -e REPO_URL="$UPSTREAM_REPO" \
@@ -132,28 +139,47 @@ jobs:
           awk -F: '$1 == "fpr" { print $10; exit }' /tmp/gpg-keys > /tmp/gpg-fpr
           test -s /tmp/gpg-fpr
 
+      - name: Generate SPDX SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: dist/release
+          format: spdx-json
+          output-file: dist/release/SBOM.spdx.json
+          upload-artifact: false
+
       - name: Build combined checksums and signatures
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           set -euo pipefail
           cd dist/release
           find . -mindepth 1 -maxdepth 1 -type d -exec rm -rf {} +
           find . -maxdepth 1 -type f ! -name 'SHA256SUMS' ! -name '*.asc' -printf '%f\n' \
             | sort | xargs -r sha256sum > SHA256SUMS
-          cp ../../keys/deepseek-harness-release-signing.asc .
+          cp ../../keys/dshd-linux-release-signing.asc .
           FPR="$(cat /tmp/gpg-fpr)"
+          GPG=(gpg --batch --yes)
+          if [ -n "${GPG_PASSPHRASE:-}" ]; then
+            GPG+=(--pinentry-mode loopback --passphrase "$GPG_PASSPHRASE")
+          fi
           for f in *; do
             [ -f "$f" ] || continue
-            gpg --batch --yes --armor --local-user "$FPR" --detach-sign "$f"
+            "${GPG[@]}" --armor --local-user "$FPR" --detach-sign "$f"
           done
           gpg --verify SHA256SUMS.asc SHA256SUMS
           sha256sum -c SHA256SUMS
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: dist/release/*
 
       - name: Publish prerelease
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ env.TAG }}
           name: DSHD for Linux ${{ env.TAG }}
-          body_path: docs/releases/v0.2.2-rc.1.md
+          body_path: docs/releases/${{ env.TAG }}.md
           prerelease: true
           draft: false
           files: dist/release/*
