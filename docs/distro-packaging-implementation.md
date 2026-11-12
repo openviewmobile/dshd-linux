@@ -396,6 +396,9 @@ cp packaging/gentoo/deepseek-harness-bin-0.2.2_rc1.ebuild \
   packaging/gentoo/Manifest \
   /var/db/repos/dshd/app-misc/deepseek-harness-bin/
 cd /var/db/repos/dshd/app-misc/deepseek-harness-bin
+# Regenerate after changing the ebuild or version:
+# ebuild deepseek-harness-bin-0.2.2_rc1.ebuild manifest
+emerge -av dev-util/pkgcheck
 pkgcheck scan
 emerge -av app-misc/deepseek-harness-bin
 ```
@@ -409,7 +412,7 @@ fetches only the AppImage selected by the current architecture.
 
 - ✅ `bash -n` passes;
 - ✅ source URL returns HTTP 302 to the DSHD release asset;
-- ✅ Manifest sizes and hashes match both published AppImages;
+- ✅ Manifest includes the EBUILD entry and both DIST entries; sizes and SHA-256/SHA-512/BLAKE2B match the published AppImages;
 - ✅ structural checks: `EAPI=8`, `RESTRICT="strip"`, `QA_PREBUILT`, `S="${WORKDIR}"`,
   `fperms 4755`, `doicon -s 1024` are present;
 - ❌ no `ebuild`/`emerge`/`pkgcheck`; no launch verification.
@@ -422,8 +425,8 @@ fetches only the AppImage selected by the current architecture.
   the Portage sandbox;
 - `RDEPEND` uses common atoms; `CHOST`/`USE`/`SLOT` combinations are not covered;
 - `chrome-sandbox` setuid may conflict with Gentoo's `suid` policy/`FEATURES`;
-- arm64 is intentionally not in this ebuild yet; a separate arm64 ebuild/manifest is needed before
-  claiming dual-architecture Gentoo support.
+- `pkgdev manifest` downloads both arch AppImages once; normal `emerge` downloads only
+  the current architecture.
 
 ---
 

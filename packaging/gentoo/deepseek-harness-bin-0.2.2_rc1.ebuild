@@ -108,7 +108,7 @@ Exec=/usr/bin/deepseek-harness %U
 Icon=deepseek-harness
 Terminal=false
 Type=Application
-StartupWMClass=DeepSeek Harness
+StartupWMClass=com.deepseek.harness
 MimeType=x-scheme-handler/dsh;
 Categories=Development;
 EOF
