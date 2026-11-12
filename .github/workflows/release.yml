@@ -40,7 +40,7 @@ jobs:
             suffix: arm64
     steps:
       - name: Check out the release tag
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.inputs.tag || github.ref_name }}
 
@@ -92,7 +92,7 @@ jobs:
             '
 
       - name: Upload architecture artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dshd-linux-${{ matrix.suffix }}
           path: dist/linux-${{ matrix.suffix }}
@@ -105,12 +105,12 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out the release tag
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.inputs.tag || github.ref_name }}
 
       - name: Download both architecture artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: dshd-linux-*
           merge-multiple: true
@@ -147,7 +147,7 @@ jobs:
           sha256sum -c SHA256SUMS
 
       - name: Publish prerelease
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ env.TAG }}
           name: DSHD for Linux ${{ env.TAG }}
