@@ -17,6 +17,8 @@ Language: [English README](../README.md) | [Chinese README](../README.zh-CN.md)
 | [promo.md](promo.md) | YouTube promo storyboard, render pipeline and accuracy boundaries |
 | [versioning.md](versioning.md) | Version format, release channels and deprecation policy |
 | [distro-support-matrix.md](distro-support-matrix.md) | Tested distros, derivatives, immutable desktops and test plan |
+| [competitive-analysis.md](competitive-analysis.md) | Comparable projects, positioning and promotion playbook |
+| [flathub.md](flathub.md) | Flathub requirements, app ID, manifest and submission plan |
 | [distro-packages.md](distro-packages.md) | Distribution/package-format matrix, tier recommendations, technical constraints and CI verification |
 | [research/official-desktop-audit.md](research/official-desktop-audit.md) | Audit of the official desktop app and Linux release gaps |
 | [adr/](adr/) | Related ADRs (Electron, forking upstream, open-source distribution, fully local scope) |
