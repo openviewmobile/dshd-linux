@@ -6,6 +6,7 @@ English | [简体中文](README.zh-CN.md)
 
 [![CI](https://github.com/openviewmobile/dshd-linux/actions/workflows/ci.yml/badge.svg)](https://github.com/openviewmobile/dshd-linux/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/openviewmobile/dshd-linux?include_prereleases&label=release)](https://github.com/openviewmobile/dshd-linux/releases)
+[![CodeQL](https://github.com/openviewmobile/dshd-linux/actions/workflows/codeql.yml/badge.svg)](https://github.com/openviewmobile/dshd-linux/actions/workflows/codeql.yml)
 
 ![DSHD desktop workspace](promo/assets/app-chat.png)
 

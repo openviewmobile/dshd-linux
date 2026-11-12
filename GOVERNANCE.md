@@ -20,9 +20,8 @@ below.
 - **Maintainers** review changes, manage releases and secrets, and handle
   private security reports.
 - **Security reporters** use the private advisory flow in [SECURITY.md](SECURITY.md).
-- **Automated checks** include CodeQL, Dependabot version updates, secret
-  scanning and push protection. Dependency review/Scorecard are planned once
-  the repository dependency-graph setting is available.
+- **Automated checks** include CodeQL, Dependabot alerts/security updates,
+  dependency review, secret scanning and push protection.
 
 ## Decisions
 

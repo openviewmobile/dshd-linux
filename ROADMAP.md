@@ -33,8 +33,8 @@ that include reproducible evidence move faster.
   meaningful trust.
 - Stable `v0.2.2` release after the RC acceptance gaps are closed.
 - More maintainers and reviewers; documented release rotation.
-- Enable dependency graph / Dependabot alerts and add dependency review and
-  OpenSSF Scorecard once the repository security settings are available.
+- Add OpenSSF Scorecard once the runner Docker pull is reliable; dependency
+  graph, Dependabot alerts and dependency review are now enabled.
 - Accessibility and localization review for the welcome and settings flows.
 
 ## Non-goals
