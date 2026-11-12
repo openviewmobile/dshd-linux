@@ -236,8 +236,11 @@ From the [Release page](https://github.com/openviewmobile/dshd-linux/releases)
 or the signed APT/DNF repositories above. Do not use random third-party mirrors.
 
 **How do updates work?**<br>
-apt/dnf users get repository updates; AppImage/deb/rpm/Flatpak downloads are
-manual re-downloads. Auto-update and platform code signing are not implemented.
+apt/dnf users get repository updates. AppImage auto-update support is implemented
+in the next build via a signed-feed workflow; the current `0.2.2-rc.1` assets
+still require a manual re-download. deb/rpm/Flatpak installs are updated through
+their package manager or a new download. See [AppImage updates](docs/appimage-update.md).
+Platform code signing is still not implemented.
 
 **Why is apt/dnf only x86_64?**<br>
 The static GitHub Pages site is limited to about 1 GB. aarch64 users should use
