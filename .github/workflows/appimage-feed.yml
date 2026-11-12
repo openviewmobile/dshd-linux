@@ -68,10 +68,11 @@ jobs:
           set -euo pipefail
           FEED="${{ matrix.feed_tag }}"
           if gh release view "$FEED" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release delete-asset "$FEED" latest-linux.yml --repo "$GITHUB_REPOSITORY" --yes || true
-            for f in assets/*.AppImage; do
-              gh release delete-asset "$FEED" "$(basename "$f")" --repo "$GITHUB_REPOSITORY" --yes || true
-            done
+            gh release view "$FEED" --repo "$GITHUB_REPOSITORY" --json assets               --jq '.assets[].name' | while IFS= read -r name; do
+                case "$name" in
+                  *.AppImage|latest-linux.yml) gh release delete-asset "$FEED" "$name" --repo "$GITHUB_REPOSITORY" --yes || true ;;
+                esac
+              done
           else
             gh release create "$FEED" --repo "$GITHUB_REPOSITORY" \
               --title "DSHD AppImage update feed (${{ matrix.arch }})" \
