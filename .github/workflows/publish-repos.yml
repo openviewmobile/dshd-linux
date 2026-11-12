@@ -58,7 +58,7 @@ jobs:
           gh release download "$TAG" --repo "$GITHUB_REPOSITORY" \
             --pattern '*-linux-amd64-unsigned.deb' \
             --pattern '*-linux-x86_64-unsigned.rpm' \
-            --pattern 'deepseek-harness-release-signing.asc' \
+            --pattern 'dshd-linux-release-signing.asc' \
             --dir /tmp/assets
 
       - name: Build APT and DNF repositories
@@ -69,7 +69,7 @@ jobs:
           mkdir -p site/apt/pool/main/d/deepseek-harness
           mkdir -p site/apt/dists/stable/main/binary-amd64
           cp /tmp/assets/*-linux-amd64-unsigned.deb site/apt/pool/main/d/deepseek-harness/
-          cp /tmp/assets/deepseek-harness-release-signing.asc site/key.asc
+          cp /tmp/assets/dshd-linux-release-signing.asc site/key.asc
           gpg --export --armor "$FPR" > site/key.asc
           (
             cd site/apt

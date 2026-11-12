@@ -66,6 +66,10 @@ if [ "$(uname -s)" = "Linux" ]; then
   done < <(find "$SRC" -path '*/node_modules/@deepseek-ai/libreoffice-kit/lib/index.js' -print0)
 fi
 
-pnpm --filter @deepseek-ai/dsh-desktop "package:linux:${SUFFIX}"
+if [ -n "${DSH_DESKTOP_BUILD_VERSION:-}" ]; then
+  pnpm --filter @deepseek-ai/dsh-desktop "package:linux:${SUFFIX}" -- --build-version "$DSH_DESKTOP_BUILD_VERSION"
+else
+  pnpm --filter @deepseek-ai/dsh-desktop "package:linux:${SUFFIX}"
+fi
 echo "artifacts: $SRC/apps/desktop/.desktop-build/targets/linux-${SUFFIX}/unsigned-artifacts"
 find "$SRC/apps/desktop/.desktop-build/targets/linux-${SUFFIX}/unsigned-artifacts" -maxdepth 1 -type f -printf '%f\\n' | sort
