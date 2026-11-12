@@ -4,17 +4,32 @@ Every published artifact has a detached, armored GPG signature (`.asc`), and
 each artifact directory has a signed `SHA256SUMS`. This gives users a chain from
 the published public key to the bytes they install.
 
-## Release key
+## Release keys
+
+### Current key (next release onward)
+
+| Field | Value |
+|---|---|
+| UID | `DSHD for Linux Release Signing <release@dshd-linux.invalid>` |
+| Fingerprint | `2D4C2CFD4F1C3B5F8AF0DA481C9A912742C70369` |
+| Key ID | `1C9A912742C70369` |
+| Type | Ed25519 (sign) |
+| Created | 2026-11-12 |
+| Expires | 2028-11-11 |
+| Public key | [`keys/dshd-linux-release-signing.asc`](../keys/dshd-linux-release-signing.asc) |
+| Private key | offline, passphrase-protected, not in this repository |
+
+### Historical key (`v0.2.2-rc.1` only)
 
 | Field | Value |
 |---|---|
 | UID | `DeepSeek Harness Linux Release Signing (release artifacts only) <linux-release@deepseek-harness.invalid>` |
 | Fingerprint | `0E6023DF4DB8C68AA2202EF876CE5675AFF067FF` |
-| Key ID | `76CE5675AFF067FF` |
-| Type | ed25519 (sign) + cv25519 (encrypt) |
-| Created | 2026-11-09 |
-| Expires | 2028-11-08 |
 | Public key | [`keys/deepseek-harness-release-signing.asc`](../keys/deepseek-harness-release-signing.asc) |
+
+The historical key was the passphrase-less reference key used before the
+production key rotation. Keep it for the existing `v0.2.2-rc.1` release; do not
+use it for new releases.
 
 The `.invalid` domain is intentional: this is a project release identity, not a
 mailbox. Report security issues through the private advisory flow in
@@ -40,9 +55,13 @@ automatically trusted by package managers.
 ## Verify a download
 
 ```bash
-# 1. Import the project key and confirm the fingerprint.
-gpg --import keys/deepseek-harness-release-signing.asc
-gpg --fingerprint 0E6023DF4DB8C68AA2202EF876CE5675AFF067FF
+# 1. Import the key for the release you downloaded.
+# New releases:
+gpg --import keys/dshd-linux-release-signing.asc
+gpg --fingerprint 2D4C2CFD4F1C3B5F8AF0DA481C9A912742C70369
+# Existing v0.2.2-rc.1 only:
+# gpg --import keys/deepseek-harness-release-signing.asc
+# gpg --fingerprint 0E6023DF4DB8C68AA2202EF876CE5675AFF067FF
 
 # 2. Verify the checksum file and the artifact you downloaded.
 gpg --verify SHA256SUMS.asc SHA256SUMS

@@ -151,7 +151,7 @@ jobs:
           find . -mindepth 1 -maxdepth 1 -type d -exec rm -rf {} +
           find . -maxdepth 1 -type f ! -name 'SHA256SUMS' ! -name '*.asc' -printf '%f\n' \
             | sort | xargs -r sha256sum > SHA256SUMS
-          cp ../../keys/deepseek-harness-release-signing.asc .
+          cp ../../keys/dshd-linux-release-signing.asc .
           FPR="$(cat /tmp/gpg-fpr)"
           GPG=(gpg --batch --yes)
           if [ -n "${GPG_PASSPHRASE:-}" ]; then

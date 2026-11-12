@@ -258,6 +258,7 @@ For security issues, use the private advisory flow in [SECURITY.md](SECURITY.md)
 Verify a download before installing:
 
 ```bash
+# v0.2.2-rc.1 uses the historical key; new releases use the production key.
 gpg --import keys/deepseek-harness-release-signing.asc
 gpg --verify SHA256SUMS.asc SHA256SUMS
 sha256sum -c SHA256SUMS
@@ -450,9 +451,10 @@ hyper-frame transitions rather than a screen recording.
 ## Verification and signing
 
 ```bash
-gpg --import keys/deepseek-harness-release-signing.asc
+gpg --import keys/dshd-linux-release-signing.asc   # next releases
+gpg --import keys/deepseek-harness-release-signing.asc  # v0.2.2-rc.1 only
 scripts/verify-artifacts.sh
-DSHD_GPG_KEY=0E6023DF4DB8C68AA2202EF876CE5675AFF067FF scripts/sign-artifacts.sh
+DSHD_GPG_KEY=2D4C2CFD4F1C3B5F8AF0DA481C9A912742C70369 scripts/sign-artifacts.sh
 ```
 
 `SHA256SUMS` and every artifact have detached `.asc` signatures. The public key
