@@ -23,6 +23,8 @@ version.
   hosted on GitHub Pages for x86_64, plus a package landing page.
 - Added project governance, support policy, roadmap, versioning policy,
   CODEOWNERS, Dependabot and CodeQL.
+- Added a distribution support matrix for high-value Debian/Ubuntu, RPM, ARM64,
+  immutable and Arch-family derivatives.
 
 ## [0.2.2-rc.1] - 2026-11-10
 

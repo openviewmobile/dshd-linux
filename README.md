@@ -150,6 +150,26 @@ channels. `armv7`, 32-bit x86 and musl distributions are not supported.
 Wayland-native sessions, tray icons and IME behavior still need verification on
 physical desktops.
 
+### High-value derivatives and immutable desktops
+
+These reuse the same packages but are not yet full acceptance targets:
+
+- **Debian/Ubuntu derivatives:** Linux Mint, Pop!_OS, Zorin OS, elementary OS,
+  MX Linux, Kali/Parrot, Deepin/UOS — use the `.deb` (Kali/Deepin are
+  experimental due to dependency drift).
+- **RHEL/Fedora derivatives:** AlmaLinux, CentOS Stream, Oracle Linux, Nobara —
+  use the `.rpm`.
+- **ARM64:** Raspberry Pi OS **64-bit** — use the aarch64 `.deb` or AppImage.
+- **Immutable desktops:** Fedora Silverblue/Kinoite, Bazzite, SteamOS 3,
+  openSUSE Aeon/MicroOS — use the **Flatpak** bundle; do not document
+  `dnf`/`pacman` installation into the immutable root.
+- **Arch derivatives:** EndeavourOS, CachyOS, Garuda, Manjaro — use the
+  `packaging/aur` recipe; AUR publication and an Arch custom repository are not
+  done yet.
+
+See [docs/distro-support-matrix.md](docs/distro-support-matrix.md) for the
+candidate table, effort, and acceptance checklist.
+
 ## Install and first run
 
 ```bash

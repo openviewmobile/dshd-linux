@@ -16,6 +16,7 @@ Language: [English README](../README.md) | [Chinese README](../README.zh-CN.md)
 | [releases/v0.2.2-rc.1.md](releases/v0.2.2-rc.1.md) | Release notes and checksums for the current version |
 | [promo.md](promo.md) | YouTube promo storyboard, render pipeline and accuracy boundaries |
 | [versioning.md](versioning.md) | Version format, release channels and deprecation policy |
+| [distro-support-matrix.md](distro-support-matrix.md) | Tested distros, derivatives, immutable desktops and test plan |
 | [distro-packages.md](distro-packages.md) | Distribution/package-format matrix, tier recommendations, technical constraints and CI verification |
 | [research/official-desktop-audit.md](research/official-desktop-audit.md) | Audit of the official desktop app and Linux release gaps |
 | [adr/](adr/) | Related ADRs (Electron, forking upstream, open-source distribution, fully local scope) |
