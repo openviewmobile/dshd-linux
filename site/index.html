@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DSHD for Linux — packages</title>
+  <style>
+    :root { color-scheme: dark; --bg:#05070d; --panel:#0d1422; --text:#e7eefb; --muted:#9aa9bd; --accent:#65b9ff; }
+    body { margin:0; font:16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; background:var(--bg); color:var(--text); }
+    main { max-width:860px; margin:0 auto; padding:56px 24px 80px; }
+    h1 { font-size:44px; letter-spacing:-.04em; margin:0 0 8px; }
+    h2 { margin-top:36px; font-size:20px; }
+    p, li { color:var(--muted); }
+    a { color:var(--accent); }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    pre { background:var(--panel); border:1px solid #1d2b42; border-radius:10px; padding:16px; overflow:auto; color:#dbe7f8; }
+    .tag { color:var(--accent); font-family:ui-monospace, monospace; font-size:13px; letter-spacing:.08em; text-transform:uppercase; }
+  </style>
+</head>
+<body>
+<main>
+  <div class="tag">DSHD · DeepSeek Harness Desktop</div>
+  <h1>Linux packages</h1>
+  <p>APT and DNF repositories for the x86_64 release, generated from the signed GitHub Release by GitHub Actions.</p>
+
+  <h2>Debian / Ubuntu (APT)</h2>
+  <pre>curl -fsSL https://openviewmobile.github.io/dshd-linux/key.asc | sudo gpg --dearmor -o /usr/share/keyrings/dshd-linux.gpg
+echo "deb [signed-by=/usr/share/keyrings/dshd-linux.gpg] https://openviewmobile.github.io/dshd-linux/apt stable main" | sudo tee /etc/apt/sources.list.d/dshd-linux.list
+sudo apt update
+sudo apt install deepseek-harness</pre>
+
+  <h2>Fedora / RHEL / Rocky Linux (DNF)</h2>
+  <pre>sudo curl -fsSL https://openviewmobile.github.io/dshd-linux/dshd-linux.repo -o /etc/yum.repos.d/dshd-linux.repo
+sudo dnf install deepseek-harness</pre>
+
+  <h2>Other distributions</h2>
+  <p>AppImage, Flatpak, aarch64 packages and source recipes are on the
+    <a href="https://github.com/openviewmobile/dshd-linux/releases/tag/v0.2.2-rc.1">GitHub Release</a>.
+    Arch/AUR and other recipes are in the repository under <code>packaging/</code>.</p>
+
+  <p><a href="https://github.com/openviewmobile/dshd-linux">Project repository</a></p>
+</main>
+</body>
+</html>

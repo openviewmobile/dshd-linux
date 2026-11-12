@@ -1,0 +1,117 @@
+name: Publish package repositories
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag containing the signed assets
+        required: true
+        default: v0.2.2-rc.1
+  workflow_run:
+    workflows: ["Build Linux release assets"]
+    types: [completed]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-${{ github.event.inputs.tag || github.event.workflow_run.head_branch || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      TAG: ${{ github.event.inputs.tag || github.event.workflow_run.head_branch }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out the static site
+        uses: actions/checkout@v4
+
+      - name: Install repository tooling and the release key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GPG_PRIVATE_KEY:-}" ]; then
+            echo "::error::Set the GPG_PRIVATE_KEY repository secret."
+            exit 1
+          fi
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq dpkg-dev apt-utils createrepo-c rpm gnupg
+          printf '%s' "$GPG_PRIVATE_KEY" | gpg --batch --import
+          gpg --batch --list-secret-keys --with-colons > /tmp/gpg-keys
+          awk -F: '$1 == "fpr" { print $10; exit }' /tmp/gpg-keys > /tmp/gpg-fpr
+          test -s /tmp/gpg-fpr
+
+      - name: Download x86_64 release assets
+        run: |
+          set -euo pipefail
+          test -n "$TAG"
+          mkdir -p /tmp/assets
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" \
+            --pattern '*-linux-amd64-unsigned.deb' \
+            --pattern '*-linux-x86_64-unsigned.rpm' \
+            --pattern 'deepseek-harness-release-signing.asc' \
+            --dir /tmp/assets
+
+      - name: Build APT and DNF repositories
+        run: |
+          set -euo pipefail
+          FPR="$(cat /tmp/gpg-fpr)"
+          rm -rf site/apt site/rpm site/dshd-linux.repo site/key.asc
+          mkdir -p site/apt/pool/main/d/deepseek-harness
+          mkdir -p site/apt/dists/stable/main/binary-amd64
+          cp /tmp/assets/*-linux-amd64-unsigned.deb site/apt/pool/main/d/deepseek-harness/
+          cp /tmp/assets/deepseek-harness-release-signing.asc site/key.asc
+          gpg --export --armor "$FPR" > site/key.asc
+          (
+            cd site/apt
+            dpkg-scanpackages pool /dev/null > dists/stable/main/binary-amd64/Packages
+            gzip -9c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.gz
+            apt-ftparchive \
+              -o APT::FTPArchive::Release::Origin=DSHD \
+              -o APT::FTPArchive::Release::Label=DSHD \
+              -o APT::FTPArchive::Release::Suite=stable \
+              -o APT::FTPArchive::Release::Codename=stable \
+              -o APT::FTPArchive::Release::Architectures=amd64 \
+              -o APT::FTPArchive::Release::Components=main \
+              release dists/stable > dists/stable/Release
+            gpg --batch --yes --clearsign -o dists/stable/InRelease dists/stable/Release
+            gpg --batch --yes --armor --detach-sign -o dists/stable/Release.gpg dists/stable/Release
+          )
+
+          mkdir -p site/rpm/x86_64
+          cp /tmp/assets/*-linux-x86_64-unsigned.rpm site/rpm/x86_64/
+          for rpm in site/rpm/x86_64/*.rpm; do
+            rpmsign --define "_gpg_name $FPR" --define "_gpg_path $HOME/.gnupg" --addsign "$rpm"
+          done
+          createrepo_c --database site/rpm/x86_64
+          gpg --batch --yes --armor --detach-sign -o site/rpm/x86_64/repodata/repomd.xml.asc site/rpm/x86_64/repodata/repomd.xml
+          cat > site/dshd-linux.repo <<REPO
+          [dshd-linux]
+          name=DSHD for Linux
+          baseurl=https://openviewmobile.github.io/dshd-linux/rpm/x86_64
+          enabled=1
+          gpgcheck=1
+          repo_gpgcheck=1
+          gpgkey=https://openviewmobile.github.io/dshd-linux/key.asc
+          REPO
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
