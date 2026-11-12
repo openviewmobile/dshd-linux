@@ -20,6 +20,8 @@ Do not call it official. It is an independent packaging project.
 - `assets/dshd-linux-social-preview.jpg` — GitHub/social preview
 - `assets/app-chat.png` — real UI screenshot
 - `assets/linux-pdf-export.png` — Office→PDF evidence
+- `youtube-metadata.md` — YouTube title/description/tags
+- `dshd-linux-promo.en.srt` / `.zh-CN.srt` — captions
 
 ## Copy files
 
