@@ -4,39 +4,85 @@
 
 English | [简体中文](README.zh-CN.md)
 
-![DSHD for Linux](promo/out/dshd-linux-social-preview.jpg)
-
 [![CI](https://github.com/openviewmobile/dshd-linux/actions/workflows/ci.yml/badge.svg)](https://github.com/openviewmobile/dshd-linux/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/openviewmobile/dshd-linux?include_prereleases&label=release)](https://github.com/openviewmobile/dshd-linux/releases)
 
-A standalone Linux desktop distribution project for DeepSeek Harness. It adds
-Linux x86_64/aarch64 targets to the official desktop application and provides
-reproducible packaging, smoke tests, acceptance evidence, and signed release
-artifacts.
+![DSHD desktop workspace](promo/assets/app-chat.png)
 
-> This is a packaging and distribution repository, not the upstream application
-> source tree. The desktop runtime is bundled from the upstream release.
+**DSHD brings DeepSeek Harness Desktop to Linux as a normal desktop app** — a
+native window with sessions, a local workspace, plugins, a terminal, and
+Office-to-PDF conversion. Download a signed package, or install from the
+signed APT/DNF repositories.
+
+<p>
+<a href="https://github.com/openviewmobile/dshd-linux/releases/tag/v0.2.2-rc.1"><b>Download the latest release</b></a>
+&nbsp;·&nbsp;
+<a href="#apt-and-dnf-repositories-x86_64">Install with apt/dnf</a>
+&nbsp;·&nbsp;
+<a href="#screenshots">Screenshots</a>
+&nbsp;·&nbsp;
+<a href="docs/README.md">Documentation</a>
+</p>
+
+- **Native desktop, not a browser tab** — a real Electron window with local
+  sessions, files, plugins, and workspace tools.
+- **Your key, your machine** — bring your own API key or provider endpoint;
+  workspace data stays on your computer.
+- **Office without the cloud** — DOCX/XLSX/PPTX and legacy DOC/XLS/PPT convert
+  to PDF locally through the bundled WASM engine. No system LibreOffice.
+- **Install the way you prefer** — AppImage, deb, rpm, Flatpak, or signed APT
+  and DNF repositories for x86_64.
+- **Verified release assets** — every package has a detached GPG signature and
+  a signed `SHA256SUMS`.
+
+> This is an independent packaging and distribution project, not the upstream
+> DeepSeek Harness source tree. The desktop runtime is bundled from the upstream
+> release. See [Trademarks](#trademarks).
 
 ## Download
 
-Prebuilt AppImage, deb, rpm and Flatpak packages are published on the
-[GitHub Releases page](https://github.com/openviewmobile/dshd-linux/releases).
-Choose the asset for your architecture:
+All packages are built and signed by GitHub Actions and attached to the
+[GitHub Release](https://github.com/openviewmobile/dshd-linux/releases/tag/v0.2.2-rc.1).
 
-| Format | x86_64 | aarch64 | Install |
-|---|---|---|---|
-| AppImage | yes | yes | `chmod +x` and run |
-| deb | yes | yes | `sudo apt install ./<file>.deb` |
-| rpm | yes | yes | `sudo dnf install ./<file>.rpm` |
-| Flatpak | yes | yes | `flatpak install --user --bundle ./<file>.flatpak` |
-| Arch/AUR | x86_64 | — | source recipe in `packaging/aur`; not a Release asset |
+| Architecture | AppImage | deb | rpm | Flatpak |
+|---|---|---|---|---|
+| **x86_64** (Intel/AMD) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.AppImage) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-amd64-unsigned.deb) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.rpm) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.flatpak) |
+| **aarch64** (ARM64) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-arm64-unsigned.AppImage) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-arm64-unsigned.deb) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-aarch64-unsigned.rpm) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-aarch64-unsigned.flatpak) |
 
-Every Release asset is accompanied by a detached `.asc` signature; each release
-also has a signed `SHA256SUMS`. The CI release currently attaches the eight
-primary-format packages; AUR and local Snap/OBS packaging remain in the
-repository. If the latest Release page does not yet show
-binary assets, use the **Build Linux release assets** GitHub Actions workflow
-(or build from source below); the workflow is the supported release builder.
+**Which file do I need?**
+
+```bash
+uname -m   # x86_64 = Intel/AMD, aarch64 = ARM64
+```
+
+- **AppImage** is portable: `chmod +x` and run. Best for a first try.
+- **deb** for Debian/Ubuntu and derivatives.
+- **rpm** for Fedora/RHEL/Rocky/openSUSE.
+- **Flatpak** for any glibc distribution; install the 25.08 runtime first.
+- On Debian/Ubuntu x86_64 and Fedora/RHEL x86_64, the signed
+  [APT/DNF repositories](#apt-and-dnf-repositories-x86_64) are the easiest
+  update path.
+
+Every Release asset has a detached `.asc` signature. Verify before installing:
+
+```bash
+gpg --verify <file>.asc <file>
+```
+
+See [Verification and signing](#verification-and-signing) for the public key,
+checksums, and install steps.
+
+### Screenshots
+
+<p align="center">
+  <img src="promo/assets/app-chat.png" width="49%" alt="DSHD chat workspace with sessions and local files">
+  <img src="promo/assets/app-settings.png" width="49%" alt="DSHD settings for permissions, models and language">
+</p>
+<p align="center">
+  <img src="promo/assets/app-pdf.png" width="76%" alt="Office document converted to PDF inside DSHD">
+</p>
+
+*Chat workspace, settings, and a local Office → PDF preview.*
 
 ## APT and DNF repositories (x86_64)
 
@@ -115,14 +161,68 @@ sudo apt install ./deepseek-harness-*.deb
 sudo dnf install ./deepseek-harness-*.rpm
 
 # Flatpak (runtime 25.08 required)
-flatpak install flathub org.freedesktop.Platform//25.08   org.electronjs.Electron2.BaseApp//25.08
+flatpak install flathub org.freedesktop.Platform//25.08
+flatpak install flathub org.electronjs.Electron2.BaseApp//25.08
 flatpak install --user --bundle ./deepseek-harness-*.flatpak
 ```
 
-On first launch, choose **Add API Key** (or sign in if your provider supports
-it), select a model, and start a session. The workspace, files and plugins are
-local; the network is used only for the model endpoint. Office→PDF uses the
-bundled LibreOfficeKit WASM engine, so system LibreOffice is not required.
+### First launch
+
+1. Start DSHD from the AppImage, application menu, or `deepseek-harness`.
+2. Choose **Add API Key** (or sign in if your provider supports it).
+3. Open **Settings → Models**, select or add the model endpoint you want to use.
+4. Create a session and start working. Files, sessions and plugins stay in your
+   local workspace.
+
+The network is contacted only for the model provider you configure. Office→PDF
+uses the bundled LibreOfficeKit WASM engine, so system LibreOffice is not
+required.
+
+## System requirements
+
+- Linux with glibc **2.32+** (Debian 12+, Ubuntu 22.04+, RHEL/Rocky 9+, current
+  Arch/openSUSE/NixOS/Gentoo).
+- **x86_64** or **aarch64**; 32-bit x86, armv7 and musl/Alpine are unsupported.
+- About **1 GB free disk** for an installed copy (the AppImage itself is
+  ~350 MB) and **4 GB RAM** recommended.
+- A working desktop session (X11 or Wayland) and a network connection only for
+  your model endpoint.
+- No system LibreOffice, Node.js or Python installation is required.
+
+## FAQ
+
+**Is this the official DeepSeek app?**<br>
+No. DSHD is an independent Linux packaging/distribution project, not the
+upstream DeepSeek Harness source tree. See [Trademarks](#trademarks).
+
+**Do I need an API key?**<br>
+Yes: bring your own key for your provider, or sign in if your provider supports
+it. DSHD does not ship API keys.
+
+**Does DSHD upload my workspace?**<br>
+Workspace files and sessions stay local. Network requests go to the model
+provider or endpoint you configure.
+
+**Where do I download packages?**<br>
+From the [Release page](https://github.com/openviewmobile/dshd-linux/releases)
+or the signed APT/DNF repositories above. Do not use random third-party mirrors.
+
+**How do updates work?**<br>
+apt/dnf users get repository updates; AppImage/deb/rpm/Flatpak downloads are
+manual re-downloads. Auto-update and platform code signing are not implemented.
+
+**Why is apt/dnf only x86_64?**<br>
+The static GitHub Pages site is limited to about 1 GB. aarch64 users should use
+the Release `.deb`/`.rpm` assets; AppImage and Flatpak work on both.
+
+**Where are the screenshots from?**<br>
+They are real DSHD screenshots, with sample content localized to English for
+the promotional assets.
+
+**Something is broken. Where do I report it?**<br>
+Open an issue at <https://github.com/openviewmobile/dshd-linux/issues> and
+include your distribution, architecture, package format, and the exact error.
+For security issues, use the private advisory flow in [SECURITY.md](SECURITY.md).
 
 Verify a download before installing:
 
