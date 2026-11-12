@@ -35,6 +35,14 @@ The `.invalid` domain is intentional: this is a project release identity, not a
 mailbox. Report security issues through the private advisory flow in
 [SECURITY.md](../SECURITY.md).
 
+## Why filenames still say `unsigned`
+
+`-unsigned` is the upstream Linux artifact mode, meaning no platform
+code-signing certificate. It is not a statement that the GPG signatures are
+missing. Linux AppImage has no system-wide code-signing authority; the project
+GPG key, signed checksums and SBOM are the verification chain. The APT/DNF
+repository metadata is signed separately by the Pages workflow.
+
 ## What is signed
 
 For each directory:
