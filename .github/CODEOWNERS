@@ -1,0 +1,8 @@
+# Default owners for the repository.
+* @openviewmobile
+
+/.github/ @openviewmobile
+/docs/ @openviewmobile
+/packaging/ @openviewmobile
+/promo/ @openviewmobile
+/scripts/ @openviewmobile

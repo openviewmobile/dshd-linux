@@ -58,6 +58,16 @@ commit the private key. See [docs/release-signing.md](docs/release-signing.md)
 and use `scripts/sign-artifacts.sh` with `DSHD_GPG_KEY` set to the release
 fingerprint.
 
+## Community and decisions
+
+- Read [GOVERNANCE.md](GOVERNANCE.md) for maintainer roles, lazy consensus,
+  release authority, and continuity.
+- Use [SUPPORT.md](SUPPORT.md) for usage questions; bugs belong in the issue
+  forms.
+- [ROADMAP.md](ROADMAP.md) lists current priorities and evidence needs.
+- Release candidates and stable versions follow
+  [docs/versioning.md](docs/versioning.md).
+
 ## License
 
 By contributing, you agree that your contribution is licensed under the

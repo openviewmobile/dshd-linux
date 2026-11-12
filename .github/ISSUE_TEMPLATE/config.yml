@@ -1,5 +1,11 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Support and usage questions
-    url: https://github.com/deepseek-ai/deepseek-harness/discussions
-    about: Ask usage questions in Discussions instead of opening a bug.
+  - name: Usage questions and community support
+    url: https://github.com/openviewmobile/dshd-linux/discussions
+    about: Ask usage questions, share screenshots, or discuss ideas in Discussions.
+  - name: Support and supported versions
+    url: https://github.com/openviewmobile/dshd-linux/blob/main/SUPPORT.md
+    about: Read the support scope and what information to include.
+  - name: Report a security vulnerability
+    url: https://github.com/openviewmobile/dshd-linux/security/policy
+    about: Do not disclose vulnerabilities in a public issue; use the private advisory flow.
