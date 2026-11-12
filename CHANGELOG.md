@@ -22,7 +22,7 @@ version.
 - Added signed APT (Debian/Ubuntu) and DNF (Fedora/RHEL/Rocky) repositories
   hosted on GitHub Pages for x86_64, plus a package landing page.
 - Added project governance, support policy, roadmap, versioning policy,
-  CODEOWNERS, Dependabot, CodeQL, dependency review and OpenSSF Scorecard.
+  CODEOWNERS, Dependabot and CodeQL.
 
 ## [0.2.2-rc.1] - 2026-11-10
 
