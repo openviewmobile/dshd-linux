@@ -13,6 +13,8 @@ on:
 
 permissions:
   contents: write
+  id-token: write
+  attestations: write
 
 concurrency:
   group: release-${{ github.event.inputs.tag || github.ref_name }}
@@ -132,7 +134,17 @@ jobs:
           awk -F: '$1 == "fpr" { print $10; exit }' /tmp/gpg-keys > /tmp/gpg-fpr
           test -s /tmp/gpg-fpr
 
+      - name: Generate SPDX SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: dist/release
+          format: spdx-json
+          output-file: dist/release/SBOM.spdx.json
+          upload-artifact: false
+
       - name: Build combined checksums and signatures
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           set -euo pipefail
           cd dist/release
@@ -141,12 +153,21 @@ jobs:
             | sort | xargs -r sha256sum > SHA256SUMS
           cp ../../keys/deepseek-harness-release-signing.asc .
           FPR="$(cat /tmp/gpg-fpr)"
+          GPG=(gpg --batch --yes)
+          if [ -n "${GPG_PASSPHRASE:-}" ]; then
+            GPG+=(--pinentry-mode loopback --passphrase "$GPG_PASSPHRASE")
+          fi
           for f in *; do
             [ -f "$f" ] || continue
-            gpg --batch --yes --armor --local-user "$FPR" --detach-sign "$f"
+            "${GPG[@]}" --armor --local-user "$FPR" --detach-sign "$f"
           done
           gpg --verify SHA256SUMS.asc SHA256SUMS
           sha256sum -c SHA256SUMS
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: dist/release/*
 
       - name: Publish prerelease
         uses: softprops/action-gh-release@v3
