@@ -1,7 +1,7 @@
 name: Bug report
 description: Report a reproducible Linux desktop or packaging problem
 title: "[bug] "
-labels: ["bug", "needs-triage"]
+labels: ["bug"]
 body:
   - type: markdown
     attributes:
