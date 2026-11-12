@@ -9,7 +9,7 @@
     "audio": "python3 make-audio.py"
   },
   "dependencies": {
-    "puppeteer-core": "24.10.2",
+    "puppeteer-core": "25.16.0",
     "three": "0.187.0"
   }
 }
