@@ -36,6 +36,10 @@ signed APT/DNF repositories.
 - **Verified release assets** — every package has a detached GPG signature and
   a signed `SHA256SUMS`.
 
+<p align="center">
+  <img src="promo/out/dshd-linux-demo.gif" width="78%" alt="DSHD animated product preview">
+</p>
+
 > This is an independent packaging and distribution project, not the upstream
 > DeepSeek Harness source tree. The desktop runtime is bundled from the upstream
 > release. See [Trademarks](#trademarks).

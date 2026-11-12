@@ -1,0 +1,48 @@
+name: Package repository install smoke
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Publish package repositories"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  apt:
+    name: Install from APT (Debian 12)
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Install from the Pages APT repository
+        run: |
+          docker run --rm debian:12 bash -lc '
+            set -euo pipefail
+            apt-get update -qq
+            apt-get install -y -qq ca-certificates curl gnupg
+            curl -fsSL https://openviewmobile.github.io/dshd-linux/key.asc \
+              | gpg --dearmor -o /usr/share/keyrings/dshd-linux.gpg
+            echo "deb [signed-by=/usr/share/keyrings/dshd-linux.gpg] https://openviewmobile.github.io/dshd-linux/apt stable main" \
+              > /etc/apt/sources.list.d/dshd-linux.list
+            apt-get update -qq
+            apt-get install -y --no-install-recommends deepseek-harness
+            dpkg -s deepseek-harness | grep -E "^(Status|Version):"
+          '
+
+  dnf:
+    name: Install from DNF (Fedora 41)
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Install from the Pages DNF repository
+        run: |
+          docker run --rm fedora:41 bash -lc '
+            set -euo pipefail
+            curl -fsSL https://openviewmobile.github.io/dshd-linux/dshd-linux.repo \
+              -o /etc/yum.repos.d/dshd-linux.repo
+            dnf install -y deepseek-harness
+            rpm -q deepseek-harness
+          '
