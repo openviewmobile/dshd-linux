@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <maintainer type="project">
+    <email>linux-release@deepseek-harness.invalid</email>
+    <name>DeepSeek Harness Linux packaging</name>
+  </maintainer>
+  <upstream>
+    <remote-id type="github">openviewmobile/dshd-linux</remote-id>
+  </upstream>
+</pkgmetadata>

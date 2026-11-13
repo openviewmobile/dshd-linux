@@ -7,6 +7,12 @@ version.
 
 ## [Unreleased]
 
+### Fixed
+
+- Gentoo QA pass: license set, metadata.xml, libcrypt, sandbox fallback,
+  virtual/zlib, SHA-256 removal, description length, variable order and a pinned
+  version comment.
+
 ### Added
 
 - `v0.2.2-rc.1.1` packaging rebuild with AppImage update feed, SBOM,

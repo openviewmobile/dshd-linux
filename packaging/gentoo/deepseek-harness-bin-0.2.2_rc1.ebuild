@@ -3,26 +3,23 @@
 
 EAPI=8
 
-# Upstream GitHub release tag/filename uses 0.2.2-rc.1; Gentoo version syntax
-# represents the pre-release as 0.2.2_rc1 (PV above).
+# Intentionally pinned to the verified v0.2.2-rc.1 assets. Update UPSTREAM_PV,
+# the ebuild filename, and the Manifest together when moving to a newer RC.
 UPSTREAM_PV="0.2.2-rc.1"
 MY_PN="deepseek-harness"
 
 inherit desktop xdg-utils
 
-S="${WORKDIR}"
-
-DESCRIPTION="Electron desktop shell for a bundled dsh runtime and external plugins (binary AppImage repackage)"
+DESCRIPTION="Electron desktop shell for the bundled dsh runtime"
 HOMEPAGE="https://github.com/openviewmobile/dshd-linux"
 SRC_URI="
 	amd64? ( https://github.com/openviewmobile/dshd-linux/releases/download/v${UPSTREAM_PV}/${MY_PN}-${UPSTREAM_PV}-linux-x86_64-unsigned.AppImage -> ${P}-amd64.AppImage )
 	arm64? ( https://github.com/openviewmobile/dshd-linux/releases/download/v${UPSTREAM_PV}/${MY_PN}-${UPSTREAM_PV}-linux-arm64-unsigned.AppImage -> ${P}-arm64.AppImage )
 "
 
-LICENSE="MIT"
+LICENSE="MIT BSD PSF-2 Apache-2.0"
 SLOT="0"
 KEYWORDS="~amd64 ~arm64"
-IUSE=""
 
 # The AppImage already contains Electron 44, Node 24 and Python.  System
 # Electron cannot be used: the desktop shell starts its Host with
@@ -36,7 +33,8 @@ RDEPEND="
 	media-libs/mesa
 	net-print/cups
 	sys-apps/util-linux
-	sys-libs/zlib
+	virtual/libcrypt:=
+	virtual/zlib
 	x11-libs/cairo
 	x11-libs/gtk+:3
 	x11-libs/libnotify
@@ -50,6 +48,8 @@ RDEPEND="
 	x11-libs/pango
 	x11-misc/xdg-utils
 "
+
+S="${WORKDIR}"
 
 # Never strip Electron/Node/Python or the bundled native modules.
 RESTRICT="strip"
@@ -95,6 +95,9 @@ export PATH="$APPDIR${PATH:+:$PATH}"
 export LD_LIBRARY_PATH="$APPDIR/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export XDG_DATA_DIRS="$APPDIR/usr/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
 export GSETTINGS_SCHEMA_DIR="$APPDIR/usr/share/glib-2.0/schemas${GSETTINGS_SCHEMA_DIR:+:$GSETTINGS_SCHEMA_DIR}"
+if ! unshare -Ur true 2>/dev/null; then
+    set -- --no-sandbox "$@"
+fi
 exec "$APPDIR/deepseek-harness" "$@"
 EOF
 	exeinto /usr/bin
