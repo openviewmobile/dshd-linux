@@ -1,7 +1,7 @@
 # Gentoo source-build option
 
-Status: research / design, 2026-11-13. The supported Gentoo package remains
-`deepseek-harness-bin`.
+Status: research only, 2026-11-13. No source or hybrid ebuild is currently
+provided; the supported Gentoo package remains `deepseek-harness-bin`.
 
 ## Why the current package is binary
 
@@ -27,7 +27,7 @@ The binary ebuild avoids all of that by unpacking the signed AppImage.
 | System-runtime ebuild | App with system Node/Electron | None, if upstream is patched | Requires upstream changes and extensive testing; not compatible with the bundled-runtime design |
 | Full source ebuild | Electron/Chromium, Node, Python, pnpm, app | None | Not practical: Electron/Chromium alone is a multi-hour, multi-GB build and Gentoo has no supported generic Electron source package here |
 
-## Recommended first step: hybrid source ebuild
+## Deferred option: hybrid source ebuild
 
 Name it `deepseek-harness-0.2.2_rc1-r3.ebuild`; keep
 `deepseek-harness-bin-...` as the binary package. The two must `BLOCK` each
@@ -127,10 +127,9 @@ they consume the pre-fetched Electron/primary-runtime files instead of calling
 | Gentoo test and review fixes | 2–5 days |
 | True source Electron/system-runtime path | weeks, upstream-dependent |
 
-## Recommendation
+## Decision
 
-Do not replace the binary ebuild. Add an **experimental hybrid source ebuild** in
-the overlay, clearly labeled as hybrid, after the pnpm store and pre-fetched
-runtime approach builds and launches. Revisit pure source only if upstream adds
-a Linux source-build path that uses system Electron/Node or if a maintainable
-Electron source package becomes available.
+No source or hybrid ebuild is being added for now. The supported Gentoo package
+remains the binary ebuild. Revisit this only if upstream adds a Linux
+source-build path that uses system Electron/Node, or if a maintainable Electron
+source package becomes available.
