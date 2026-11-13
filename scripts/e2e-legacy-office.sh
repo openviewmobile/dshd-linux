@@ -6,14 +6,14 @@
 #   scripts/e2e-legacy-office.sh <fixtures-dir> [output-dir]
 #
 # On a packaged install the defaults are:
-#   APP_DIR="/opt/DeepSeek Harness"
+#   APP_DIR="/opt/deepseek-harness"
 #   NODE="$APP_DIR/resources/runtime/primary-runtime/dependencies/node/bin/node"
 # Override APP_DIR/NODE/CLI for a development tree.
 set -euo pipefail
 
 FIXTURES="${1:?usage: $0 <fixtures-dir> [output-dir]}"
 OUT="${2:-$(mktemp -d)}"
-APP_DIR="${APP_DIR:-/opt/DeepSeek Harness}"
+APP_DIR="${APP_DIR:-/opt/deepseek-harness}"
 NODE="${NODE:-$APP_DIR/resources/runtime/primary-runtime/dependencies/node/bin/node}"
 CLI="${CLI:-$APP_DIR/resources/app.asar.unpacked/dsh/node_modules/@deepseek-ai/libreoffice-kit/lib/cli.js}"
 

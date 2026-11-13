@@ -29,8 +29,10 @@ signed APT/DNF repositories.
   sessions, files, plugins, and workspace tools.
 - **Your key, your machine** — bring your own API key or provider endpoint;
   workspace data stays on your computer.
-- **Office without the cloud** — DOCX/XLSX/PPTX and legacy DOC/XLS/PPT convert
-  to PDF locally through the bundled WASM engine. No system LibreOffice.
+- **Office without the cloud, when the engine is available** — DOCX/XLSX/PPTX
+  can convert to PDF locally through the LibreOfficeKit path. The current
+  `rc.1.3` AppImage does not ship the WASM payload, so this is not a guaranteed
+  out-of-the-box feature; see [known limitations](#known-limitations).
 - **Install the way you prefer** — AppImage, deb, rpm, Flatpak, or signed APT
   and DNF repositories for x86_64.
 - **Verified release assets** — every package has a detached GPG signature and
@@ -152,8 +154,9 @@ The CI Release currently contains **8 primary packages**: AppImage, deb, rpm and
 Flatpak for x86_64 and aarch64. Snap, openSUSE OBS, AUR, Nix and Gentoo remain
 source/packaging recipes until they are built and verified in their native
 channels. `armv7`, 32-bit x86 and musl distributions are not supported.
-Wayland-native sessions, tray icons and IME behavior still need verification on
-physical desktops.
+Wayland-native sessions and IME behavior still need physical-desktop verification.
+Tray support is Windows-only in the upstream desktop; Linux has no tray/background
+residency.
 
 ### High-value derivatives and immutable desktops
 
@@ -203,8 +206,9 @@ flatpak install --user --bundle ./deepseek-harness-*.flatpak
    local workspace.
 
 The network is contacted only for the model provider you configure. Office→PDF
-uses the bundled LibreOfficeKit WASM engine, so system LibreOffice is not
-required.
+uses the app's LibreOfficeKit/WASM path when that engine is available; the
+current binary does not bundle the WASM payload and may require an on-demand
+sidecar. See [known limitations](#known-limitations).
 
 ## System requirements
 
@@ -342,10 +346,12 @@ dist/                   local artifacts (gitignored)
 - Arch/AUR `-bin` was built, installed and launched under Xvfb.
 - Snap (manually assembled) and openSUSE OBS (local `rpmbuild`) are packaging
   artifacts, not Store/service-verified channels.
-- Nix and Gentoo definitions are statically checked only.
+- Gentoo was verified on Gentoo 2.18 (pkgcheck, fetch, merge, Wayland launch);
+  Nix remains statically checked only.
 - Every release artifact and checksum has a detached GPG signature; platform
   code signing and auto-update are not implemented in v1.
-- Wayland, tray icons and IME behavior still need physical-desktop testing.
+- Wayland and IME behavior still need physical-desktop testing; tray support is
+  Windows-only upstream.
 
 Per-channel details and evidence are in
 [docs/distro-packaging-implementation.md](docs/distro-packaging-implementation.md),

@@ -16,7 +16,7 @@ Body:
 ```text
 The official DSH desktop ships macOS/Windows builds, so Linux users have had to use the web UI or build from source. I made a downstream packaging project for the official Electron desktop.
 
-It includes AppImage, deb, rpm and Flatpak for x86_64 and aarch64, APT/DNF repositories, GPG-signed releases, an SPDX SBOM and GitHub provenance. It also keeps local DOCX/XLSX/PPTX -> PDF working through the bundled WASM engine.
+It includes AppImage, deb, rpm and Flatpak for x86_64 and aarch64, APT/DNF repositories, GPG-signed releases, an SPDX SBOM and GitHub provenance. It also supports local DOCX/XLSX/PPTX -> PDF through the LibreOfficeKit path when that engine is available.
 
 It is an independent project, not an official DeepSeek release, and the desktop/agent core follows upstream.
 

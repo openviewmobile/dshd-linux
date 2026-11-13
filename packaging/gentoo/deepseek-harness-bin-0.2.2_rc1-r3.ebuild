@@ -56,6 +56,8 @@ RDEPEND="
 	x11-misc/xdg-utils
 "
 
+BDEPEND="media-gfx/imagemagick"
+
 # Never strip Electron/Node/Python or the bundled native modules.
 RESTRICT="strip"
 QA_PREBUILT="*"
@@ -85,6 +87,10 @@ src_install() {
 	dodir /opt/deepseek-harness
 	cp -a "${appdir}/." "${ED}/opt/deepseek-harness/" || die
 
+	# Portage runs with umask 077; the extracted tree would otherwise remain
+	# unreadable by unprivileged users on a fresh install.
+	chmod -R a+rX "${ED}/opt/deepseek-harness" || die
+
 	# chrome-sandbox needs root:root + setuid when unprivileged user namespaces
 	# are unavailable.  fowners/fperms are applied by Portage as root.
 	fowners root:root /opt/deepseek-harness/chrome-sandbox
@@ -111,16 +117,24 @@ EOF
 Name=DeepSeek Harness
 Comment=Electron desktop shell for a bundled dsh runtime and external plugins
 Exec=/usr/bin/deepseek-harness %U
-Icon=deepseek-harness
+Icon=com.deepseek.harness
 Terminal=false
 Type=Application
 StartupWMClass=com.deepseek.harness
 MimeType=x-scheme-handler/dsh;
 Categories=Development;
 EOF
-	domenu "${T}/${MY_PN}.desktop"
+	insinto /usr/share/applications
+	newins "${T}/${MY_PN}.desktop" com.deepseek.harness.desktop
 
-	doicon -s 1024 "${appdir}/usr/share/icons/hicolor/1024x1024/apps/${MY_PN}.png"
+	# hicolor registers 16..512, and KDE resolves the Wayland app_id through
+	# the matching desktop file. Install both the correct name and the sizes.
+	local icon_src="${appdir}/usr/share/icons/hicolor/1024x1024/apps/${MY_PN}.png"
+	local icon_size
+	for icon_size in 16 22 24 32 48 64 128 256 512; do
+		convert "${icon_src}" -resize "${icon_size}x${icon_size}" "${T}/${MY_PN}-${icon_size}.png" || die
+		newicon -s "${icon_size}" "${T}/${MY_PN}-${icon_size}.png" com.deepseek.harness.png
+	done
 }
 
 pkg_postinst() {

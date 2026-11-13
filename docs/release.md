@@ -96,7 +96,7 @@ For the complete matrix, effort estimates and CI verification approach, see [dis
 
 ## Current limitations
 
-- Office→PDF uses the bundled WASM engine (no system LibreOffice dependency); DOCX/XLSX/PPTX and legacy DOC/XLS/PPT have been tested, though pixel-perfect fidelity is not guaranteed;
+- Office→PDF depends on the runtime engine. The `rc.1` build carried the WASM payload; the `rc.1.3` AppImage does not, so the current package may use an existing sidecar or an on-demand download. DOCX/XLSX/PPTX were tested on rc.1; pixel-perfect fidelity is not guaranteed;
 - Flatpak x64/arm64 25.08 have both been verified; not submitted to Flathub;
 - Snap / OBS / Nix / Gentoo have only templates and static checks, with no native build/install;
 - Wayland/tray/IME have not been acceptance-tested; `desktopName` has been added but awaits confirmation on real hardware.

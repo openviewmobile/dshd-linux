@@ -13,17 +13,21 @@ merge, `pkg_postinst`, setuid installation, or removal.
 sudo emerge -av app-misc/deepseek-harness-bin
 
 qlist -e app-misc/deepseek-harness-bin
+stat -c '%a %U:%G %n' /opt/deepseek-harness
 stat -c '%U %G %a %n' /opt/deepseek-harness/chrome-sandbox
 ls -l /usr/bin/deepseek-harness
+kiconfinder6 com.deepseek.harness
+ls /usr/share/applications/com.deepseek.harness.desktop
 ls -l /usr/share/applications/deepseek-harness.desktop
 ls -l /usr/share/icons/hicolor/1024x1024/apps/deepseek-harness.png
 ```
 
 Pass criteria:
 
+- `/opt/deepseek-harness` is mode `755` and readable by a normal user;
 - `chrome-sandbox` is `root:root` and mode `4755`;
 - `/opt/deepseek-harness` is about 1.1 GB;
-- desktop file and icon are installed;
+- `com.deepseek.harness.desktop` exists and hicolor icons resolve;
 - `pkg_postinst` emits no errors;
 - a normal user can launch the app.
 
@@ -43,27 +47,22 @@ Check that the desktop/icon/MIME caches update and that user data under
 
 ### `/var/tmp` with `noexec`
 
-Use a disposable VM with `PORTAGE_TMPDIR` on a `noexec` mount:
+Portage itself rejects a `noexec` `PORTAGE_TMPDIR` before entering the ebuild:
 
-```bash
-sudo mkdir -p /var/tmp/dshd-noexec
-sudo mount -t tmpfs -o noexec,nosuid,nodev tmpfs /var/tmp/dshd-noexec
-sudo PORTAGE_TMPDIR=/var/tmp/dshd-noexec emerge -av app-misc/deepseek-harness-bin
+```text
+Can not execute files in /var/tmp/.../portage
+Likely cause: mount option 'noexec'
 ```
 
-Record whether `src_unpack` fails when executing the AppImage. This is a known
-limitation; do not work around it by mounting `exec` without documenting it.
+Treat this as a documented Portage prerequisite, not an ebuild test. If a
+`noexec` build directory is required, the ebuild needs a non-exec extraction path
+before it can be supported.
 
 ### `/opt` with `nosuid`, or `FEATURES=-suid`
 
-Test a normal user launch when `chrome-sandbox` cannot be setuid:
-
-```bash
-# Only in a disposable VM with /opt on a nosuid mount
-sudo env FEATURES="-suid" emerge -av app-misc/deepseek-harness-bin
-```
-
-Check the wrapper's fallback:
+`FEATURES=-suid` does not strip the mode written by `fperms 4755`; use a
+`nosuid` mount for `/opt` in a disposable VM instead. Check the wrapper's
+fallback:
 
 ```bash
 sh -x /usr/bin/deepseek-harness
@@ -87,7 +86,6 @@ On GNOME Wayland and KDE Plasma Wayland:
 
 - native Wayland window, no XWayland fallback unless requested;
 - fractional scaling;
-- tray icon behavior;
 - file picker;
 - Chinese/Japanese IME;
 - desktop launch from the application menu;
@@ -104,6 +102,8 @@ Using a real provider key in a disposable profile:
 - install, enable and remove a plugin;
 - open DOCX, XLSX and PPTX files and convert each to PDF;
 - check the generated PDF opens and is not empty;
+- record whether the Office engine was bundled, already installed as a sidecar,
+  or downloaded on demand;
 - test offline/network-failure behavior.
 
 Do not put real API keys in logs, screenshots, issues or the repository.

@@ -81,7 +81,7 @@ Electron 官方 glibc 二进制不兼容而明确不支持。
 - AppImage 也已构建并同样启动验证：`deepseek-harness-0.2.2-rc.1-linux-arm64-unsigned.AppImage`（350 MB），见 [evidence/linux-appimage.png](evidence/linux-appimage.png)。
 - 本机可交付副本（已 gitignore）：`dist/linux-arm64/`，含 `SHA256SUMS`；SHA-256 `c93e1a4e9a8a67fe8f4d03e344911ac6bc1687acd7026a57f45cb2da2d4ec00d`。
 - Packaged runtime smoke 通过：`node 24.21.0`、`koffi`、`sharp`、`pty`、`pnpm`、`grep`、`glob` 均为 true；`dsh web` 能打印 token URL。
-- **Office→PDF 已可用**：Linux 包内置 `@deepseek-ai/libreoffice-kit-wasm`（0.1.5，backend `wasm`），无需系统 LibreOffice。已实测 DOCX/XLSX/PPTX → PDF（4–7 秒），并在真实会话中由 `office-export-pdf` 技能完成导出；DOCX/PPTX/XLSX 均已通过打包 UI 逐项转换并在右侧预览，见 [evidence/office-ui.txt](evidence/office-ui.txt)、[evidence/linux-pdf-pptx-preview.png](evidence/linux-pdf-pptx-preview.png) 与 [evidence/linux-pdf-xlsx-preview.png](evidence/linux-pdf-xlsx-preview.png)。旧版 DOC/XLS/PPT 走同一 WASM 引擎的兼容路径，已逐格式验证并保留渲染证据，见 [evidence/legacy-office/README.txt](evidence/legacy-office/README.txt)。
+- **Office→PDF 取决于运行时引擎**：当前 `rc.1.3` AppImage 没有随包携带 WASM payload；转换可能依赖已有的 sidecar 或按需下载，不能保证开箱即用。旧的 `rc.1` 验收证据仍保留，但不能代表当前包。
 
 > AppImage 在容器内用 `--appimage-extract-and-run --no-sandbox` 验证；正式分发建议在目标发行版上直接双击/`chmod +x` 后运行。
 
@@ -102,8 +102,8 @@ Electron 官方 glibc 二进制不兼容而明确不支持。
 | 首启欢迎页、Sign in / Add API Key | ✅ 已渲染；真实供应商 E2E 通过（[acceptance](docs/acceptance.md)） |
 | 插件安装/启用/卸载 | ✅ deb GUI 实测（whale pet） |
 | 自动更新 / 平台代码签名 / 公证 | ❌ v1 无；✅ GPG 分离签名（见 `dist/*/*.asc`） |
-| Office→PDF | ✅ 内置 WASM 引擎；DOCX/XLSX/PPTX 与旧版 DOC/XLS/PPT 均已实测 |
-| 托盘 / Wayland / 输入法 / 桌面集成 | ⏳ 未验证；`desktopName` 已补，待真机复验 |
+| Office→PDF | ⚠️ 取决于运行时引擎；当前 rc.1.3 包未随包携带 WASM payload |
+| 托盘 / Wayland / 输入法 / 桌面集成 | ⏳ Wayland/IME 待真机复验；Linux 托盘上游未实现（仅 Windows） |
 | x86_64 产物 | ✅ deb/AppImage/rpm/Flatpak 已产出并启动验证 |
 
 

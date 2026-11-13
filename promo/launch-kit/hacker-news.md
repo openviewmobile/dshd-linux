@@ -26,7 +26,7 @@ What is in the release:
 - AppImage/deb/rpm/Flatpak for x86_64 and aarch64
 - APT and DNF repositories on GitHub Pages (x86_64)
 - detached GPG signatures, SHA256SUMS, SPDX SBOM, GitHub build provenance
-- local DOCX/XLSX/PPTX -> PDF via bundled WASM
+- local DOCX/XLSX/PPTX -> PDF when the LibreOfficeKit/WASM engine is available
 - CI-built and signed releases from GitHub Actions
 
 Known limitations: this is an RC; real Wayland/KDE/GNOME testing is still pending, AppImage auto-update has an implementation but no completed version-to-version acceptance yet, and Flathub/AUR are not published. It is also an independent project, not an official DeepSeek release.

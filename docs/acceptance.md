@@ -24,7 +24,12 @@ This call went through the full chain: Electron → bundled Node → dsh Host �
 gateway → streamed model response → Web UI rendering. It is not a mock, and it does not merely test
 `/v1/models`.
 
-## 2. Office → PDF (Built-in WASM Engine)
+## 2. Office → PDF (historical rc.1 evidence)
+
+> Historical note: the `v0.2.2-rc.1` build shipped the WASM payload. The
+> `v0.2.2-rc.1.3` AppImage does not contain `soffice.wasm`; do not treat the
+> rc.1 results below as proof that the current binary is self-contained.
+
 
 The Linux package already bundles `@deepseek-ai/libreoffice-kit-wasm@0.1.5`. `selectOfficeEngine()`
 selects `wasm` on Linux, so system LibreOffice is not required, nor does it depend on the upstream
