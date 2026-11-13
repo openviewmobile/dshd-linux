@@ -49,11 +49,11 @@ RDEPEND="
 	x11-misc/xdg-utils
 "
 
-S="${WORKDIR}"
-
 # Never strip Electron/Node/Python or the bundled native modules.
 RESTRICT="strip"
 QA_PREBUILT="*"
+
+S="${WORKDIR}"
 
 src_unpack() {
 	local appimage_arch
