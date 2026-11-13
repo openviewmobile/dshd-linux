@@ -20,7 +20,7 @@
 | Snap | `packaging/snap/snapcraft.yaml`, `packaging/snap/icon.png` | `cd packaging/snap && snapcraft pack` | **`.snap` manually built (squashfs)**; not `snap install`ed / `snap run` | No `snapcraft` on this machine (no longer in the Ubuntu 24.04 repositories, PyPI only has 4.8.1, the official image cannot be pulled); a 297 MB `.snap` was generated from the installed AUR payload + `mksquashfs`, and `unsquashfs -l` verified `meta/snap.yaml`, the wrapper, the desktop file, and the `/opt` payload. See `evidence/snap-build.txt`; for the strict confinement gaps see §3.2 |
 | openSUSE OBS | `packaging/obs/deepseek-harness.spec`, `packaging/obs/_service` | `osc service ra && osc build openSUSE_Tumbleweed x86_64` | **The spec has produced a package via local `rpmbuild` (x86_64)**; not built in OBS/osc, not installed | Binary repackaging of the spec with Arch `rpm-tools` + `--nodeps`, producing a 273 MB `deepseek-harness-0.2.2~rc1-0.x86_64.rpm`; OBS server-side build and signing remain unverified. See `evidence/obs-build.txt`; details in §3.3 |
 | Nix / NixOS | `packaging/nix/package.nix`, `packaging/nix/flake.nix` | `cd packaging/nix && nix build .#default`; `nix run .#` | **Static verification only**; not parsed, not built | No `nix` on this machine; uses `appimageTools.extractType2` + `autoPatchelfHook`; see §3.4 |
-| Gentoo | `packaging/gentoo/deepseek-harness-bin-0.2.2_rc1-r3.ebuild` | `ebuild ... manifest && emerge ...` (overlay/GURU) | **Verified on Gentoo 2.18 / Portage 3.0.83 before the final optional hardening**: `pkgcheck scan` clean, `fetch`, `clean unpack prepare install`, and Wayland launch; re-run after the latest ebuild edit | A prebuilt AppImage conflicts with main-tree culture; overlay/GURU is the realistic entry point; see §3.5 |
+| Gentoo | `packaging/gentoo/deepseek-harness-bin-0.2.2_rc1-r3.ebuild` | `ebuild ... manifest && emerge ...` (overlay/GURU) | **Verified on Gentoo 2.18 / Portage 3.0.83**: `pkgcheck scan` clean, `fetch`, `clean unpack prepare install`, `emerge -pv`, and Wayland launch | A prebuilt AppImage conflicts with main-tree culture; overlay/GURU is the realistic entry point; see §3.5 |
 | Alpine | None added | — | **Explicitly not provided** | musl is incompatible with Electron's official glibc binaries; rationale in §3.5/§4.5 of the research document |
 
 Status legend:
@@ -417,11 +417,9 @@ AppImage selected by the current architecture.
 - ✅ Manifest includes the EBUILD entry and both DIST entries; sizes and SHA-512/BLAKE2B match the published AppImages;
 - ✅ structural checks: `EAPI=8`, `RESTRICT="strip"`, `QA_PREBUILT`, `S="${WORKDIR}"`,
   `fperms 4755`, `doicon -s 1024` are present;
-- ✅ the earlier `0.2.2_rc1-r3` revision passed `pkgcheck scan` on Gentoo
-  2.18 / pkgcheck 0.10.49, `ebuild … fetch`, `clean unpack prepare install`,
-  `emerge -pv`, and a Wayland launch;
-- ⚠️ re-run those checks after the final `DoubleEmptyLine`, direct-dependency
-  and root-wrapper edits.
+- ✅ `pkgcheck scan` clean on Gentoo 2.18 / pkgcheck 0.10.49;
+- ✅ `ebuild … fetch`, `clean unpack prepare install`, `emerge -pv`, and a
+  Wayland launch passed on the final revision.
 
 **Limitations.**
 
