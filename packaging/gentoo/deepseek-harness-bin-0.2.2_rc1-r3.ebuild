@@ -13,9 +13,11 @@ inherit desktop xdg-utils
 DESCRIPTION="Electron desktop shell for the bundled dsh runtime"
 HOMEPAGE="https://github.com/openviewmobile/dshd-linux"
 SRC_URI="
-	amd64? ( https://github.com/openviewmobile/dshd-linux/releases/download/v${UPSTREAM_PV}/${MY_PN}-${UPSTREAM_PV}-linux-x86_64-unsigned.AppImage -> ${P}-amd64.AppImage )
-	arm64? ( https://github.com/openviewmobile/dshd-linux/releases/download/v${UPSTREAM_PV}/${MY_PN}-${UPSTREAM_PV}-linux-arm64-unsigned.AppImage -> ${P}-arm64.AppImage )
+	amd64? ( https://github.com/openviewmobile/dshd-linux/releases/download/v${UPSTREAM_PV}/${MY_PN}-${UPSTREAM_PV}-linux-x86_64-unsigned.AppImage -> ${PF}-amd64.AppImage )
+	arm64? ( https://github.com/openviewmobile/dshd-linux/releases/download/v${UPSTREAM_PV}/${MY_PN}-${UPSTREAM_PV}-linux-arm64-unsigned.AppImage -> ${PF}-arm64.AppImage )
 "
+
+S="${WORKDIR}"
 
 LICENSE="MIT BSD PSF-2 Apache-2.0"
 SLOT="0"
@@ -53,7 +55,6 @@ RDEPEND="
 RESTRICT="strip"
 QA_PREBUILT="*"
 
-S="${WORKDIR}"
 
 src_unpack() {
 	local appimage_arch
@@ -63,7 +64,7 @@ src_unpack() {
 		*) die "unsupported ARCH: ${ARCH}" ;;
 	esac
 
-	local appimage="${P}-${appimage_arch}.AppImage"
+	local appimage="${PF}-${appimage_arch}.AppImage"
 	cp "${DISTDIR}/${appimage}" "${WORKDIR}/${appimage}" || die
 	chmod +x "${WORKDIR}/${appimage}" || die
 
@@ -95,9 +96,7 @@ export PATH="$APPDIR${PATH:+:$PATH}"
 export LD_LIBRARY_PATH="$APPDIR/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export XDG_DATA_DIRS="$APPDIR/usr/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
 export GSETTINGS_SCHEMA_DIR="$APPDIR/usr/share/glib-2.0/schemas${GSETTINGS_SCHEMA_DIR:+:$GSETTINGS_SCHEMA_DIR}"
-if ! unshare -Ur true 2>/dev/null; then
-    set -- --no-sandbox "$@"
-fi
+unshare -Ur true 2>/dev/null || set -- --no-sandbox "$@"
 exec "$APPDIR/deepseek-harness" "$@"
 EOF
 	exeinto /usr/bin

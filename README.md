@@ -12,7 +12,7 @@ English | [简体中文](README.zh-CN.md)
 
 **DSHD brings DeepSeek Harness Desktop to Linux as a normal desktop app** — a
 native window with sessions, a local workspace, plugins, a terminal, and
-Office-to-PDF conversion. **Current status: `0.2.2-rc.1` release candidate.** Download a signed package, or install from the
+Office-to-PDF conversion. **Current status: `0.2.2-rc.1.3` release candidate.** Download a signed package, or install from the
 signed APT/DNF repositories.
 
 <p>
@@ -142,7 +142,7 @@ Gentoo are source recipes in this repository, not binary Release assets.
 | Arch Linux / Manjaro | rolling | Source recipe: [`packaging/aur`](packaging/aur) (not yet published to AUR) | `cd packaging/aur && DSHD_APPIMAGE_X86_64=/path/to/dshd.AppImage makepkg -si` (or `pacman -U`) | x86_64 built, installed with `pacman -Udd`, launched under Xvfb |
 | openSUSE Leap / Tumbleweed | 15.6 / current | No OBS repository yet. Release → `*-linux-x86_64-unsigned.rpm`, or build [`packaging/obs`](packaging/obs) | `sudo zypper install ./deepseek-harness-*.rpm` (not verified) | local `rpmbuild` only; OBS service build not done |
 | NixOS | current | Source recipe: [`packaging/nix`](packaging/nix) (flake) | `cd packaging/nix && nix build .#default` | template/static checks only; not built on NixOS in the reference environment |
-| Gentoo | current | Source recipe: [`packaging/gentoo`](packaging/gentoo) (x86_64/aarch64) | Add the ebuild to a local overlay, then `emerge deepseek-harness-bin` | ebuild syntax, Manifest and `StartupWMClass` checked; not built on Gentoo |
+| Gentoo | current | Source recipe: [`packaging/gentoo`](packaging/gentoo) (x86_64/aarch64) | Add the ebuild to a local overlay, then `emerge deepseek-harness-bin` | tested on Gentoo 2.18 / Portage 3.0.83: pkgcheck, fetch, install and Wayland launch |
 | Any glibc distribution (AppImage) | — | Release → `*.AppImage` | `chmod +x deepseek-harness-*.AppImage && ./deepseek-harness-*.AppImage` | AppImage launched under Xvfb on x86_64/aarch64 |
 | Any glibc distribution (Flatpak) | — | Release → `*.flatpak` | `flatpak install --user --bundle ./deepseek-harness-*.flatpak` | Flatpak 25.08 x86_64/aarch64 installed and launched |
 | Snap | — | Source recipe: [`packaging/snap`](packaging/snap) (PoC, not in Snap Store) | `snapcraft pack` | `.snap` assembled manually; no `snap install` verification |
@@ -236,10 +236,10 @@ From the [Release page](https://github.com/openviewmobile/dshd-linux/releases)
 or the signed APT/DNF repositories above. Do not use random third-party mirrors.
 
 **How do updates work?**<br>
-apt/dnf users get repository updates. AppImage auto-update support is implemented
-in the next build via a signed-feed workflow; the current `0.2.2-rc.1` assets
-still require a manual re-download. deb/rpm/Flatpak installs are updated through
-their package manager or a new download. See [AppImage updates](docs/appimage-update.md).
+apt/dnf users get repository updates. The `0.2.2-rc.1.3` AppImage contains the
+signed feed configuration; version-to-version update acceptance is still pending.
+deb/rpm/Flatpak installs are updated through their package manager or a new
+download. See [AppImage updates](docs/appimage-update.md).
 Platform code signing is still not implemented.
 
 **Why is apt/dnf only x86_64?**<br>
@@ -435,9 +435,10 @@ Build deb/rpm/Flatpak (not the `--dir` smoke package):
 - The first `pnpm install` downloads Electron/Node/Python wheels and can take a
   long time.
 - Electron inside Docker needs `--no-sandbox`; test use only.
-- Linux auto-update and platform code signing are not implemented. Detached GPG
-  signatures and `SHA256SUMS` are available; updates remain manual or use a
-  custom updater.
+- The AppImage update feed is implemented; a version-to-version acceptance is
+  still pending. deb/rpm/Flatpak remain package-manager or manual updates.
+  Platform code signing is not implemented; detached GPG signatures and
+  `SHA256SUMS` are available.
 - The upstream Desktop has Linux code paths but no official Linux release
   acceptance; each capability must be tested here.
 
@@ -456,8 +457,8 @@ scripts/verify-artifacts.sh
 DSHD_GPG_KEY=2D4C2CFD4F1C3B5F8AF0DA481C9A912742C70369 scripts/sign-artifacts.sh
 ```
 
-`SHA256SUMS` and every artifact have detached `.asc` signatures. The public key
-fingerprint is `0E6023DF4DB8C68AA2202EF876CE5675AFF067FF`; see
+`SHA256SUMS` and every artifact have detached `.asc` signatures. The current public key
+fingerprint is `2D4C2CFD4F1C3B5F8AF0DA481C9A912742C70369`; see
 [docs/release-signing.md](docs/release-signing.md). The private key is not in the
 repository; replace it with an offline, passphrase-protected key before a
 production release. The `unsigned` filename suffix only means there is no

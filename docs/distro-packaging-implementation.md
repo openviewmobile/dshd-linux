@@ -20,7 +20,7 @@
 | Snap | `packaging/snap/snapcraft.yaml`, `packaging/snap/icon.png` | `cd packaging/snap && snapcraft pack` | **`.snap` manually built (squashfs)**; not `snap install`ed / `snap run` | No `snapcraft` on this machine (no longer in the Ubuntu 24.04 repositories, PyPI only has 4.8.1, the official image cannot be pulled); a 297 MB `.snap` was generated from the installed AUR payload + `mksquashfs`, and `unsquashfs -l` verified `meta/snap.yaml`, the wrapper, the desktop file, and the `/opt` payload. See `evidence/snap-build.txt`; for the strict confinement gaps see §3.2 |
 | openSUSE OBS | `packaging/obs/deepseek-harness.spec`, `packaging/obs/_service` | `osc service ra && osc build openSUSE_Tumbleweed x86_64` | **The spec has produced a package via local `rpmbuild` (x86_64)**; not built in OBS/osc, not installed | Binary repackaging of the spec with Arch `rpm-tools` + `--nodeps`, producing a 273 MB `deepseek-harness-0.2.2~rc1-0.x86_64.rpm`; OBS server-side build and signing remain unverified. See `evidence/obs-build.txt`; details in §3.3 |
 | Nix / NixOS | `packaging/nix/package.nix`, `packaging/nix/flake.nix` | `cd packaging/nix && nix build .#default`; `nix run .#` | **Static verification only**; not parsed, not built | No `nix` on this machine; uses `appimageTools.extractType2` + `autoPatchelfHook`; see §3.4 |
-| Gentoo | `packaging/gentoo/deepseek-harness-bin-0.2.2_rc1-r3.ebuild` | `ebuild ... manifest && emerge ...` (overlay/GURU) | **Static verification only** (`bash -n` + structural checks); no `pkgcheck`, no emerge | No Portage environment; a prebuilt AppImage conflicts with main-tree culture; see §3.5 |
+| Gentoo | `packaging/gentoo/deepseek-harness-bin-0.2.2_rc1-r3.ebuild` | `ebuild ... manifest && emerge ...` (overlay/GURU) | **Verified on Gentoo 2.18 / Portage 3.0.83**: `pkgcheck scan` clean, `fetch`, `clean unpack prepare install`, and Wayland launch | A prebuilt AppImage conflicts with main-tree culture; overlay/GURU is the realistic entry point; see §3.5 |
 | Alpine | None added | — | **Explicitly not provided** | musl is incompatible with Electron's official glibc binaries; rationale in §3.5/§4.5 of the research document |
 
 Status legend:
@@ -376,9 +376,11 @@ nix run .#
 **Behavior.**
 
 - `EAPI=8`; `KEYWORDS="~amd64 ~arm64"`; dual architecture;
+- upstream `0.2.2-rc.1.3` maps to Gentoo `0.2.2_rc1-r3`; Gentoo cannot encode
+  the fourth numeric field after `_rc1`, so `-r3` is the packaging revision;
 - `SRC_URI` points at the DSHD GitHub Release (not the upstream
-  `deepseek-ai/deepseek-harness` release, which has no Linux assets) and renames
-  the AppImage with `->`;
+  `deepseek-ai/deepseek-harness` release, which has no Linux assets), uses
+  `${PF}` for the distfile names, and renames the AppImage with `->`;
 - `S="${WORKDIR}"` so Portage finds the extracted source directory;
 - `src_unpack()` runs `AppImage --appimage-extract`;
 - `src_install()` installs to `/opt/deepseek-harness`, generates the wrapper/desktop file,
@@ -404,25 +406,27 @@ emerge -av app-misc/deepseek-harness-bin
 ```
 
 The committed `Manifest` contains both the x86_64 and aarch64 AppImages and
-their SHA-256/SHA-512/BLAKE2B values. Manifest generation downloads both
-conditional sources, which is normal for a multiarch ebuild; a user `emerge`
-fetches only the AppImage selected by the current architecture.
+their SHA-512/BLAKE2B values. Manifest generation downloads both conditional
+sources, which is normal for a multiarch ebuild; a user `emerge` fetches only the
+AppImage selected by the current architecture.
 
 **Verified.**
 
 - ✅ `bash -n` passes;
 - ✅ source URL returns HTTP 302 to the DSHD release asset;
-- ✅ Manifest includes the EBUILD entry and both DIST entries; sizes and SHA-256/SHA-512/BLAKE2B match the published AppImages;
+- ✅ Manifest includes the EBUILD entry and both DIST entries; sizes and SHA-512/BLAKE2B match the published AppImages;
 - ✅ structural checks: `EAPI=8`, `RESTRICT="strip"`, `QA_PREBUILT`, `S="${WORKDIR}"`,
   `fperms 4755`, `doicon -s 1024` are present;
-- ❌ no `ebuild`/`emerge`/`pkgcheck`; no launch verification.
+- ✅ `pkgcheck scan` clean on Gentoo 2.18 / pkgcheck 0.10.49;
+- ✅ `ebuild … fetch`, `clean unpack prepare install`, and `emerge -pv` pass;
+- ✅ launch from `/opt/deepseek-harness` under Wayland.
 
 **Limitations.**
 
 - a prebuilt AppImage conflicts with Gentoo's source-build culture; acceptance in the main tree is
   low, and the realistic entry point is overlay/GURU;
-- self-unpacking the AppImage inside the ebuild depends on an executable runtime; not measured under
-  the Portage sandbox;
+- self-unpacking the AppImage inside the ebuild depends on an executable runtime;
+  it was verified with the Gentoo 2.18 / Portage 3.0.83 test environment;
 - `RDEPEND` uses common atoms; `CHOST`/`USE`/`SLOT` combinations are not covered;
 - `chrome-sandbox` setuid may conflict with Gentoo's `suid` policy/`FEATURES`;
 - `pkgdev manifest` downloads both arch AppImages once; normal `emerge` downloads only
@@ -475,8 +479,9 @@ gentoo   PASS   NOT RUN    NO
 Lint: PASS=11 FAIL=0 SKIP=6
 ```
 
-The six `SKIP` entries are: `makepkg` (absent), `snapcraft` (absent), `rpmspec` (absent),
-`rpmlint` (absent), `nix-instantiate` (absent), `pkgcheck` (absent). None of these are PASS.
+The historical script skipped `makepkg`, `snapcraft`, `rpmspec`, `rpmlint`,
+`nix-instantiate` and `pkgcheck` when those tools were absent. The Gentoo ebuild has
+since been validated separately on Gentoo 2.18 with pkgcheck 0.10.49.
 
 Actual result of running `--build aur` in the Arch container (`DSHD_APPDIR=/appdir`, skipping the
 non-executable AppImage runtime):
@@ -500,7 +505,7 @@ does not mean GUI install/launch acceptance.
    - Arch aarch64: build and install;
    - openSUSE Leap/Tumbleweed: `osc build` + `zypper install`, check AppArmor/SELinux;
    - NixOS: `nix build`/`nix run`, verify ELF patchelf and the userns sandbox;
-   - Gentoo: overlay + `pkgcheck` + `emerge`;
+   - Gentoo: keep the overlay ebuild and repeat `pkgcheck` + `emerge` on release bumps;
    - Snap: `snap install --dangerous` + `snap connections` in an LXD/VM (Docker has no snapd).
 3. **Signing**: the upstream AppImage/RPM is still unsigned; the checksums for AUR/OBS/Gentoo/Nix
    only guarantee "the file did not change", not publisher identity. Real release GPG keys and a

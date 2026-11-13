@@ -76,8 +76,8 @@ gpg --verify SHA256SUMS.asc SHA256SUMS
 sha256sum -c SHA256SUMS
 
 # 3. Verify the artifact's own signature (optional but recommended).
-gpg --verify deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.AppImage.asc \
-            deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.AppImage
+gpg --verify deepseek-harness-0.2.2-rc.1.3-linux-x86_64-unsigned.AppImage.asc \
+            deepseek-harness-0.2.2-rc.1.3-linux-x86_64-unsigned.AppImage
 ```
 
 A good signature means the file was signed by the holder of the release key and
@@ -87,7 +87,7 @@ compare the fingerprint through an independent channel before trusting it.
 ## Re-sign a local build
 
 ```bash
-export DSHD_GPG_KEY=0E6023DF4DB8C68AA2202EF876CE5675AFF067FF
+export DSHD_GPG_KEY=2D4C2CFD4F1C3B5F8AF0DA481C9A912742C70369
 scripts/sign-artifacts.sh
 scripts/verify-artifacts.sh
 ```
@@ -100,17 +100,16 @@ secret key is not in the local keyring. A single directory can be signed with
 ## Private key handling
 
 - The private key is **not** in this repository, `dist/`, or any evidence file.
-- The reference key was generated for this release on the release host and has
-  no passphrase so that the signing step is reproducible in this environment.
-  Before a public production release, replace it with an offline,
-  passphrase-protected key (or an HSM-backed key), publish the new fingerprint,
-  and re-sign the artifacts.
+- The current production key is passphrase-protected and its private half is
+  excluded from the repository and CI logs. The historical reference key used
+  for early releases is passphrase-less and must not be used for new releases.
+  Keep the private key and passphrase in separate offline storage.
 - Back up the secret key and revocation certificate offline. Losing the key
   prevents updates to an existing release; leaking it requires a revocation and
   a new key. Example (never commit the result):
 
   ```bash
-  gpg --armor --export-secret-keys 0E6023DF4DB8C68AA2202EF876CE5675AFF067FF \
+  gpg --armor --export-secret-keys 2D4C2CFD4F1C3B5F8AF0DA481C9A912742C70369 \
     | gpg --symmetric --cipher-algo AES256 -o release-secret.asc.gpg
   ```
 

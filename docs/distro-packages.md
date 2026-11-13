@@ -38,15 +38,15 @@ format configuration lives in
 
 | Format | Architecture | Version / size | What has been verified | Status |
 |---|---|---|---|---|
-| AppImage | arm64 / x64 | 0.2.2-rc.1; about 349 MB / 354 MB | Launched under Xvfb; window and Host work normally | ✅ Produced; unsigned, no auto-update |
-| deb | arm64 / x64 | 262 MB / 278 MB | `dpkg-deb -I` metadata; x64 installed and launched in an amd64 Docker container + Xvfb | ✅ Produced; no APT repo |
+| AppImage | arm64 / x64 | 0.2.2-rc.1.3; about 349 MB / 354 MB | Launched under Xvfb; window and Host work normally | ✅ Produced; unsigned, no auto-update |
+| deb | arm64 / x64 | 263 MB / 277 MB | `dpkg-deb -I` metadata; x64 installed and launched in an amd64 Docker container + Xvfb | ✅ Produced; no APT repo |
 | rpm | arm64 / x64 | 216 MB / 229 MB | `rpm -qpi` metadata; no installation on real Fedora/RHEL hardware | ✅ Produced; no DNF repo |
 | Flatpak | arm64 / x64 | 227 MB / 240 MiB | 25.08 bundle installation for both architectures, ref/runtime checks, Xvfb GUI launch | ✅ x64/arm64 25.08 verified; **not submitted to Flathub** |
 | Snap | — | — | — | 🟡 `.snap` produced, no `snap install` |
 | Arch `pkg.tar.zst` / AUR | — | — | — | ✅ Package produced, installed, and launched |
 | openSUSE OBS repository | — | — | — | 🟡 Local rpmbuild produced a package; no server-side OBS build |
 | Alpine `apk` | — | — | — | ⛔ Incompatible (musl) |
-| Gentoo ebuild | — | — | — | 🟡 x86_64/aarch64 overlay ebuild + Manifest; not emerge-tested |
+| Gentoo ebuild | — | — | — | ✅ x86_64/aarch64 overlay ebuild + Manifest; tested on Gentoo 2.18 / Portage 3.0.83 |
 | Nix / NixOS | — | — | — | ⚪ Not implemented (research) |
 
 Evidence:
