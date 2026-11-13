@@ -30,12 +30,15 @@ RDEPEND="
 	app-accessibility/at-spi2-core
 	dev-libs/expat
 	app-crypt/libsecret
+	dev-libs/glib
 	dev-libs/nss
 	media-libs/alsa-lib
 	media-libs/mesa
 	net-print/cups
+	sys-apps/dbus
 	sys-apps/util-linux
 	virtual/libcrypt:=
+	virtual/libudev
 	virtual/zlib
 	x11-libs/cairo
 	x11-libs/gtk+:3
@@ -43,6 +46,8 @@ RDEPEND="
 	x11-libs/libX11
 	x11-libs/libXcomposite
 	x11-libs/libXdamage
+	x11-libs/libXext
+	x11-libs/libXfixes
 	x11-libs/libXrandr
 	x11-libs/libXScrnSaver
 	x11-libs/libXtst
@@ -54,7 +59,6 @@ RDEPEND="
 # Never strip Electron/Node/Python or the bundled native modules.
 RESTRICT="strip"
 QA_PREBUILT="*"
-
 
 src_unpack() {
 	local appimage_arch
@@ -96,7 +100,7 @@ export PATH="$APPDIR${PATH:+:$PATH}"
 export LD_LIBRARY_PATH="$APPDIR/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export XDG_DATA_DIRS="$APPDIR/usr/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
 export GSETTINGS_SCHEMA_DIR="$APPDIR/usr/share/glib-2.0/schemas${GSETTINGS_SCHEMA_DIR:+:$GSETTINGS_SCHEMA_DIR}"
-unshare -Ur true 2>/dev/null || set -- --no-sandbox "$@"
+if [ "$(id -u)" = 0 ] || ! unshare -Ur true 2>/dev/null; then set -- --no-sandbox "$@"; fi
 exec "$APPDIR/deepseek-harness" "$@"
 EOF
 	exeinto /usr/bin
