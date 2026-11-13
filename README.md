@@ -219,7 +219,7 @@ sidecar. See [known limitations](#known-limitations).
   ~350 MB) and **4 GB RAM** recommended.
 - A working desktop session (X11 or Wayland) and a network connection only for
   your model endpoint.
-- No system LibreOffice, Node.js or Python installation is required.
+- No system LibreOffice, Node.js or Python installation is required to start the app. Office conversion needs the runtime engine; see the Office limitation above.
 
 ## FAQ
 

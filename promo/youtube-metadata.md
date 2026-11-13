@@ -20,7 +20,7 @@ DSHD for Linux — DeepSeek Harness Desktop, native on Linux
 
 ```text
 DSHD brings DeepSeek Harness Desktop to Linux: real providers, local-first
-workspaces, built-in plugins, and Office-to-PDF conversion with a bundled WASM
+workspaces, built-in plugins, and Office-to-PDF conversion when the LibreOfficeKit/WASM engine is available
 engine.
 
 This is the 0.2.2-rc.1 release candidate. AppImage, deb, rpm and Flatpak are
