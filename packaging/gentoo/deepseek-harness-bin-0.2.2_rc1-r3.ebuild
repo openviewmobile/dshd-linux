@@ -124,8 +124,7 @@ StartupWMClass=com.deepseek.harness
 MimeType=x-scheme-handler/dsh;
 Categories=Development;
 EOF
-	insinto /usr/share/applications
-	newins "${T}/${MY_PN}.desktop" com.deepseek.harness.desktop
+	newmenu "${T}/${MY_PN}.desktop" com.deepseek.harness.desktop
 
 	# hicolor registers 16..512, and KDE resolves the Wayland app_id through
 	# the matching desktop file. Install both the correct name and the sizes.

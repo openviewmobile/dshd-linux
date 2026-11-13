@@ -418,8 +418,10 @@ AppImage selected by the current architecture.
 - ✅ structural checks: `EAPI=8`, `RESTRICT="strip"`, `QA_PREBUILT`, `S="${WORKDIR}"`,
   `fperms 4755`, `doicon -s 1024` are present;
 - ✅ `pkgcheck scan` clean on Gentoo 2.18 / pkgcheck 0.10.49;
-- ✅ `ebuild … fetch`, `clean unpack prepare install`, `emerge -pv`, and a
-  Wayland launch passed on the final revision.
+- ✅ `ebuild … fetch`, clean merge/unmerge, `emerge -pv`, and ordinary-user
+  Wayland launch passed on the final revision;
+- ✅ `/opt/deepseek-harness` is 0755, `chrome-sandbox` is 4755, and the
+  `com.deepseek.harness` desktop/icon entries resolve in KDE.
 
 **Limitations.**
 
@@ -432,6 +434,8 @@ AppImage selected by the current architecture.
 - `chrome-sandbox` setuid may conflict with Gentoo's `suid` policy/`FEATURES`;
 - the maintainer email in `metadata.xml` is a private-overlay placeholder;
   GURU/main-tree submission needs a real contact or a Gentoo proxy maintainer;
+- the package still uses a prebuilt Electron tree and a setuid `chrome-sandbox`,
+  which remain policy considerations for GURU/main-tree.
 - `pkgdev manifest` downloads both arch AppImages once; normal `emerge` downloads only
   the current architecture.
 
