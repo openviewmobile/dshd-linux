@@ -3,9 +3,9 @@
 
 EAPI=8
 
-# Intentionally pinned to the verified v0.2.2-rc.1 assets. Update UPSTREAM_PV,
-# the ebuild filename, and the Manifest together when moving to a newer RC.
-UPSTREAM_PV="0.2.2-rc.1"
+# Gentoo cannot encode the fourth numeric field in upstream 0.2.2-rc.1.3;
+# this packaging revision maps to that release. Update the files together.
+UPSTREAM_PV="0.2.2-rc.1.3"
 MY_PN="deepseek-harness"
 
 inherit desktop xdg-utils

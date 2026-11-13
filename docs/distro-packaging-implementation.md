@@ -20,7 +20,7 @@
 | Snap | `packaging/snap/snapcraft.yaml`, `packaging/snap/icon.png` | `cd packaging/snap && snapcraft pack` | **`.snap` manually built (squashfs)**; not `snap install`ed / `snap run` | No `snapcraft` on this machine (no longer in the Ubuntu 24.04 repositories, PyPI only has 4.8.1, the official image cannot be pulled); a 297 MB `.snap` was generated from the installed AUR payload + `mksquashfs`, and `unsquashfs -l` verified `meta/snap.yaml`, the wrapper, the desktop file, and the `/opt` payload. See `evidence/snap-build.txt`; for the strict confinement gaps see §3.2 |
 | openSUSE OBS | `packaging/obs/deepseek-harness.spec`, `packaging/obs/_service` | `osc service ra && osc build openSUSE_Tumbleweed x86_64` | **The spec has produced a package via local `rpmbuild` (x86_64)**; not built in OBS/osc, not installed | Binary repackaging of the spec with Arch `rpm-tools` + `--nodeps`, producing a 273 MB `deepseek-harness-0.2.2~rc1-0.x86_64.rpm`; OBS server-side build and signing remain unverified. See `evidence/obs-build.txt`; details in §3.3 |
 | Nix / NixOS | `packaging/nix/package.nix`, `packaging/nix/flake.nix` | `cd packaging/nix && nix build .#default`; `nix run .#` | **Static verification only**; not parsed, not built | No `nix` on this machine; uses `appimageTools.extractType2` + `autoPatchelfHook`; see §3.4 |
-| Gentoo | `packaging/gentoo/deepseek-harness-bin-0.2.2_rc1.ebuild` | `ebuild ... manifest && emerge ...` (overlay/GURU) | **Static verification only** (`bash -n` + structural checks); no `pkgcheck`, no emerge | No Portage environment; a prebuilt AppImage conflicts with main-tree culture; see §3.5 |
+| Gentoo | `packaging/gentoo/deepseek-harness-bin-0.2.2_rc1-r3.ebuild` | `ebuild ... manifest && emerge ...` (overlay/GURU) | **Static verification only** (`bash -n` + structural checks); no `pkgcheck`, no emerge | No Portage environment; a prebuilt AppImage conflicts with main-tree culture; see §3.5 |
 | Alpine | None added | — | **Explicitly not provided** | musl is incompatible with Electron's official glibc binaries; rationale in §3.5/§4.5 of the research document |
 
 Status legend:
@@ -75,7 +75,7 @@ Shared caveats:
 | Snap | `0.2.2-rc.1` | `source-checksum: sha256/<hex>` |
 | OBS | `0.2.2~rc1` (RPM `Version`) | `verify_file` in `_service` pins the sha256 |
 | Nix | `0.2.2-rc.1` | `fetchurl` SRI hash |
-| Gentoo | `0.2.2_rc1` | `Manifest` committed for x86_64 and aarch64 |
+| Gentoo | `0.2.2_rc1-r3` | `Manifest` committed for x86_64 and aarch64 |
 
 The AUR GitHub Releases URL has the form:
 
@@ -368,9 +368,9 @@ nix run .#
 
 ---
 
-### 3.5 Gentoo: `deepseek-harness-bin-0.2.2_rc1.ebuild`
+### 3.5 Gentoo: `deepseek-harness-bin-0.2.2_rc1-r3.ebuild`
 
-**Files.** `packaging/gentoo/deepseek-harness-bin-0.2.2_rc1.ebuild` and
+**Files.** `packaging/gentoo/deepseek-harness-bin-0.2.2_rc1-r3.ebuild` and
 `packaging/gentoo/Manifest`.
 
 **Behavior.**
@@ -392,12 +392,12 @@ nix run .#
 
 ```bash
 mkdir -p /var/db/repos/dshd/app-misc/deepseek-harness-bin
-cp packaging/gentoo/deepseek-harness-bin-0.2.2_rc1.ebuild \
+cp packaging/gentoo/deepseek-harness-bin-0.2.2_rc1-r3.ebuild \
   packaging/gentoo/Manifest \
   /var/db/repos/dshd/app-misc/deepseek-harness-bin/
 cd /var/db/repos/dshd/app-misc/deepseek-harness-bin
 # Regenerate after changing the ebuild or version:
-# ebuild deepseek-harness-bin-0.2.2_rc1.ebuild manifest
+# ebuild deepseek-harness-bin-0.2.2_rc1-r3.ebuild manifest
 emerge -av dev-util/pkgcheck
 pkgcheck scan
 emerge -av app-misc/deepseek-harness-bin
@@ -526,7 +526,7 @@ packaging/obs/deepseek-harness.spec
 packaging/obs/_service
 packaging/nix/package.nix
 packaging/nix/flake.nix
-packaging/gentoo/deepseek-harness-bin-0.2.2_rc1.ebuild
+packaging/gentoo/deepseek-harness-bin-0.2.2_rc1-r3.ebuild
 scripts/package-distro-formats.sh
 docs/distro-packaging-implementation.md
 ```
