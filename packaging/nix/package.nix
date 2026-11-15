@@ -66,15 +66,15 @@ let
   };
 
   desktopItem = makeDesktopItem {
-    name = pname;
+    name = "com.deepseek.harness";
     desktopName = "DeepSeek Harness";
     comment = "Electron desktop shell for a bundled dsh runtime and external plugins";
     exec = "${pname} %U";
-    icon = pname;
+    icon = "com.deepseek.harness";
     terminal = false;
     categories = [ "Development" ];
     mimeTypes = [ "x-scheme-handler/dsh" ];
-    startupWMClass = "DeepSeek Harness";
+    startupWMClass = "com.deepseek.harness";
   };
 in
 stdenv.mkDerivation {
@@ -126,7 +126,7 @@ stdenv.mkDerivation {
     chmod 0755 $out/opt/${pname}/chrome-sandbox
 
     install -Dm644 $out/opt/${pname}/usr/share/icons/hicolor/1024x1024/apps/${pname}.png \
-      $out/share/icons/hicolor/1024x1024/apps/${pname}.png
+      $out/share/icons/hicolor/1024x1024/apps/com.deepseek.harness.png
 
     makeWrapper $out/opt/${pname}/${pname} $out/bin/${pname} \
       --set APPDIR "$out/opt/${pname}" \

@@ -15,13 +15,24 @@ diff --git a/apps/desktop/scripts/electron-builder-config.mjs b/apps/desktop/scr
 index c47badd0..dadc6b4f 100644
 --- a/apps/desktop/scripts/electron-builder-config.mjs
 +++ b/apps/desktop/scripts/electron-builder-config.mjs
-@@ -257,7 +257,20 @@ export function createElectronBuilderConfig(
+@@ -257,7 +257,31 @@ export function createElectronBuilderConfig(
      linux: {
        executableName: 'deepseek-harness',
        category: 'Development',
 -      target: ['AppImage'],
 +      maintainer: 'DeepSeek Harness <support@deepseek.com>',
 +      syncDesktopName: true,
++      icon: 'build/icons',
++      desktop: {
++        entry: {
++          Name: 'DeepSeek Harness',
++          Comment: 'Electron desktop shell for a bundled dsh runtime and external plugins',
++          Categories: 'Development;',
++          StartupWMClass: 'com.deepseek.harness',
++          Icon: 'com.deepseek.harness',
++          MimeType: 'x-scheme-handler/dsh;',
++        },
++      },
 +      target: process.env.DSH_SKIP_FLATPAK === '1' ? ['AppImage', 'deb', 'rpm'] : ['AppImage', 'deb', 'rpm', 'flatpak'],
 +    },
 +    deb: {

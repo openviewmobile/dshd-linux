@@ -31,6 +31,7 @@ ExclusiveArch:  x86_64 aarch64
 BuildRequires:  cpio
 BuildRequires:  rpm
 BuildRequires:  desktop-file-utils
+BuildRequires:  ImageMagick
 Requires:       gtk3
 Requires:       mozilla-nss
 Requires:       libnotify4
@@ -96,22 +97,28 @@ WRAPPER
 chmod 755 "%{buildroot}%{_bindir}/deepseek-harness"
 
 install -dm755 "%{buildroot}%{_datadir}/applications"
-cat >"%{buildroot}%{_datadir}/applications/deepseek-harness.desktop" <<'DESKTOP'
+cat >"%{buildroot}%{_datadir}/applications/com.deepseek.harness.desktop" <<'DESKTOP'
 [Desktop Entry]
 Name=DeepSeek Harness
 Comment=Electron desktop shell for a bundled dsh runtime and external plugins
 Exec=/usr/bin/deepseek-harness %U
-Icon=deepseek-harness
+Icon=com.deepseek.harness
 Terminal=false
 Type=Application
-StartupWMClass=DeepSeek Harness
+StartupWMClass=com.deepseek.harness
 MimeType=x-scheme-handler/dsh;
 Categories=Development;
 DESKTOP
-desktop-file-validate "%{buildroot}%{_datadir}/applications/deepseek-harness.desktop"
+desktop-file-validate "%{buildroot}%{_datadir}/applications/com.deepseek.harness.desktop"
 
-install -Dm644 "usr/share/icons/hicolor/1024x1024/apps/deepseek-harness.png" \
-  "%{buildroot}%{_datadir}/icons/hicolor/1024x1024/apps/deepseek-harness.png"
+icon_src="usr/share/icons/hicolor/1024x1024/apps/deepseek-harness.png"
+for icon_size in 16 22 24 32 48 64 96 128 256 512; do
+  convert "$icon_src" -resize "${icon_size}x${icon_size}" "%{buildroot}/icon-${icon_size}.png"
+  install -Dm644 "%{buildroot}/icon-${icon_size}.png" \
+    "%{buildroot}%{_datadir}/icons/hicolor/${icon_size}x${icon_size}/apps/com.deepseek.harness.png"
+done
+install -Dm644 "$icon_src" \
+  "%{buildroot}%{_datadir}/icons/hicolor/1024x1024/apps/com.deepseek.harness.png"
 
 %post
 if command -v update-desktop-database >/dev/null 2>&1; then
@@ -138,8 +145,8 @@ fi
 %exclude %{appdir}/chrome-sandbox
 %attr(4755,root,root) %{appdir}/chrome-sandbox
 %{_bindir}/deepseek-harness
-%{_datadir}/applications/deepseek-harness.desktop
-%{_datadir}/icons/hicolor/1024x1024/apps/deepseek-harness.png
+%{_datadir}/applications/com.deepseek.harness.desktop
+%{_datadir}/icons/hicolor/*/apps/com.deepseek.harness.png
 
 %changelog
 * Mon Nov 10 2026 DeepSeek Harness Linux packaging <noreply@deepseek.com> - 0.2.2~rc1-0

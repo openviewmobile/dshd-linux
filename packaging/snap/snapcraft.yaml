@@ -39,7 +39,7 @@ plugs:
 apps:
   deepseek-harness:
     command: bin/deepseek-harness
-    desktop: usr/share/applications/deepseek-harness.desktop
+    desktop: usr/share/applications/com.deepseek.harness.desktop
     extensions: [gnome]
     plugs:
       - home
@@ -99,18 +99,24 @@ parts:
       chmod 755 "$CRAFT_PART_INSTALL/bin/deepseek-harness"
 
       install -dm755 "$CRAFT_PART_INSTALL/usr/share/applications"
-      cat >"$CRAFT_PART_INSTALL/usr/share/applications/deepseek-harness.desktop" <<'DESKTOP'
+      cat >"$CRAFT_PART_INSTALL/usr/share/applications/com.deepseek.harness.desktop" <<'DESKTOP'
       [Desktop Entry]
       Name=DeepSeek Harness
       Comment=Electron desktop shell for a bundled dsh runtime and external plugins
       Exec=deepseek-harness %U
-      Icon=${SNAP}/usr/share/icons/hicolor/1024x1024/apps/deepseek-harness.png
+      Icon=${SNAP}/usr/share/icons/hicolor/1024x1024/apps/com.deepseek.harness.png
       Terminal=false
       Type=Application
-      StartupWMClass=DeepSeek Harness
+      StartupWMClass=com.deepseek.harness
       MimeType=x-scheme-handler/dsh;
       Categories=Development;
       DESKTOP
 
-      install -Dm644 "$CRAFT_PART_INSTALL/opt/deepseek-harness/usr/share/icons/hicolor/1024x1024/apps/deepseek-harness.png" \
-        "$CRAFT_PART_INSTALL/usr/share/icons/hicolor/1024x1024/apps/deepseek-harness.png"
+      icon_src="$CRAFT_PART_INSTALL/opt/deepseek-harness/usr/share/icons/hicolor/1024x1024/apps/deepseek-harness.png"
+      for icon_size in 16 22 24 32 48 64 96 128 256 512; do
+        convert "$icon_src" -resize "${icon_size}x${icon_size}" "$CRAFT_PART_INSTALL/icon-${icon_size}.png"
+        install -Dm644 "$CRAFT_PART_INSTALL/icon-${icon_size}.png" \
+          "$CRAFT_PART_INSTALL/usr/share/icons/hicolor/${icon_size}x${icon_size}/apps/com.deepseek.harness.png"
+      done
+      install -Dm644 "$icon_src" \
+        "$CRAFT_PART_INSTALL/usr/share/icons/hicolor/1024x1024/apps/com.deepseek.harness.png"

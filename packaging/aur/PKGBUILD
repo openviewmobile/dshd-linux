@@ -27,6 +27,7 @@ pkgrel="${DSHD_PKGREL:-1}"
 _upstream_ver="${DSHD_UPSTREAM_VER:-${pkgver//_/-}}"
 pkgdesc="Electron desktop shell for a bundled dsh runtime and external plugins (binary AppImage repackage)"
 arch=('x86_64' 'aarch64')
+makedepends=('imagemagick')
 url="https://github.com/deepseek-ai/deepseek-harness"
 license=('MIT')
 depends=(
@@ -159,19 +160,26 @@ exec "$APPDIR/deepseek-harness" "$@"
 WRAPPER
   chmod 755 "$pkgdir/usr/bin/deepseek-harness"
 
-  install -Dm644 "$srcdir/squashfs-root/usr/share/icons/hicolor/1024x1024/apps/deepseek-harness.png" \
-    "$pkgdir/usr/share/icons/hicolor/1024x1024/apps/deepseek-harness.png"
+  local icon_src="$srcdir/squashfs-root/usr/share/icons/hicolor/1024x1024/apps/deepseek-harness.png"
+  local icon_size
+  for icon_size in 16 22 24 32 48 64 96 128 256 512; do
+    convert "$icon_src" -resize "${icon_size}x${icon_size}" "$srcdir/icon-${icon_size}.png"
+    install -Dm644 "$srcdir/icon-${icon_size}.png" \
+      "$pkgdir/usr/share/icons/hicolor/${icon_size}x${icon_size}/apps/com.deepseek.harness.png"
+  done
+  install -Dm644 "$icon_src" \
+    "$pkgdir/usr/share/icons/hicolor/1024x1024/apps/com.deepseek.harness.png"
 
   install -dm755 "$pkgdir/usr/share/applications"
-  cat >"$pkgdir/usr/share/applications/deepseek-harness.desktop" <<'DESKTOP'
+  cat >"$pkgdir/usr/share/applications/com.deepseek.harness.desktop" <<'DESKTOP'
 [Desktop Entry]
 Name=DeepSeek Harness
 Comment=Electron desktop shell for a bundled dsh runtime and external plugins
 Exec=/usr/bin/deepseek-harness %U
-Icon=deepseek-harness
+Icon=com.deepseek.harness
 Terminal=false
 Type=Application
-StartupWMClass=DeepSeek Harness
+StartupWMClass=com.deepseek.harness
 MimeType=x-scheme-handler/dsh;
 Categories=Development;
 DESKTOP

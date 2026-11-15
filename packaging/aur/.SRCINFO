@@ -5,6 +5,7 @@ pkgbase = deepseek-harness-bin
 	url = https://github.com/deepseek-ai/deepseek-harness
 	arch = x86_64
 	arch = aarch64
+	makedepends = imagemagick
 	license = MIT
 	depends = gtk3
 	depends = nss

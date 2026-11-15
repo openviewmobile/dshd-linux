@@ -66,6 +66,14 @@ if [ "$(uname -s)" = "Linux" ]; then
   done < <(find "$SRC" -path '*/node_modules/@deepseek-ai/libreoffice-kit/lib/index.js' -print0)
 fi
 
+# electron-builder reads Linux icons from the project build directory.  Keep
+# the icon set in packaging/ so the AppImage, deb, rpm and Flatpak targets all
+# get 16px..512px entries instead of a single 1024px image.
+if [ -d "$PATCH_DIR/../packaging/linux/icons" ]; then
+  mkdir -p "$SRC/apps/desktop/build/icons"
+  cp -a "$PATCH_DIR/../packaging/linux/icons/." "$SRC/apps/desktop/build/icons/"
+fi
+
 if [ -n "${DSH_DESKTOP_BUILD_VERSION:-}" ]; then
   pnpm --filter @deepseek-ai/dsh-desktop "package:linux:${SUFFIX}" -- --build-version "$DSH_DESKTOP_BUILD_VERSION"
 else
