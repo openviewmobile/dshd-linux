@@ -9,6 +9,12 @@ version.
 
 ### Fixed
 
+- Linux desktop integration: use `com.deepseek.harness` for the desktop entry,
+  `StartupWMClass` and icon name, and ship 16px through 512px icons for
+  AppImage, deb, rpm and Flatpak and the AUR/OBS/Snap/Nix repackages.
+
+### Fixed
+
 - Gentoo QA pass: license set, metadata.xml, libcrypt, sandbox fallback,
   virtual/zlib, SHA-256 removal, description length, variable order and a pinned
   version comment.

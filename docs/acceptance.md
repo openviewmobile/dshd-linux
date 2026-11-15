@@ -27,7 +27,7 @@ gateway → streamed model response → Web UI rendering. It is not a mock, and 
 ## 2. Office → PDF (historical rc.1 evidence)
 
 > Historical note: the `v0.2.2-rc.1` build shipped the WASM payload. The
-> `v0.2.2-rc.1.3` AppImage does not contain `soffice.wasm`; do not treat the
+> `v0.2.2-rc.1.4` AppImage does not contain `soffice.wasm`; do not treat the
 > rc.1 results below as proof that the current binary is self-contained.
 
 

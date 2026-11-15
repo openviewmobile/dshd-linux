@@ -76,8 +76,8 @@ gpg --verify SHA256SUMS.asc SHA256SUMS
 sha256sum -c SHA256SUMS
 
 # 3. Verify the artifact's own signature (optional but recommended).
-gpg --verify deepseek-harness-0.2.2-rc.1.3-linux-x86_64-unsigned.AppImage.asc \
-            deepseek-harness-0.2.2-rc.1.3-linux-x86_64-unsigned.AppImage
+gpg --verify deepseek-harness-0.2.2-rc.1.4-linux-x86_64-unsigned.AppImage.asc \
+            deepseek-harness-0.2.2-rc.1.4-linux-x86_64-unsigned.AppImage
 ```
 
 A good signature means the file was signed by the holder of the release key and

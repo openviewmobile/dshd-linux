@@ -24,7 +24,7 @@ workspaces, built-in plugins, and Office-to-PDF conversion when the
 LibreOfficeKit/WASM engine is available. The current AppImage does not ship the
 WASM payload.
 
-This is the 0.2.2-rc.1.3 release candidate. AppImage, deb, rpm and Flatpak are
+This is the 0.2.2-rc.1.4 release candidate. AppImage, deb, rpm and Flatpak are
 available for x86_64 and aarch64. Every artifact has a detached GPG signature
 and a signed SHA256SUMS file.
 
@@ -44,7 +44,7 @@ Verification:
 https://github.com/openviewmobile/dshd-linux/blob/main/docs/release-signing.md
 
 Release notes:
-https://github.com/openviewmobile/dshd-linux/blob/main/docs/releases/v0.2.2-rc.1.3.md
+https://github.com/openviewmobile/dshd-linux/blob/main/docs/releases/v0.2.2-rc.1.4.md
 
 Known limits: Snap and OBS packages were built locally but were not installed
 from the Snap Store or built on the OBS service. Physical Wayland/KDE/GNOME and
