@@ -4,6 +4,8 @@
 
 [English](README.md) | 简体中文
 
+[观看 50 秒演示](https://youtu.be/nA7vSFrIAUU)
+
 本目录是一个可单独复制、构建和测试的 Linux 桌面发行版项目：在官方
 `apps/desktop` 上增加 Linux x64/arm64 目标，并用 Docker + Xvfb 做可重复的打包/冒烟。
 
