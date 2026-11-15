@@ -23,6 +23,8 @@ signed APT/DNF repositories.
 <a href="#screenshots">Screenshots</a>
 &nbsp;·&nbsp;
 <a href="docs/README.md">Documentation</a>
+&nbsp;·&nbsp;
+<a href="https://youtu.be/nA7vSFrIAUU">Watch the 50-second demo</a>
 </p>
 
 - **Native desktop, not a browser tab** — a real Electron window with local
