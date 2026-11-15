@@ -20,10 +20,11 @@ DSHD for Linux — DeepSeek Harness Desktop, native on Linux
 
 ```text
 DSHD brings DeepSeek Harness Desktop to Linux: real providers, local-first
-workspaces, built-in plugins, and Office-to-PDF conversion when the LibreOfficeKit/WASM engine is available
-engine.
+workspaces, built-in plugins, and Office-to-PDF conversion when the
+LibreOfficeKit/WASM engine is available. The current AppImage does not ship the
+WASM payload.
 
-This is the 0.2.2-rc.1 release candidate. AppImage, deb, rpm and Flatpak are
+This is the 0.2.2-rc.1.3 release candidate. AppImage, deb, rpm and Flatpak are
 available for x86_64 and aarch64. Every artifact has a detached GPG signature
 and a signed SHA256SUMS file.
 
@@ -43,12 +44,13 @@ Verification:
 https://github.com/openviewmobile/dshd-linux/blob/main/docs/release-signing.md
 
 Release notes:
-https://github.com/openviewmobile/dshd-linux/blob/main/docs/releases/v0.2.2-rc.1.md
+https://github.com/openviewmobile/dshd-linux/blob/main/docs/releases/v0.2.2-rc.1.3.md
 
 Known limits: Snap and OBS packages were built locally but were not installed
-from the Snap Store or built on the OBS service. Wayland, tray and IME behavior
-have not been verified on physical desktops. The release is GPG-signed, not
-platform-code-signed.
+from the Snap Store or built on the OBS service. Physical Wayland/KDE/GNOME and
+IME testing is still limited. Linux tray support is not implemented upstream
+(Windows only). AppImage auto-update has not completed a version-to-version
+acceptance. The release is GPG-signed, not platform-code-signed.
 
 Narration is synthesized; the soundtrack is generated for this video.
 ```

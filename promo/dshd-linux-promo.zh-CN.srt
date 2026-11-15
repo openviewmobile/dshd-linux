@@ -20,8 +20,8 @@ DSHD。DeepSeek Harness Desktop。
 
 5
 00:00:29,000 --> 00:00:36,000
-Office 转 PDF，内置 WASM 引擎。
-无需系统 LibreOffice，无需云端往返。
+Office 转 PDF，取决于 LibreOfficeKit 引擎是否可用。
+无需云端往返。
 
 6
 00:00:37,000 --> 00:00:43,950

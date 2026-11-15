@@ -25,7 +25,7 @@ VOICE_TEXT = {
     'vo-02.wav': 'A complete AI workspace. Real providers, sessions, files, and a terminal.',
     'vo-03.wav': 'Bring your own API key. Keep the workspace on your machine.',
     'vo-04.wav': 'Plugins, models, permissions, settings. One coherent desktop.',
-    'vo-05.wav': 'Office to PDF, with a bundled WASM engine. No system LibreOffice. No cloud round trip.',
+    'vo-05.wav': 'Office to PDF, when the LibreOfficeKit engine is available. No cloud round trip.',
     'vo-06.wav': 'One app. AppImage, deb, rpm, Flatpak. X86 and ARM64.',
     'vo-07.wav': 'DSHD for Linux. Release candidate, on GitHub.',
 }

@@ -20,8 +20,8 @@ One coherent desktop.
 
 5
 00:00:29,000 --> 00:00:36,000
-Office to PDF, with a bundled WASM engine.
-No system LibreOffice. No cloud round trip.
+Office to PDF, when the LibreOfficeKit engine is available.
+No cloud round trip.
 
 6
 00:00:37,000 --> 00:00:43,950
