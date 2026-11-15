@@ -6,7 +6,7 @@ from pathlib import Path
 
 SR = 48000
 DURATION = 50.0
-VOICE_ENGINE = 'en-US-AndrewNeural'
+VOICE_ENGINE = 'en-US-AvaNeural'
 ROOT = Path(__file__).resolve().parent
 AUDIO = ROOT / 'audio'
 OUT = AUDIO / 'dshd-linux-promo-mix.wav'

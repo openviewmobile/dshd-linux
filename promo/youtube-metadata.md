@@ -7,7 +7,7 @@
 - GitHub social preview: `out/dshd-linux-social-preview.jpg`
 - Captions: `dshd-linux-promo.en.srt`, `dshd-linux-promo.zh-CN.srt`
 - Length: 50 seconds, 1920×1080, 30 fps, H.264 + AAC
-- Narration: Microsoft Edge neural TTS (`en-US-AndrewNeural`); music generated
+- Narration: Microsoft Edge neural TTS (`en-US-AvaNeural`); music generated
   deterministically in `make-audio.py`
 
 ## Title (58 characters)

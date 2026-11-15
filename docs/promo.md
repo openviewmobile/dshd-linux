@@ -33,7 +33,7 @@ not burned into the picture.
   exceptions.
 - **FFmpeg** encodes H.264 High profile, yuv420p, fast-start, and muxes the AAC
   soundtrack.
-- **Audio**: macOS `say` (Samantha) narration, normalized to −16 LUFS; the pad,
+- **Audio**: Microsoft Edge neural TTS (`en-US-AvaNeural`) narration, normalized to −16 LUFS; the pad,
   pulse, shimmer and transition risers are synthesized deterministically in
   `make-audio.py`.
 
