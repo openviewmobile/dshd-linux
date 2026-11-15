@@ -19,7 +19,8 @@ release candidate.
 
 ```bash
 npm install
-python3 make-audio.py    # macOS `say` + generated music
+pip install -r requirements.txt
+python3 make-audio.py    # Edge neural narration + generated music
 node render.mjs          # 1,500 deterministic frames + thumbnail
 ```
 

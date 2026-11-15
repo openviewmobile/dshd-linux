@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Build the 50 s promo soundtrack from a deterministic pad and the TTS stems."""
 from __future__ import annotations
-import math, random, struct, subprocess, wave
+import math, random, struct, subprocess, sys, tempfile, wave
 from pathlib import Path
 
 SR = 48000
 DURATION = 50.0
+VOICE_ENGINE = 'en-US-AndrewNeural'
 ROOT = Path(__file__).resolve().parent
 AUDIO = ROOT / 'audio'
 OUT = AUDIO / 'dshd-linux-promo-mix.wav'
@@ -42,25 +43,27 @@ CHORDS = [
 ]
 
 def ensure_voice_stems() -> None:
-    """Regenerate missing TTS stems on macOS with the same text and rate."""
+    """Regenerate missing neural TTS stems with the same voice and text."""
     for _, name in VOICE:
         wav = AUDIO / name
         if wav.exists():
             continue
-        aiff = wav.with_suffix('.aiff')
+        with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as tmp:
+            mp3 = Path(tmp.name)
         try:
-            subprocess.run(
-                ['say', '-v', 'Samantha', '-r', '150', '-o', str(aiff), VOICE_TEXT[name]],
-                check=True,
-            )
+            subprocess.run([
+                sys.executable, '-m', 'edge_tts',
+                '--voice', VOICE_ENGINE, '--rate=+0%',
+                '--text', VOICE_TEXT[name], '--write-media', str(mp3),
+            ], check=True)
+            subprocess.run([
+                'ffmpeg', '-hide_banner', '-loglevel', 'error', '-y',
+                '-i', str(mp3), '-ar', str(SR), '-ac', '1', str(wav),
+            ], check=True)
         except FileNotFoundError as exc:
-            raise SystemExit('macOS `say` is required to regenerate the voice stems') from exc
-        subprocess.run(
-            ['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y', '-i', str(aiff),
-             '-ar', str(SR), '-ac', '1', str(wav)],
-            check=True,
-        )
-        aiff.unlink(missing_ok=True)
+            raise SystemExit('edge-tts and ffmpeg are required to regenerate the voice stems; see promo/requirements.txt') from exc
+        finally:
+            mp3.unlink(missing_ok=True)
 
 ensure_voice_stems()
 random.seed(7)
