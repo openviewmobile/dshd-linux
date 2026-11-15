@@ -3,8 +3,8 @@
 
 EAPI=8
 
-# Gentoo cannot encode the fourth numeric field in upstream 0.2.2-rc.1.3;
-# this packaging revision maps to that release. Update the files together.
+# Upstream v0.2.2-rc.1.3 maps to the Gentoo patch suffix _p3.
+# Update the filename, UPSTREAM_PV and Manifest together on the next bump.
 UPSTREAM_PV="0.2.2-rc.1.3"
 MY_PN="deepseek-harness"
 
