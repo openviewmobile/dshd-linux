@@ -1,8 +1,8 @@
 pkgbase = deepseek-harness-bin
 	pkgdesc = Electron desktop shell for a bundled dsh runtime and external plugins (binary AppImage repackage)
-	pkgver = 0.2.2_rc.1
+	pkgver = 0.2.2_rc.1.5
 	pkgrel = 1
-	url = https://github.com/deepseek-ai/deepseek-harness
+	url = https://github.com/openviewmobile/dshd-linux
 	arch = x86_64
 	arch = aarch64
 	makedepends = imagemagick
@@ -34,9 +34,9 @@ pkgbase = deepseek-harness-bin
 	conflicts = deepseek-harness
 	options = !strip
 	options = !debug
-	source_x86_64 = https://github.com/deepseek-ai/deepseek-harness/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-x86_64-unsigned.AppImage
-	sha256sums_x86_64 = cd9f8fc968d1278b6fc6919970c472064dc3d2e796315d36447ed323666a738d
-	source_aarch64 = https://github.com/deepseek-ai/deepseek-harness/releases/download/v0.2.2-rc.1/deepseek-harness-0.2.2-rc.1-linux-arm64-unsigned.AppImage
-	sha256sums_aarch64 = c93e1a4e9a8a67fe8f4d03e344911ac6bc1687acd7026a57f45cb2da2d4ec00d
+	source_x86_64 = https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.5/deepseek-harness-0.2.2-rc.1.5-linux-x86_64-unsigned.AppImage
+	sha256sums_x86_64 = 0e6d8fd40acd04f7d39545219a5ce7d86615f7b8bdf20e89c3a260c57efcfa93
+	source_aarch64 = https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.5/deepseek-harness-0.2.2-rc.1.5-linux-arm64-unsigned.AppImage
+	sha256sums_aarch64 = 0474d3bc965b177477eace675558a0218f42f8ae28ff99194c638afea8e47d44
 
 pkgname = deepseek-harness-bin

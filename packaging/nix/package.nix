@@ -41,16 +41,16 @@
 
 let
   pname = "deepseek-harness";
-  version = "0.2.2-rc.1";
+  version = "0.2.2-rc.1.5";
 
   sources = {
     x86_64-linux = {
-      url = "https://github.com/deepseek-ai/deepseek-harness/releases/download/v${version}/${pname}-${version}-linux-x86_64-unsigned.AppImage";
-      hash = "sha256-zZ+PyWjRJ4tvxpGZcMRyBk3D0ueWMV02RH7TI2Zqc40=";
+      url = "https://github.com/openviewmobile/dshd-linux/releases/download/v${version}/${pname}-${version}-linux-x86_64-unsigned.AppImage";
+      hash = "sha256-Dm2P1ArNBPfTlUUhmlzn2GYV97i98g6Jw6JgxX78+pM=";
     };
     aarch64-linux = {
-      url = "https://github.com/deepseek-ai/deepseek-harness/releases/download/v${version}/${pname}-${version}-linux-arm64-unsigned.AppImage";
-      hash = "sha256-yT4aTpqKZ/6PTQPjRJEaxrwWh6zXAmpX9Fyy2i1OwA0=";
+      url = "https://github.com/openviewmobile/dshd-linux/releases/download/v${version}/${pname}-${version}-linux-arm64-unsigned.AppImage";
+      hash = "sha256-BHTTvJZbF3R36s5nVVigIY9C+K4o/5kZTGOK/qjkfUQ=";
     };
   };
 
@@ -143,7 +143,7 @@ stdenv.mkDerivation {
 
   meta = with lib; {
     description = "Electron desktop shell for a bundled dsh runtime and external plugins";
-    homepage = "https://github.com/deepseek-ai/deepseek-harness";
+    homepage = "https://github.com/openviewmobile/dshd-linux";
     license = licenses.mit;
     mainProgram = pname;
     platforms = [ "x86_64-linux" "aarch64-linux" ];

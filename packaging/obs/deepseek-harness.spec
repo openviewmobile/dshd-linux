@@ -14,17 +14,17 @@
 # Update Version/Release, the *_rpm globals, _service filenames and checksums
 # atomically when a new upstream release is published.
 #
-%global upstream_ver 0.2.2-rc.1
+%global upstream_ver 0.2.2-rc.1.5
 %global appdir /opt/deepseek-harness
 %global appimage_payload opt/DeepSeek Harness
 
 Name:           deepseek-harness
-Version:        0.2.2~rc1
+Version:        0.2.2~rc1.5
 Release:        0
 Summary:        Electron desktop shell for a bundled dsh runtime and external plugins
 License:        MIT
 Group:          Development/Tools
-URL:            https://github.com/deepseek-ai/deepseek-harness
+URL:            https://github.com/openviewmobile/dshd-linux
 Source0:        deepseek-harness-%{upstream_ver}-linux-x86_64-unsigned.rpm
 Source1:        deepseek-harness-%{upstream_ver}-linux-aarch64-unsigned.rpm
 ExclusiveArch:  x86_64 aarch64
@@ -149,5 +149,6 @@ fi
 %{_datadir}/icons/hicolor/*/apps/com.deepseek.harness.png
 
 %changelog
-* Mon Nov 10 2026 DeepSeek Harness Linux packaging <noreply@deepseek.com> - 0.2.2~rc1-0
+* Mon Nov 16 2026 DeepSeek Harness Linux packaging <noreply@deepseek.com> - 0.2.2~rc1.5-0
+- Rebuild with the com.deepseek.harness desktop id, sized icons and native window icon.
 - Initial OBS binary repackage of the upstream unsigned RPM.
