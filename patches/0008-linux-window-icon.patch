@@ -1,0 +1,35 @@
+diff --git a/apps/desktop/src/main.ts b/apps/desktop/src/main.ts
+--- a/apps/desktop/src/main.ts
++++ b/apps/desktop/src/main.ts
+@@ -267,6 +267,9 @@
+     minWidth: 520,
+     minHeight: 600,
+     show,
++    ...(process.platform === 'linux'
++      ? { icon: nativeImage.createFromPath(join(process.resourcesPath, 'icon.png')) }
++      : {}),
+     ...(process.platform === 'win32' && primary ? {
+       titleBarStyle: 'hidden' as const,
+       titleBarOverlay: { height: WINDOWS_TITLEBAR_HEIGHT, color: chromeFallbackFill(),
+diff --git a/apps/desktop/src/welcome-window.ts b/apps/desktop/src/welcome-window.ts
+--- a/apps/desktop/src/welcome-window.ts
++++ b/apps/desktop/src/welcome-window.ts
+@@ -3,7 +3,7 @@
+ 
+ import { join } from 'node:path'
+ import { fileURLToPath } from 'node:url'
+-import { app, BrowserWindow, ipcMain, type BrowserWindowConstructorOptions, type IpcMainInvokeEvent } from 'electron'
++import { app, BrowserWindow, ipcMain, nativeImage, type BrowserWindowConstructorOptions, type IpcMainInvokeEvent } from 'electron'
+ import type { DesktopLocale } from './locale.ts'
+ import { WELCOME_IPC, type WelcomeOperations } from './welcome-api.ts'
+ 
+@@ -25,6 +25,9 @@
+     show: false,
+     title: locale.messages.welcomeTitle,
+     backgroundColor: platform === 'darwin' || platform === 'win32' ? '#00000000' : '#FFFFFF',
++    ...(platform === 'linux'
++      ? { icon: nativeImage.createFromPath(join(process.resourcesPath, 'icon.png')) }
++      : {}),
+     ...(platform === 'darwin' ? {
+       titleBarStyle: 'hidden',
+       trafficLightPosition: { x: 21, y: 21 },

@@ -29,7 +29,7 @@ index c47badd0..dadc6b4f 100644
 +          Comment: 'Electron desktop shell for a bundled dsh runtime and external plugins',
 +          Categories: 'Development;',
 +          StartupWMClass: 'com.deepseek.harness',
-+          Icon: 'com.deepseek.harness',
++          Icon: 'deepseek-harness',
 +          MimeType: 'x-scheme-handler/dsh;',
 +        },
 +      },

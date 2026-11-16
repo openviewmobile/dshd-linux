@@ -9,9 +9,9 @@ version.
 
 ### Fixed
 
-- Linux desktop integration: use `com.deepseek.harness` for the desktop entry,
-  `StartupWMClass` and icon name, and ship 16px through 512px icons for
-  AppImage, deb, rpm and Flatpak and the AUR/OBS/Snap/Nix repackages.
+- Linux desktop integration: use `com.deepseek.harness` for the desktop entry
+  and `StartupWMClass`, install 16px through 512px icons, and set the native
+  Electron window icon so KDE menus, taskbars and title bars resolve it.
 
 ### Fixed
 

@@ -12,11 +12,11 @@ English | [简体中文](README.zh-CN.md)
 
 **DSHD brings DeepSeek Harness Desktop to Linux as a normal desktop app** — a
 native window with sessions, a local workspace, plugins, a terminal, and
-Office-to-PDF conversion. **Current status: `0.2.2-rc.1.4` release candidate.** Download a signed package, or install from the
+Office-to-PDF conversion. **Current status: `0.2.2-rc.1.5` release candidate.** Download a signed package, or install from the
 signed APT/DNF repositories.
 
 <p>
-<a href="https://github.com/openviewmobile/dshd-linux/releases/tag/v0.2.2-rc.1.4"><b>Download the latest release</b></a>
+<a href="https://github.com/openviewmobile/dshd-linux/releases/tag/v0.2.2-rc.1.5"><b>Download the latest release</b></a>
 &nbsp;·&nbsp;
 <a href="#apt-and-dnf-repositories-x86_64">Install with apt/dnf</a>
 &nbsp;·&nbsp;
@@ -33,7 +33,7 @@ signed APT/DNF repositories.
   workspace data stays on your computer.
 - **Office without the cloud, when the engine is available** — DOCX/XLSX/PPTX
   can convert to PDF locally through the LibreOfficeKit path. The current
-  `rc.1.4` AppImage does not ship the WASM payload, so this is not a guaranteed
+  `rc.1.5` AppImage does not ship the WASM payload, so this is not a guaranteed
   out-of-the-box feature; see [known limitations](#known-limitations).
 - **Install the way you prefer** — AppImage, deb, rpm, Flatpak, or signed APT
   and DNF repositories for x86_64.
@@ -51,12 +51,12 @@ signed APT/DNF repositories.
 ## Download
 
 All packages are built and signed by GitHub Actions and attached to the
-[GitHub Release](https://github.com/openviewmobile/dshd-linux/releases/tag/v0.2.2-rc.1.4).
+[GitHub Release](https://github.com/openviewmobile/dshd-linux/releases/tag/v0.2.2-rc.1.5).
 
 | Architecture | AppImage | deb | rpm | Flatpak |
 |---|---|---|---|---|
-| **x86_64** (Intel/AMD) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.4/deepseek-harness-0.2.2-rc.1.4-linux-x86_64-unsigned.AppImage) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.4/deepseek-harness-0.2.2-rc.1.4-linux-amd64-unsigned.deb) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.4/deepseek-harness-0.2.2-rc.1.4-linux-x86_64-unsigned.rpm) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.4/deepseek-harness-0.2.2-rc.1.4-linux-x86_64-unsigned.flatpak) |
-| **aarch64** (ARM64) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.4/deepseek-harness-0.2.2-rc.1.4-linux-arm64-unsigned.AppImage) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.4/deepseek-harness-0.2.2-rc.1.4-linux-arm64-unsigned.deb) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.4/deepseek-harness-0.2.2-rc.1.4-linux-aarch64-unsigned.rpm) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.4/deepseek-harness-0.2.2-rc.1.4-linux-aarch64-unsigned.flatpak) |
+| **x86_64** (Intel/AMD) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.5/deepseek-harness-0.2.2-rc.1.5-linux-x86_64-unsigned.AppImage) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.5/deepseek-harness-0.2.2-rc.1.5-linux-amd64-unsigned.deb) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.5/deepseek-harness-0.2.2-rc.1.5-linux-x86_64-unsigned.rpm) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.5/deepseek-harness-0.2.2-rc.1.5-linux-x86_64-unsigned.flatpak) |
+| **aarch64** (ARM64) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.5/deepseek-harness-0.2.2-rc.1.5-linux-arm64-unsigned.AppImage) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.5/deepseek-harness-0.2.2-rc.1.5-linux-arm64-unsigned.deb) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.5/deepseek-harness-0.2.2-rc.1.5-linux-aarch64-unsigned.rpm) | [Download](https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.5/deepseek-harness-0.2.2-rc.1.5-linux-aarch64-unsigned.flatpak) |
 
 The `unsigned` in a filename means “no platform code-signing certificate”; the
 packages still have detached GPG signatures and a signed checksum file.
@@ -242,7 +242,7 @@ From the [Release page](https://github.com/openviewmobile/dshd-linux/releases)
 or the signed APT/DNF repositories above. Do not use random third-party mirrors.
 
 **How do updates work?**<br>
-apt/dnf users get repository updates. The `0.2.2-rc.1.4` AppImage contains the
+apt/dnf users get repository updates. The `0.2.2-rc.1.5` AppImage contains the
 signed feed configuration; version-to-version update acceptance is still pending.
 deb/rpm/Flatpak installs are updated through their package manager or a new
 download. See [AppImage updates](docs/appimage-update.md).
@@ -384,7 +384,7 @@ built binaries to the Release page. See
 - [Release and signing](docs/release.md)
 - [Distro package matrix](docs/distro-packages.md)
 - [YouTube promo and thumbnail](promo/README.md)
-- [0.2.2-rc.1.4 announcement](https://github.com/openviewmobile/dshd-linux/discussions/7)
+- [0.2.2-rc.1.5 announcement](https://github.com/openviewmobile/dshd-linux/discussions/7)
 - [Community support](SUPPORT.md) and [governance](GOVERNANCE.md)
 - [Roadmap](ROADMAP.md) and [versioning policy](docs/versioning.md)
 - [Code of conduct](CODE_OF_CONDUCT.md) and [security policy](SECURITY.md)

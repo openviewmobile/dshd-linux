@@ -9,7 +9,7 @@ on:
       tag:
         description: Existing tag to build and release
         required: true
-        default: v0.2.2-rc.1.4
+        default: v0.2.2-rc.1.5
 
 permissions:
   contents: write

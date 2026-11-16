@@ -40,6 +40,7 @@ apply_patch "$PATCH_DIR/0004-flatpak-launch.patch"
 apply_patch "$PATCH_DIR/0005-linux-office-fallback.patch"
 apply_patch "$PATCH_DIR/0006-linux-skip-office-smoke.patch"
 apply_patch "$PATCH_DIR/0007-linux-appimage-update.patch"
+apply_patch "$PATCH_DIR/0008-linux-window-icon.patch"
 
 if [ "${SKIP_INSTALL:-0}" != "1" ]; then
   pnpm install --frozen-lockfile --reporter=append-only
