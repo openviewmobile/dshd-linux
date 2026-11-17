@@ -3,9 +3,9 @@
 
 EAPI=8
 
-# Upstream v0.2.2-rc.1.3 maps to the Gentoo patch suffix _p3.
+# Upstream v0.2.2-rc.1.5 maps to the Gentoo patch suffix _p5.
 # Update the filename, UPSTREAM_PV and Manifest together on the next bump.
-UPSTREAM_PV="0.2.2-rc.1.3"
+UPSTREAM_PV="0.2.2-rc.1.5"
 MY_PN="deepseek-harness"
 
 inherit desktop xdg-utils

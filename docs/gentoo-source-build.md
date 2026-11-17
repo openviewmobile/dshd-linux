@@ -29,7 +29,7 @@ The binary ebuild avoids all of that by unpacking the signed AppImage.
 
 ## Deferred option: hybrid source ebuild
 
-Name it `deepseek-harness-0.2.2_rc1_p3.ebuild`; keep
+Name it `deepseek-harness-0.2.2_rc1_p5.ebuild`; keep
 `deepseek-harness-bin-...` as the binary package. The two must `BLOCK` each
 other because both install into `/opt/deepseek-harness`.
 
