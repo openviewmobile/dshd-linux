@@ -16,7 +16,7 @@
 
 | Channel | New files | Build command (target environment) | Current status | Evidence / boundaries |
 |---|---|---|---|---|
-| Arch / AUR `-bin` | `packaging/aur/PKGBUILD`, `packaging/aur/.SRCINFO` | `cd packaging/aur && makepkg -si` | **Build + `pacman -Udd` install + Xvfb GUI launch verified (x86_64)**; aarch64 not built | Generated `deepseek-harness-bin-0.2.2_rc.1-1-x86_64.pkg.tar.zst` in an `archlinux:base-devel` (amd64) container; `.SRCINFO` exactly matches `makepkg --printsrcinfo`; sha256 verification passed; `chrome-sandbox` is `4755 root:root`. See §3.1 |
+| Arch / Arch `-bin` | `packaging/aur/PKGBUILD`, `packaging/aur/.SRCINFO` | `cd packaging/aur && makepkg -si` | **Build + `pacman -Udd` install + Xvfb GUI launch verified (x86_64)**; aarch64 not built | Generated `deepseek-harness-bin-0.2.2_rc.1-1-x86_64.pkg.tar.zst` in an `archlinux:base-devel` (amd64) container; `.SRCINFO` exactly matches `makepkg --printsrcinfo`; sha256 verification passed; `chrome-sandbox` is `4755 root:root`. See §3.1 |
 | Snap | `packaging/snap/snapcraft.yaml`, `packaging/snap/icon.png` | `cd packaging/snap && snapcraft pack` | **`.snap` manually built (squashfs)**; not `snap install`ed / `snap run` | No `snapcraft` on this machine (no longer in the Ubuntu 24.04 repositories, PyPI only has 4.8.1, the official image cannot be pulled); a 297 MB `.snap` was generated from the installed AUR payload + `mksquashfs`, and `unsquashfs -l` verified `meta/snap.yaml`, the wrapper, the desktop file, and the `/opt` payload. See `evidence/snap-build.txt`; for the strict confinement gaps see §3.2 |
 | openSUSE OBS | `packaging/obs/deepseek-harness.spec`, `packaging/obs/_service` | `osc service ra && osc build openSUSE_Tumbleweed x86_64` | **The spec has produced a package via local `rpmbuild` (x86_64)**; not built in OBS/osc, not installed | Binary repackaging of the spec with Arch `rpm-tools` + `--nodeps`, producing a 273 MB `deepseek-harness-0.2.2~rc1-0.x86_64.rpm`; OBS server-side build and signing remain unverified. See `evidence/obs-build.txt`; details in §3.3 |
 | Nix / NixOS | `packaging/nix/package.nix`, `packaging/nix/flake.nix` | `cd packaging/nix && nix build .#default`; `nix run .#` | **Static verification only**; not parsed, not built | No `nix` on this machine; uses `appimageTools.extractType2` + `autoPatchelfHook`; see §3.4 |
@@ -93,7 +93,7 @@ repository URL was not treated as a verified fact**: local builds used the `dist
 
 ## 3. Per-channel details
 
-### 3.1 Arch / AUR: `deepseek-harness-bin`
+### 3.1 Arch: `dshd-linux-bin`
 
 **Files.** `packaging/aur/PKGBUILD`, `packaging/aur/.SRCINFO`.
 

@@ -1,5 +1,5 @@
-pkgbase = deepseek-harness-bin
-	pkgdesc = Electron desktop shell for a bundled dsh runtime and external plugins (binary AppImage repackage)
+pkgbase = dshd-linux-bin
+	pkgdesc = Linux desktop packages for DeepSeek Harness (binary AppImage repackage)
 	pkgver = 0.2.2_rc.1.5
 	pkgrel = 1
 	url = https://github.com/openviewmobile/dshd-linux
@@ -30,8 +30,9 @@ pkgbase = deepseek-harness-bin
 	depends = zlib
 	optdepends = libappindicator-gtk3: tray icon support
 	optdepends = xdg-desktop-portal: portal-based file pickers on Wayland
-	provides = deepseek-harness
+	provides = dshd-linux
 	conflicts = deepseek-harness
+	conflicts = deepseek-harness-bin
 	options = !strip
 	options = !debug
 	source_x86_64 = https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.5/deepseek-harness-0.2.2-rc.1.5-linux-x86_64-unsigned.AppImage
@@ -39,4 +40,4 @@ pkgbase = deepseek-harness-bin
 	source_aarch64 = https://github.com/openviewmobile/dshd-linux/releases/download/v0.2.2-rc.1.5/deepseek-harness-0.2.2-rc.1.5-linux-arm64-unsigned.AppImage
 	sha256sums_aarch64 = 0474d3bc965b177477eace675558a0218f42f8ae28ff99194c638afea8e47d44
 
-pkgname = deepseek-harness-bin
+pkgname = dshd-linux-bin

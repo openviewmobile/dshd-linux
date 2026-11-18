@@ -1,0 +1,42 @@
+# DRAFT source-build manifest for the Flathub app ID.
+#
+# This is intentionally not a validated Flathub manifest yet. The upstream
+# desktop is an Electron application with a bundled Node/Python runtime; a
+# source build needs vendored pnpm/npm/Python/Electron inputs and a pinned
+# upstream commit. Do not submit this draft as-is.
+app-id: io.github.openviewmobile.dshd
+runtime: org.freedesktop.Platform
+runtime-version: "25.08"
+sdk: org.freedesktop.Sdk
+base: org.electronjs.Electron2.BaseApp
+base-version: "25.08"
+command: dsh-launch
+
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  - --socket=pulseaudio
+  - --filesystem=home
+
+modules:
+  - name: dshd
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 dsh-launch /app/bin/dsh-launch
+      # Replace this placeholder with the vendored upstream build:
+      # install the Electron app, runtime, desktop file, metainfo and icons.
+      - install -Dm644 io.github.openviewmobile.dshd.metainfo.xml /app/share/metainfo/io.github.openviewmobile.dshd.metainfo.xml
+      - install -Dm644 io.github.openviewmobile.dshd.png /app/share/icons/hicolor/512x512/apps/io.github.openviewmobile.dshd.png
+    sources:
+      - type: git
+        url: https://github.com/deepseek-ai/deepseek-harness.git
+        commit: fcc0ad462172522aaf5c93a7b2e01f6b9f0b0159
+      - type: file
+        path: dsh-launch
+      - type: file
+        path: io.github.openviewmobile.dshd.metainfo.xml
+      - type: file
+        path: io.github.openviewmobile.dshd.png

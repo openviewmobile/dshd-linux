@@ -1,6 +1,6 @@
 # Maintainer: DeepSeek Harness Linux packaging <noreply@deepseek.com>
 #
-# AUR -bin package: repackages the upstream unsigned AppImage.  The Electron
+# Arch -bin package: repackages the upstream unsigned AppImage.  The Electron
 # runtime (and Node/Python) must stay bundled because the desktop shell starts
 # its Host with ELECTRON_RUN_AS_NODE; Arch's /usr/bin/electron cannot be used.
 #
@@ -21,11 +21,11 @@
 # Regenerate .SRCINFO after changing pkgver:
 #   makepkg --printsrcinfo > .SRCINFO
 
-pkgname=deepseek-harness-bin
+pkgname=dshd-linux-bin
 pkgver="${DSHD_PKGVER:-0.2.2_rc.1.5}"
 pkgrel="${DSHD_PKGREL:-1}"
 _upstream_ver="${DSHD_UPSTREAM_VER:-${pkgver//_/-}}"
-pkgdesc="Electron desktop shell for a bundled dsh runtime and external plugins (binary AppImage repackage)"
+pkgdesc="Linux desktop packages for DeepSeek Harness (binary AppImage repackage)"
 arch=('x86_64' 'aarch64')
 makedepends=('imagemagick')
 url="https://github.com/openviewmobile/dshd-linux"
@@ -57,8 +57,8 @@ optdepends=(
   'libappindicator-gtk3: tray icon support'
   'xdg-desktop-portal: portal-based file pickers on Wayland'
 )
-provides=('deepseek-harness')
-conflicts=('deepseek-harness')
+provides=('dshd-linux')
+conflicts=('deepseek-harness' 'deepseek-harness-bin')
 options=('!strip' '!debug')
 
 _release_url="https://github.com/openviewmobile/dshd-linux/releases/download/v${_upstream_ver}"

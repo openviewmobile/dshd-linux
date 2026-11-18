@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.openviewmobile.dshd</id>
+  <name>DSHD</name>
+  <summary>Linux desktop packaging for DeepSeek Harness</summary>
+  <summary xml:lang="zh-CN">DeepSeek Harness 的 Linux 桌面发行版</summary>
+  <developer id="io.github.openviewmobile">
+    <name>OpenView Mobile</name>
+  </developer>
+  <project_license>MIT</project_license>
+  <metadata_license>CC0-1.0</metadata_license>
+  <description>
+    <p>DSHD packages DeepSeek Harness Desktop for Linux with AppImage, deb, rpm and Flatpak output, signed releases, SBOM and build provenance.</p>
+    <p>It is an independent downstream packaging project, not an official DeepSeek release.</p>
+    <ul>
+      <li>Local-first desktop workspace with real providers</li>
+      <li>AppImage, deb, rpm and Flatpak packages</li>
+      <li>x86_64 and aarch64 release assets</li>
+      <li>APT and DNF repositories for x86_64</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">io.github.openviewmobile.dshd.desktop</launchable>
+  <provides>
+    <binary>deepseek-harness</binary>
+  </provides>
+  <url type="homepage">https://github.com/openviewmobile/dshd-linux</url>
+  <url type="bugtracker">https://github.com/openviewmobile/dshd-linux/issues</url>
+  <url type="vcs-browser">https://github.com/openviewmobile/dshd-linux</url>
+  <url type="help">https://github.com/openviewmobile/dshd-linux/blob/main/docs/README.md</url>
+  <categories>
+    <category>Development</category>
+    <category>Utility</category>
+  </categories>
+  <keywords>
+    <keyword>DeepSeek</keyword>
+    <keyword>DeepSeek Harness</keyword>
+    <keyword>AI</keyword>
+    <keyword>desktop</keyword>
+    <keyword>Electron</keyword>
+  </keywords>
+  <content_rating type="oars-1.1" />
+  <screenshots>
+    <screenshot type="default">
+      <image type="source">https://raw.githubusercontent.com/openviewmobile/dshd-linux/main/packaging/appstream/screenshots/welcome.png</image>
+      <caption>Welcome screen</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source">https://raw.githubusercontent.com/openviewmobile/dshd-linux/main/packaging/appstream/screenshots/home.png</image>
+      <caption>Desktop workspace</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source">https://raw.githubusercontent.com/openviewmobile/dshd-linux/main/packaging/appstream/screenshots/plugins.png</image>
+      <caption>Plugins</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source">https://raw.githubusercontent.com/openviewmobile/dshd-linux/main/packaging/appstream/screenshots/settings.png</image>
+      <caption>Settings</caption>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="0.2.2-rc.1.5" date="2026-11-16">
+      <description>
+        <p>Linux desktop icon and app-id fixes; Fedora DNF repository and Debian package verification.</p>
+      </description>
+    </release>
+  </releases>
+</component>

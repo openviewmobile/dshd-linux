@@ -237,7 +237,7 @@ system Electron.
 
 **Two approaches.**
 
-1. **AUR `deepseek-harness-bin` (do this first)**: `source` points to the official AppImage or deb,
+1. **Arch `dshd-linux-bin` (do this first; AUR registration is currently closed)**: `source` points to the official AppImage or deb,
    `package()` unpacks it, installs to `/opt/deepseek-harness`, provides the `/usr/bin/deepseek-harness`
    wrapper, `.desktop`, and icons; `depends` lists system libraries such as GTK3/NSS. Pros: reuses verified artifacts,
    2–3 person-days; cons: not built from source, and the AUR community's acceptance of `-bin` depends on maintenance quality.
@@ -308,7 +308,7 @@ for checks use [pkgcheck](https://wiki.gentoo.org/wiki/Pkgcheck).
 
 **Viable approaches.**
 
-1. **`deepseek-harness-bin` ebuild**: `SRC_URI` points to the official AppImage or deb,
+1. **`dshd-linux-bin` PKGBUILD**: `SRC_URI` points to the official AppImage or deb,
    `src_unpack()` unpacks it, `src_install()` installs to `/opt/deepseek-harness`, and installs the wrapper,
    `.desktop`, and icons; `RDEPEND` lists `x11-libs/gtk+:3`, `dev-libs/nss`, `x11-libs/libXScrnSaver`, etc.
 2. **Source ebuild**: build from source, depending on the system Node/pnpm/Python; high effort and tightly coupled to the upstream build chain.
@@ -784,7 +784,7 @@ CI implementation suggestions:
 
 - **Snap**: do a core24 PoC with electron-builder's `snap` target or a minimal `snapcraft.yaml`;
   start with strict and record which capabilities are unavailable; then assess whether a classic request is worthwhile.
-- **Arch**: publish AUR `deepseek-harness-bin`, repackaged from the AppImage; get `namcap` to zero on fixable items;
+- **Arch**: ship `dshd-linux-bin` from a self-hosted pacman repository, repackaged from the AppImage; get `namcap` to zero on fixable items;
   collect issues and verify the update cadence.
 - **openSUSE OBS**: create a `home:` project with a spec + `_service`, produce an rpm and install it with zypper;
   verify OBS signing and arm64 workers.

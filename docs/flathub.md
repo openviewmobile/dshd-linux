@@ -1,5 +1,21 @@
 # Publishing to Flathub
 
+## Prepared files
+
+The repository now contains a reviewable AppStream metadata file and a **draft**
+manifest:
+
+```text
+packaging/flathub/io.github.openviewmobile.dshd.metainfo.xml
+packaging/flathub/io.github.openviewmobile.dshd.yml
+packaging/flathub/README.md
+packaging/appstream/screenshots/
+packaging/appstream/icons/
+```
+
+They are preparation only. The draft manifest does not yet vendor the upstream
+Node/Python/Electron dependencies and must not be submitted as-is.
+
 ## Current status
 
 The existing `*.flatpak` file is an electron-builder **bundle**. It can be
