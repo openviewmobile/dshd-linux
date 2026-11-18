@@ -11,7 +11,7 @@ been through the full install + launch acceptance in this repository.
 |---|---|---|
 | Debian 12/13 | Release `.deb` or x86_64 APT repository | x64 deb installed/launched in Docker + Xvfb; arm64 structure checked |
 | Ubuntu 22.04/24.04 | Release `.deb` or x86_64 APT repository | x64 deb path; 24.04 t64 dependency names measured |
-| Fedora 41/42 | Release `.rpm` or x86_64 DNF repository | rpm metadata/unpack checked; full Fedora install pending |
+| Fedora 44/45 | Release `.rpm` or x86_64 DNF repository | Fedora 45 x86_64 DNF repo install, `rpm -V`, and Wayland launch verified |
 | RHEL / Rocky Linux 9 | Release `.rpm` or x86_64 DNF repository | glibc baseline; install on target pending |
 | Arch Linux / Manjaro | `packaging/aur` recipe (not in AUR) | x86_64 built/installed/launched under Xvfb |
 | Any glibc desktop | Release AppImage or Flatpak bundle | AppImage launched on x64/aarch64; Flatpak 25.08 installed/launched |
