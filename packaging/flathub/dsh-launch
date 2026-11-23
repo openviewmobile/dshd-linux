@@ -1,0 +1,11 @@
+#!/bin/sh
+# Flatpak strips PATH from the sandbox environment; keep /app/bin visible so
+# zypak-wrapper and the app binary can be resolved.
+export PATH="/app/bin:/usr/bin:/bin${PATH:+:$PATH}"
+export TMPDIR="${XDG_RUNTIME_DIR}/app/${FLATPAK_ID}"
+
+if [ "${XDG_SESSION_TYPE}" = "wayland" ]; then
+  exec zypak-wrapper deepseek-harness --enable-features=UseOzonePlatform --ozone-platform=wayland "$@"
+else
+  exec zypak-wrapper deepseek-harness "$@"
+fi

@@ -4,7 +4,7 @@
 # desktop is an Electron application with a bundled Node/Python runtime; a
 # source build needs vendored pnpm/npm/Python/Electron inputs and a pinned
 # upstream commit. Do not submit this draft as-is.
-app-id: io.github.openviewmobile.dshd
+app-id: com.deepseek.harness
 runtime: org.freedesktop.Platform
 runtime-version: "25.08"
 sdk: org.freedesktop.Sdk
@@ -28,8 +28,8 @@ modules:
       - install -Dm755 dsh-launch /app/bin/dsh-launch
       # Replace this placeholder with the vendored upstream build:
       # install the Electron app, runtime, desktop file, metainfo and icons.
-      - install -Dm644 io.github.openviewmobile.dshd.metainfo.xml /app/share/metainfo/io.github.openviewmobile.dshd.metainfo.xml
-      - install -Dm644 io.github.openviewmobile.dshd.png /app/share/icons/hicolor/512x512/apps/io.github.openviewmobile.dshd.png
+      - install -Dm644 com.deepseek.harness.metainfo.xml /app/share/metainfo/com.deepseek.harness.metainfo.xml
+      - install -Dm644 com.deepseek.harness.png /app/share/icons/hicolor/512x512/apps/com.deepseek.harness.png
     sources:
       - type: git
         url: https://github.com/deepseek-ai/deepseek-harness.git
@@ -37,6 +37,6 @@ modules:
       - type: file
         path: dsh-launch
       - type: file
-        path: io.github.openviewmobile.dshd.metainfo.xml
+        path: com.deepseek.harness.metainfo.xml
       - type: file
-        path: io.github.openviewmobile.dshd.png
+        path: com.deepseek.harness.png

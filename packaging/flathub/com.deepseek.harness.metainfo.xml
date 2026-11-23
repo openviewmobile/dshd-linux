@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>io.github.openviewmobile.dshd</id>
+  <id>com.deepseek.harness</id>
   <name>DSHD</name>
   <summary>Linux desktop packaging for DeepSeek Harness</summary>
   <summary xml:lang="zh-CN">DeepSeek Harness 的 Linux 桌面发行版</summary>
-  <developer id="io.github.openviewmobile">
+  <developer id="com.deepseek.harness">
     <name>OpenView Mobile</name>
   </developer>
   <project_license>MIT</project_license>
@@ -19,7 +19,7 @@
       <li>APT and DNF repositories for x86_64</li>
     </ul>
   </description>
-  <launchable type="desktop-id">io.github.openviewmobile.dshd.desktop</launchable>
+  <launchable type="desktop-id">com.deepseek.harness.desktop</launchable>
   <provides>
     <binary>deepseek-harness</binary>
   </provides>

@@ -6,8 +6,8 @@ The repository now contains a reviewable AppStream metadata file and a **draft**
 manifest:
 
 ```text
-packaging/flathub/io.github.openviewmobile.dshd.metainfo.xml
-packaging/flathub/io.github.openviewmobile.dshd.yml
+packaging/flathub/com.deepseek.harness.metainfo.xml
+packaging/flathub/com.deepseek.harness.yml
 packaging/flathub/README.md
 packaging/appstream/screenshots/
 packaging/appstream/icons/
@@ -45,15 +45,18 @@ and [submission guide](https://docs.flathub.org/docs/for-app-authors/submission)
 
 The current package ID is `com.deepseek.harness`. That is an upstream-owned
 namespace; an independent repackager should not claim it without permission.
-A safer ID is based on the project’s controlled GitHub namespace, for example:
+The repository owner selected:
 
 ```text
-io.github.openviewmobile.dshd
+com.deepseek.harness
 ```
 
-Changing the ID affects the desktop file, application data directory, Flatpak
-ref, update identity and package metadata. Decide before a stable release.
-Flathub also requires the app ID and metadata to match; see the
+This matches the installed desktop app id and the existing `com.deepseek.harness`
+desktop file. The namespace has no existing Flathub app, but it is also an
+upstream-looking namespace; confirm upstream/owner consent before submitting.
+Changing the ID would affect the desktop file, application data directory,
+Flatpak ref, update identity and package metadata. Flathub also requires the
+app ID and metadata to match; see the
 [app ID guidance](https://docs.flathub.org/docs/for-app-authors/app-id).
 
 ## Manifest outline
@@ -61,7 +64,7 @@ Flathub also requires the app ID and metadata to match; see the
 A source manifest needs, at minimum:
 
 ```yaml
-app-id: io.github.openviewmobile.dshd
+app-id: com.deepseek.harness
 runtime: org.freedesktop.Platform
 runtime-version: "25.08"
 sdk: org.freedesktop.Sdk
@@ -106,7 +109,7 @@ This is only an outline. The real manifest must:
 ```bash
 flatpak install -y flathub org.flatpak.Builder
 flatpak run --command=flathub-build org.flatpak.Builder --install manifest.yml
-flatpak run io.github.openviewmobile.dshd
+flatpak run com.deepseek.harness
 flatpak run --command=flatpak-builder-lint org.flatpak.Builder manifest.yml
 flatpak run --command=flatpak-builder-lint org.flatpak.Builder repo repo
 ```
@@ -124,8 +127,8 @@ plugin install/remove, X11 and Wayland, and no-network launch behavior.
 6. After merge, users install with:
 
 ```bash
-flatpak install flathub io.github.openviewmobile.dshd
-flatpak run io.github.openviewmobile.dshd
+flatpak install flathub com.deepseek.harness
+flatpak run com.deepseek.harness
 ```
 
 Do not open the PR until the manifest builds from source and the app runs in the
@@ -147,7 +150,7 @@ Users add the remote and install:
 
 ```bash
 flatpak remote-add --if-not-exists dshd https://example.com/dshd.flatpakrepo
-flatpak install dshd io.github.openviewmobile.dshd
+flatpak install dshd com.deepseek.harness
 ```
 
 This still requires a source manifest; it is not a shortcut around the
