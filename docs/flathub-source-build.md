@@ -44,6 +44,22 @@ manifest must:
 - `com.deepseek.harness` is an upstream-looking namespace. Confirm ownership or
   consent before opening the Flathub PR.
 
+## Source-build spike (2026-11-24)
+
+On a Fedora 45 x86_64 host with Node 24 and pnpm 11:
+
+```text
+pnpm install --frozen-lockfile: PASS (54 s, about 2.1 GB node_modules)
+pnpm run build: PASS (207 s, 10/10 gates)
+pnpm --filter @deepseek-ai/dsh-desktop build: PASS (871 ms)
+pnpm --filter @deepseek-ai/dsh-desktop prepare:primary-runtime: FAIL
+```
+
+The runtime step failed at `fetch failed` because it downloads pinned Node,
+python-build-standalone and wheels from mirrors. Flathub builds have no network;
+these artifacts must be vendored and stored as manifest sources before the app
+can be built in the Flatpak sandbox.
+
 ## AppStream validation
 
 `appstreamcli validate --no-net packaging/appstream/com.deepseek.harness.metainfo.xml`
