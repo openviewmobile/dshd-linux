@@ -44,6 +44,12 @@ manifest must:
 - `com.deepseek.harness` is an upstream-looking namespace. Confirm ownership or
   consent before opening the Flathub PR.
 
+## AppStream validation
+
+`appstreamcli validate --no-net packaging/appstream/com.deepseek.harness.metainfo.xml`
+passes on Fedora 45. This validates the metadata only; it does not make the
+draft Flatpak manifest buildable.
+
 ## Current decision
 
 Do not submit the bundle or the draft manifest. The repository keeps:
