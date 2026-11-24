@@ -89,3 +89,19 @@ packaging/appstream/
 
 The next engineering task is to produce an offline, source-built manifest and
 run it with `flatpak-builder` before any Flathub PR.
+
+## sharp wasm finding (2026-11-24)
+
+The native `sharp` payload encodes a PNG but exits during raw decode under the
+Electron 44 Node runtime. A wasm32 build of `sharp@0.35.5` completes both the
+encode and raw decode under the same Electron binary:
+
+```text
+sharp vips 8.18.7
+png 90
+raw: width=1 height=1 channels=3 data=[17,103,231]
+```
+
+This is the preferred workaround for the Flathub runtime: vendor the wasm32
+`sharp` package and its `@img/sharp-wasm32` payload instead of the native
+`@img/sharp-linux-x64` module. It avoids the Electron native-module SIGSEGV.
