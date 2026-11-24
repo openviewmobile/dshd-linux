@@ -55,10 +55,21 @@ pnpm --filter @deepseek-ai/dsh-desktop build: PASS (871 ms)
 pnpm --filter @deepseek-ai/dsh-desktop prepare:primary-runtime: FAIL
 ```
 
-The runtime step failed at `fetch failed` because it downloads pinned Node,
-python-build-standalone and wheels from mirrors. Flathub builds have no network;
-these artifacts must be vendored and stored as manifest sources before the app
-can be built in the Flatpak sandbox.
+After switching the download mirrors, the runtime payload was prepared, but the
+next packaging step failed in its Electron runtime smoke test:
+
+```text
+runtime payload: pnpm
+runtime payload: koffi
+runtime payload: sharp
+SharpElectronLinux warning
+runtime payload: killed=false, signal=SIGSEGV
+```
+
+The source build now gets through the monorepo build, desktop bundle, runtime
+download and pnpm runtime install. The remaining blocker is the Electron/native
+module combination (`sharp`/`koffi`) crashing during the payload smoke test,
+plus the offline vendoring required by Flathub.
 
 ## AppStream validation
 
