@@ -101,7 +101,7 @@ jobs:
           mkdir -p site/rpm/x86_64
           cp /tmp/assets/*-linux-x86_64-unsigned.rpm site/rpm/x86_64/
           for rpm in site/rpm/x86_64/*.rpm; do
-            rpmsign "${RPM_SIGN_ARGS[@]}" --define "_gpg_name $FPR" --define "_gpg_path $HOME/.gnupg" --addsign "$rpm"
+            rpm --addsign --define "_signature gpg" --define "_gpg_name $FPR" --define "_gpg_path $HOME/.gnupg" "${RPM_SIGN_ARGS[@]}" "$rpm"
             rpmkeys --checksig "$rpm" | grep -qE "digests signatures OK|signatures OK" || {
               echo "::error::RPM is not signed: $rpm"
               exit 1
