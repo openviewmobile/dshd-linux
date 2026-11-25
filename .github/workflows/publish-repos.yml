@@ -69,12 +69,12 @@ jobs:
           set -euo pipefail
           FPR="$(cat /tmp/gpg-fpr)"
           GPG=(gpg --batch --yes)
-          RPM_SIGN_ARGS=()
+          RPM_SIGN_ARGS=(--define "__gpg_sign_cmd %{__gpg} gpg --batch --no-armor -u %{_gpg_name} -sbo %{__signature_filename} %{__plaintext_filename}")
           if [ -n "${GPG_PASSPHRASE:-}" ]; then
             printf '%s' "$GPG_PASSPHRASE" > /tmp/gpg-pass
             chmod 600 /tmp/gpg-pass
             GPG+=(--pinentry-mode loopback --passphrase-file /tmp/gpg-pass)
-            RPM_SIGN_ARGS+=(--define "__gpg_sign_cmd %{__gpg} gpg --batch --no-armor --pinentry-mode loopback --passphrase-file /tmp/gpg-pass -u %{_gpg_name} -sbo %{__signature_filename} %{__plaintext_filename}")
+            RPM_SIGN_ARGS=(--define "__gpg_sign_cmd %{__gpg} gpg --batch --no-armor --pinentry-mode loopback --passphrase-file /tmp/gpg-pass -u %{_gpg_name} -sbo %{__signature_filename} %{__plaintext_filename}")
           fi
           rm -rf site/apt site/rpm site/dshd-linux.repo site/key.asc
           mkdir -p site/apt/pool/main/d/deepseek-harness
