@@ -101,6 +101,10 @@ jobs:
           cp /tmp/assets/*-linux-x86_64-unsigned.rpm site/rpm/x86_64/
           for rpm in site/rpm/x86_64/*.rpm; do
             rpmsign "${RPM_SIGN_ARGS[@]}" --define "_gpg_name $FPR" --define "_gpg_path $HOME/.gnupg" --addsign "$rpm"
+            rpmkeys --checksig "$rpm" | grep -qE "digests signatures OK|signatures OK" || {
+              echo "::error::RPM is not signed: $rpm"
+              exit 1
+            }
           done
           createrepo_c --database site/rpm/x86_64
           "${GPG[@]}" --armor --detach-sign -o site/rpm/x86_64/repodata/repomd.xml.asc site/rpm/x86_64/repodata/repomd.xml
