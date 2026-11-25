@@ -133,7 +133,6 @@ jobs:
               cp /pkg/PKGBUILD /tmp/archbuild/PKGBUILD
               appimage="$(find /assets -maxdepth 1 -name "*-linux-x86_64-unsigned.AppImage" -print -quit)"
               test -n "$appimage"
-              chmod a+r "$appimage"
               chown -R builder /tmp/archbuild /site
               su builder -c "cd /tmp/archbuild && DSHD_APPIMAGE_X86_64=\"$appimage\" makepkg --noconfirm --cleanbuild --nodeps"
               cp /tmp/archbuild/*.pkg.tar.zst /site/arch/x86_64/
