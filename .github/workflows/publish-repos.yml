@@ -135,7 +135,7 @@ jobs:
               mkdir -p /tmp/archbuild /site/arch/x86_64
               cp /pkg/PKGBUILD /tmp/archbuild/PKGBUILD
               chown -R builder /tmp/archbuild /site
-              su -m builder -c "cd /tmp/archbuild && makepkg --noconfirm --cleanbuild --nodeps"
+              su -m builder -c "cd /tmp/archbuild && DSHD_APPIMAGE_X86_64=\"$DSHD_APPIMAGE_X86_64\" makepkg --noconfirm --cleanbuild --nodeps"
               cp /tmp/archbuild/*.pkg.tar.zst /site/arch/x86_64/
               repo-add /site/arch/x86_64/dshd-linux.db.tar.gz /site/arch/x86_64/*.pkg.tar.zst
             '
