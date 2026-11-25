@@ -25,19 +25,15 @@ dist/arch-repo/x86_64/dshd-linux.files.tar.gz
 
 ## Hosted repository
 
-The Pages workflow builds the package and publishes the pacman database to:
+There is no published pacman repository yet. The Pages workflow does not build
+Arch packages; use the local builder below. The future hosted URL is reserved
+as:
 
 ```text
 https://openviewmobile.github.io/dshd-linux/arch/x86_64
 ```
 
-Use the generated mirror config:
-
-```text
-https://openviewmobile.github.io/dshd-linux/dshd-linux-arch.conf
-```
-
-or add manually:
+For a local build, configure:
 
 ```ini
 [dshd-linux]
@@ -56,7 +52,6 @@ For production, sign the package/database with the release key and use
 ## Status
 
 The PKGBUILD is prepared and renamed from the colliding AUR name
-`deepseek-harness-bin` to `dshd-linux-bin`. It is **not in AUR**. The Pages
-workflow now builds the package in an Arch container and publishes the pacman
-repository; the repository is unsigned at the database level, hence
-`SigLevel = Optional DatabaseOptional`.
+`deepseek-harness-bin` to `dshd-linux-bin`. It is **not in AUR** and no pacman
+repository is published yet. The CI attempt was removed because the AppImage
+source override was not reaching `makepkg` correctly; use the local builder.
