@@ -121,7 +121,10 @@ jobs:
           # Arch package and pacman repository. This is a binary repackage of
           # the same AppImage used by the AUR PKGBUILD. It is intentionally
           # unsigned at the pacman database level; use SigLevel=Optional.
+          appimage_path="$(find /tmp/assets -maxdepth 1 -name "*-linux-x86_64-unsigned.AppImage" -print -quit)"
+          test -n "$appimage_path"
           docker run --rm \
+            -e DSHD_APPIMAGE_X86_64="/assets/$(basename "$appimage_path")" \
             -v "$PWD/site:/site" \
             -v "$PWD/packaging/aur:/pkg:ro" \
             -v "/tmp/assets:/assets:ro" \
@@ -131,10 +134,8 @@ jobs:
               useradd -m builder
               mkdir -p /tmp/archbuild /site/arch/x86_64
               cp /pkg/PKGBUILD /tmp/archbuild/PKGBUILD
-              appimage="$(find /assets -maxdepth 1 -name "*-linux-x86_64-unsigned.AppImage" -print -quit)"
-              test -n "$appimage"
               chown -R builder /tmp/archbuild /site
-              su builder -c "cd /tmp/archbuild && DSHD_APPIMAGE_X86_64=\"$appimage\" makepkg --noconfirm --cleanbuild --nodeps"
+              su builder -c "cd /tmp/archbuild && makepkg --noconfirm --cleanbuild --nodeps"
               cp /tmp/archbuild/*.pkg.tar.zst /site/arch/x86_64/
               repo-add /site/arch/x86_64/dshd-linux.db.tar.gz /site/arch/x86_64/*.pkg.tar.zst
             '
