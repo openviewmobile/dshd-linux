@@ -58,6 +58,7 @@ jobs:
           gh release download "$TAG" --repo "$GITHUB_REPOSITORY" \
             --pattern '*-linux-amd64-unsigned.deb' \
             --pattern '*-linux-x86_64-unsigned.rpm' \
+            --pattern '*-linux-x86_64-unsigned.AppImage' \
             --pattern 'dshd-linux-release-signing.asc' \
             --dir /tmp/assets
 
@@ -117,6 +118,34 @@ jobs:
           repo_gpgcheck=1
           gpgkey=https://openviewmobile.github.io/dshd-linux/key.asc
           REPO
+
+          # Arch package and pacman repository. This is a binary repackage of
+          # the same AppImage used by the AUR PKGBUILD. It is intentionally
+          # unsigned at the pacman database level; use SigLevel=Optional.
+          docker run --rm \
+            -v "$PWD/site:/site" \
+            -v "$PWD/packaging/aur:/pkg:ro" \
+            -v "/tmp/assets:/assets:ro" \
+            archlinux:base-devel bash -lc '
+              set -euo pipefail
+              pacman -Sy --noconfirm --needed base-devel git imagemagick
+              useradd -m builder
+              mkdir -p /tmp/archbuild /site/arch/x86_64
+              cp /pkg/PKGBUILD /tmp/archbuild/PKGBUILD
+              appimage="$(find /assets -maxdepth 1 -name "*-linux-x86_64-unsigned.AppImage" -print -quit)"
+              test -n "$appimage"
+              chmod a+r "$appimage"
+              chown -R builder /tmp/archbuild /site
+              su builder -c "cd /tmp/archbuild && DSHD_APPIMAGE_X86_64=\"$appimage\" makepkg --noconfirm --cleanbuild --nodeps"
+              cp /tmp/archbuild/*.pkg.tar.zst /site/arch/x86_64/
+              repo-add /site/arch/x86_64/dshd-linux.db.tar.gz /site/arch/x86_64/*.pkg.tar.zst
+            '
+
+          cat > site/dshd-linux-arch.conf <<'ARCH'
+          [dshd-linux]
+          Server = https://openviewmobile.github.io/dshd-linux/arch/x86_64
+          SigLevel = Optional DatabaseOptional
+          ARCH
 
       - name: Configure Pages
         uses: actions/configure-pages@v6

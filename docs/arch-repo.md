@@ -23,14 +23,26 @@ dist/arch-repo/x86_64/dshd-linux.db.tar.gz
 dist/arch-repo/x86_64/dshd-linux.files.tar.gz
 ```
 
-## Client configuration
+## Hosted repository
 
-Host the `x86_64` directory over HTTPS, then add:
+The Pages workflow builds the package and publishes the pacman database to:
+
+```text
+https://openviewmobile.github.io/dshd-linux/arch/x86_64
+```
+
+Use the generated mirror config:
+
+```text
+https://openviewmobile.github.io/dshd-linux/dshd-linux-arch.conf
+```
+
+or add manually:
 
 ```ini
 [dshd-linux]
-Server = https://example.com/arch/x86_64
-SigLevel = Optional
+Server = https://openviewmobile.github.io/dshd-linux/arch/x86_64
+SigLevel = Optional DatabaseOptional
 ```
 
 ```bash
@@ -44,5 +56,7 @@ For production, sign the package/database with the release key and use
 ## Status
 
 The PKGBUILD is prepared and renamed from the colliding AUR name
-`deepseek-harness-bin` to `dshd-linux-bin`. It is **not in AUR** and the
-self-hosted repository is not yet published from CI.
+`deepseek-harness-bin` to `dshd-linux-bin`. It is **not in AUR**. The Pages
+workflow now builds the package in an Arch container and publishes the pacman
+repository; the repository is unsigned at the database level, hence
+`SigLevel = Optional DatabaseOptional`.
