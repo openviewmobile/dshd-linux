@@ -118,6 +118,36 @@ jobs:
           gpgkey=https://openviewmobile.github.io/dshd-linux/key.asc
           REPO
 
+          appimage_path="$(find /tmp/assets -maxdepth 1 -name "*-linux-x86_64-unsigned.AppImage" -print -quit)"
+          test -n "$appimage_path"
+          appimage_sha="$(sha256sum "$appimage_path" | awk '{print $1}')"
+          docker run --rm \
+            -e DSHD_APPIMAGE_X86_64="/assets/$(basename "$appimage_path")" \
+            -e DSHD_SHA256_X86_64="$appimage_sha" \
+            -v "$PWD/site:/site" \
+            -v "$PWD/packaging/aur:/pkg:ro" \
+            -v "/tmp/assets:/assets:ro" \
+            archlinux:base-devel bash -lc '
+              set -euo pipefail
+              pacman -Sy --noconfirm --needed base-devel git imagemagick squashfs-tools
+              useradd -m builder
+              mkdir -p /tmp/archbuild /site/arch/x86_64
+              cp /pkg/PKGBUILD /tmp/archbuild/PKGBUILD
+              sed -i "s|^source_x86_64=.*|source_x86_64=()|" /tmp/archbuild/PKGBUILD
+              sed -i "s|^sha256sums_x86_64=.*|sha256sums_x86_64=()|" /tmp/archbuild/PKGBUILD
+              sed -i "s|^prepare() {|prepare() {\n  DSHD_APPIMAGE_X86_64=\"$DSHD_APPIMAGE_X86_64\"|" /tmp/archbuild/PKGBUILD
+              chown -R builder /tmp/archbuild /site
+              su -m builder -c "cd /tmp/archbuild && makepkg --noconfirm --cleanbuild --nodeps"
+              cp /tmp/archbuild/*.pkg.tar.zst /site/arch/x86_64/
+              repo-add /site/arch/x86_64/dshd-linux.db.tar.gz /site/arch/x86_64/*.pkg.tar.zst
+            '
+
+          cat > site/dshd-linux-arch.conf <<'ARCH'
+          [dshd-linux]
+          Server = https://openviewmobile.github.io/dshd-linux/arch/x86_64
+          SigLevel = Optional DatabaseOptional
+          ARCH
+
       - name: Configure Pages
         uses: actions/configure-pages@v6
 
