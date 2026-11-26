@@ -102,6 +102,12 @@ png 90
 raw: width=1 height=1 channels=3 data=[17,103,231]
 ```
 
-This is the preferred workaround for the Flathub runtime: vendor the wasm32
-`sharp` package and its `@img/sharp-wasm32` payload instead of the native
-`@img/sharp-linux-x64` module. It avoids the Electron native-module SIGSEGV.
+This was the first workaround, but Gentoo PR #10 now provides the preferred
+native approach: rebuild the bundled sharp addon against system libvips during
+the package install. That makes sharp and Electron share one GLib and avoids
+the private-libvips crash without switching to wasm.
+
+For Flathub, the system libvips module can be built in the manifest and the
+sharp addon rebuilt against it. That does not remove the remaining source-build
+work: offline pnpm/npm/Python sources, Electron BaseApp integration, and a
+sandbox launch test are still required before a Flathub PR.
