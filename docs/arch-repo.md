@@ -39,7 +39,17 @@ For a local build, configure:
 ```ini
 [dshd-linux]
 Server = https://openviewmobile.github.io/dshd-linux/arch/x86_64
-SigLevel = Optional DatabaseOptional
+SigLevel = Required DatabaseOptional
+PackageSigLevel = Optional
+```
+
+The repository database and package are signed with the release key. Import it
+first:
+
+```bash
+curl -fsSL https://openviewmobile.github.io/dshd-linux/key.asc \
+  | sudo pacman-key --add -
+sudo pacman-key --lsign-key <fingerprint>
 ```
 
 ```bash
