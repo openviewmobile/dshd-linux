@@ -46,3 +46,22 @@ jobs:
             dnf install -y deepseek-harness
             rpm -q deepseek-harness
           '
+
+  arch:
+    name: Install from pacman (Arch)
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    container: archlinux:base-devel
+    timeout-minutes: 30
+    steps:
+      - name: Install from the Pages pacman repository
+        run: |
+          set -euo pipefail
+          printf '\n[dshd-linux]\nServer = https://openviewmobile.github.io/dshd-linux/arch/x86_64\nSigLevel = Optional DatabaseOptional\n' >> /etc/pacman.conf
+          pacman -Sy --noconfirm
+          pacman -S --noconfirm --needed dshd-linux-bin
+          pacman -Q dshd-linux-bin
+          test -x /usr/bin/deepseek-harness
+          test -f /usr/share/applications/com.deepseek.harness.desktop
+          test -f /usr/share/icons/hicolor/256x256/apps/com.deepseek.harness.png
+          echo ARCH_PACMAN_INSTALL_OK
