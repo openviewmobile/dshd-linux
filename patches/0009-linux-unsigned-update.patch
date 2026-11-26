@@ -1,0 +1,19 @@
+--- a/apps/desktop/scripts/electron-builder-config.mjs
++++ b/apps/desktop/scripts/electron-builder-config.mjs
+@@ -99,7 +99,14 @@
+   })
+   if (windowsSigner !== undefined) {
+     installWindowsNsisBootstrapSigner({ sign: windowsSigner })
+   }
+-  const update = unsigned ? undefined : resolveDesktopAutoUpdateConfig(env, resolvedPlatform, resolvedArch)
++  // Linux AppImages are released unsigned. They still need the generic update
++  // feed; only require DSHD_APPIMAGE_UPDATE_URL when a local unsigned build
++  // explicitly wants an update source.
++  const update = resolvedPlatform === 'linux'
++    ? (env.DSHD_APPIMAGE_UPDATE_URL === undefined
++        ? undefined
++        : resolveDesktopAutoUpdateConfig(env, resolvedPlatform, resolvedArch))
++    : (unsigned ? undefined : resolveDesktopAutoUpdateConfig(env, resolvedPlatform, resolvedArch))
+   if (preparedRuntime !== undefined) buildPaths.dsh = preparedRuntime
+   // electron-builder merges extraMetadata into the packaged manifest, so a build version here reaches
+   // the artifact names, the update feed, and the installed app.getVersion() the updater compares against.
