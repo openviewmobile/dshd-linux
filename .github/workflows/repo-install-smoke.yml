@@ -58,6 +58,8 @@ jobs:
         run: |
           set -euo pipefail
           pacman -Sy --noconfirm --needed gnupg
+          pacman-key --init
+          pacman-key --populate archlinux
           curl -fsSL https://openviewmobile.github.io/dshd-linux/key.asc -o /tmp/dshd-linux.asc
           pacman-key --add /tmp/dshd-linux.asc
           FPR="$(gpg --with-colons --show-keys /tmp/dshd-linux.asc | awk -F: '$1 == "fpr" { print $10; exit }')"
