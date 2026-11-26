@@ -50,6 +50,13 @@ for path, child in walk(header):
     target.write_bytes(data[off:off + child["size"]])
 PY
 
+command -v node >/dev/null || { echo "node is required (net-libs/nodejs)" >&2; exit 1; }
+command -v npm >/dev/null || { echo "npm is required (net-libs/nodejs[npm])" >&2; exit 1; }
+command -v python3 >/dev/null || { echo "python3 is required (dev-lang/python)" >&2; exit 1; }
+command -v pkg-config >/dev/null || { echo "pkg-config is required" >&2; exit 1; }
+[ -f /usr/include/node/node.h ] || { echo "node headers missing: /usr/include/node/node.h" >&2; exit 1; }
+pkg-config --exists vips-cpp || { echo "system vips-cpp not found (>=media-libs/vips-8.18.7)" >&2; exit 1; }
+
 npm_root=$(npm root -g)
 node_gyp=
 for candidate in \
@@ -61,8 +68,7 @@ do
 		break
 	fi
 done
-[ -n "$node_gyp" ] || { echo "node-gyp not found under $npm_root" >&2; exit 1; }
-pkg-config --exists vips-cpp || { echo "system vips-cpp not found" >&2; exit 1; }
+[ -n "$node_gyp" ] || { echo "node-gyp not found under $npm_root (need net-libs/nodejs[npm])" >&2; exit 1; }
 
 export SHARP_FORCE_GLOBAL_LIBVIPS=1
 unset SHARP_IGNORE_GLOBAL_LIBVIPS || true
