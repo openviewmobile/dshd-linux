@@ -133,7 +133,7 @@ jobs:
               useradd -m builder
               mkdir -p /tmp/archbuild /site/arch/x86_64
               cp /pkg/PKGBUILD-ci /tmp/archbuild/PKGBUILD
-              chown -R builder /tmp/archbuild /site
+              chown -R builder /tmp/archbuild /site/arch
               su -m builder -c "cd /tmp/archbuild && makepkg --noconfirm --cleanbuild --nodeps"
               cp /tmp/archbuild/*.pkg.tar.zst /site/arch/x86_64/
               repo-add /site/arch/x86_64/dshd-linux.db.tar.gz /site/arch/x86_64/*.pkg.tar.zst
