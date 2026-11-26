@@ -148,7 +148,9 @@ exec "$APPDIR/deepseek-harness" "$@"
 WRAPPER
   chmod 755 "$pkgdir/usr/bin/deepseek-harness"
 
-  local icon_src="$srcdir/squashfs-root/usr/share/icons/hicolor/1024x1024/apps/deepseek-harness.png"
+  local icon_src
+  icon_src="$(find "$srcdir/squashfs-root/usr/share/icons" -type f -name 'deepseek-harness.png' | sort -V | tail -n 1)"
+  [[ -n $icon_src && -f $icon_src ]] || error "AppImage has no deepseek-harness.png icon"
   local icon_size
   for icon_size in 16 22 24 32 48 64 96 128 256 512; do
     convert "$icon_src" -resize "${icon_size}x${icon_size}" "$srcdir/icon-${icon_size}.png"
