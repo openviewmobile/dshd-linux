@@ -157,12 +157,21 @@ jobs:
               su -m builder -c "cd /tmp/archbuild && makepkg --noconfirm --cleanbuild --nodeps"
               cp /tmp/archbuild/*.pkg.tar.zst /site/arch/x86_64/
               repo-add /site/arch/x86_64/dshd-linux.db.tar.gz /site/arch/x86_64/*.pkg.tar.zst
-            '
+              cp -a /root/.gnupg /tmp/gnupg
+              rm -f /tmp/gnupg/S.*
+              chown -R root:root /tmp/gnupg
+              chmod 700 /tmp/gnupg
+              gpg --homedir /tmp/gnupg --batch --list-secret-keys >/dev/null
+              GPG_SIGN=(gpg --homedir /tmp/gnupg --batch --yes --pinentry-mode loopback --passphrase-file /tmp/gpg-pass)
+              "${GPG_SIGN[@]}" --armor --detach-sign -o /site/arch/x86_64/dshd-linux.db.tar.gz.sig /site/arch/x86_64/dshd-linux.db.tar.gz
+              "${GPG_SIGN[@]}" --armor --detach-sign -o /site/arch/x86_64/dshd-linux.files.tar.gz.sig /site/arch/x86_64/dshd-linux.files.tar.gz
+            ''
 
           cat > site/dshd-linux-arch.conf <<'ARCH'
           [dshd-linux]
           Server = https://openviewmobile.github.io/dshd-linux/arch/x86_64
-          SigLevel = Optional DatabaseOptional
+          SigLevel = Required DatabaseOptional
+          PackageSigLevel = Optional
           ARCH
 
       - name: Configure Pages
