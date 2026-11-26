@@ -21,9 +21,9 @@ sign_args=(
   --define "_gpg_path /tmp/gnupg"
 )
 if [[ -n ${GPG_PASSPHRASE:-} && -f /tmp/gpg-pass ]]; then
-  sign_args+=(--define "__gpg_sign_cmd %{__gpg} gpg --batch --no-armor --pinentry-mode loopback --passphrase-file /tmp/gpg-pass -u %{_gpg_name} -sbo %{__signature_filename} %{__plaintext_filename}")
+  sign_args+=(--define "__gpg_sign_cmd %{__gpg} gpg --homedir %{_gpg_path} --batch --no-armor --pinentry-mode loopback --passphrase-file /tmp/gpg-pass -u %{_gpg_name} -sbo %{__signature_filename} %{__plaintext_filename}")
 else
-  sign_args+=(--define "__gpg_sign_cmd %{__gpg} gpg --batch --no-armor -u %{_gpg_name} -sbo %{__signature_filename} %{__plaintext_filename}")
+  sign_args+=(--define "__gpg_sign_cmd %{__gpg} gpg --homedir %{_gpg_path} --batch --no-armor -u %{_gpg_name} -sbo %{__signature_filename} %{__plaintext_filename}")
 fi
 
 for rpm in "${rpms[@]}"; do
