@@ -24,6 +24,7 @@ jobs:
   publish:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
+    timeout-minutes: 25
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -43,8 +44,8 @@ jobs:
             echo "::error::Set the GPG_PRIVATE_KEY repository secret."
             exit 1
           fi
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq dpkg-dev apt-utils createrepo-c rpm gnupg
+          sudo timeout 300 apt-get update -qq -o Acquire::http::Timeout=30 -o Acquire::Retries=3
+          sudo timeout 300 apt-get install -y -qq -o Acquire::http::Timeout=30 -o Acquire::Retries=3 dpkg-dev apt-utils createrepo-c rpm gnupg
           printf '%s' "$GPG_PRIVATE_KEY" | gpg --batch --import
           gpg --batch --list-secret-keys --with-colons > /tmp/gpg-keys
           awk -F: '$1 == "fpr" { print $10; exit }' /tmp/gpg-keys > /tmp/gpg-fpr
