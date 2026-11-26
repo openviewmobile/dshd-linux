@@ -56,17 +56,23 @@ jobs:
     steps:
       - name: Install from the Pages pacman repository
         run: |
-          set -euo pipefail
+          set -euxo pipefail
           pacman -Sy --noconfirm --needed archlinux-keyring gnupg
           pacman-key --init
           pacman-key --populate archlinux
+          echo STEP_KEYRING_OK
           curl -fsSL https://openviewmobile.github.io/dshd-linux/key.asc -o /tmp/dshd-linux.asc
+          echo STEP_CURL_OK
           pacman-key --add /tmp/dshd-linux.asc
+          echo STEP_ADD_OK
           FPR="$(gpg --with-colons --show-keys /tmp/dshd-linux.asc | awk -F: '$1 == "fpr" { print $10; exit }')"
           test -n "$FPR"
+          echo "STEP_FPR=$FPR"
           pacman-key --lsign-key "$FPR"
+          echo STEP_LSIGN_OK
           printf '\n[dshd-linux]\nServer = https://openviewmobile.github.io/dshd-linux/arch/x86_64\nSigLevel = Required DatabaseOptional\nPackageSigLevel = Optional\n' >> /etc/pacman.conf
           pacman -Sy --noconfirm
+          echo STEP_SYNC_OK
           pacman -S --noconfirm --needed dshd-linux-bin
           pacman -Q dshd-linux-bin
           test -x /usr/bin/deepseek-harness
