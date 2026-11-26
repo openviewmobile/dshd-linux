@@ -3,12 +3,14 @@
 
 EAPI=8
 
+PYTHON_COMPAT=( python3_{12..15} )
+
 # Upstream v0.2.2-rc.1.5 maps to the Gentoo patch suffix _p5.
 # Update the filename, UPSTREAM_PV and Manifest together on the next bump.
 UPSTREAM_PV="0.2.2-rc.1.5"
 MY_PN="deepseek-harness"
 
-inherit desktop xdg-utils
+inherit desktop python-any-r1 xdg-utils
 
 DESCRIPTION="Electron desktop shell for the bundled dsh runtime"
 HOMEPAGE="https://github.com/openviewmobile/dshd-linux"
@@ -21,11 +23,14 @@ S="${WORKDIR}"
 
 LICENSE="MIT BSD PSF-2 Apache-2.0"
 SLOT="0"
-KEYWORDS="~amd64 ~arm64"
+# ~arm64 stays masked until the sharp rebuild is verified on aarch64.
+# Installing the bundled addon there still crashes the desktop host.
+KEYWORDS="~amd64"
 
 # The AppImage already contains Electron 44, Node 24 and Python.  System
 # Electron cannot be used: the desktop shell starts its Host with
-# ELECTRON_RUN_AS_NODE.  These are runtime libraries only.
+# ELECTRON_RUN_AS_NODE.  sharp is rebuilt against system libvips so that
+# host shares Electron's GLib.
 RDEPEND="
 	app-accessibility/at-spi2-core
 	dev-libs/expat
@@ -33,6 +38,7 @@ RDEPEND="
 	dev-libs/glib
 	dev-libs/nss
 	media-libs/alsa-lib
+	>=media-libs/vips-8.18.7
 	media-libs/mesa
 	net-print/cups
 	sys-apps/dbus
@@ -56,7 +62,16 @@ RDEPEND="
 	x11-misc/xdg-utils
 "
 
-BDEPEND="media-gfx/imagemagick"
+# node-gyp ships inside net-libs/nodejs[npm] and compiles against the
+# headers in /usr/include/node. It runs under the python-any-r1 interpreter.
+# gcc and make come from @system.
+BDEPEND="
+	${PYTHON_DEPS}
+	dev-libs/glib
+	>=media-libs/vips-8.18.7
+	net-libs/nodejs[npm]
+	virtual/pkgconfig
+"
 
 # Never strip Electron/Node/Python or the bundled native modules.
 RESTRICT="strip"
@@ -81,11 +96,25 @@ src_unpack() {
 	[[ -x "${WORKDIR}/squashfs-root/${MY_PN}" ]] || die "unexpected AppImage layout"
 }
 
+# The AppImage sharp addon is linked to a private libvips that bundles GLib.
+# Rebuild it against the system libvips so Electron and sharp share one GLib.
+dsh_fix_sharp_glib() {
+	local root="${1}" node
+	node="$(find "${root}/resources/app.asar.unpacked/dsh/node_modules/@img" \
+		-name 'sharp-linux-*.node' -print -quit)" || die
+	[[ -n ${node} ]] || die "bundled sharp addon not found"
+	einfo "Rebuilding sharp against system libvips"
+	bash "${FILESDIR}/rebuild-sharp-sysvips.sh" \
+		"${root}/resources/app.asar" "${node}" "${T}/sharp-sysvips" \
+		|| die "sharp rebuild against system libvips failed"
+}
+
 src_install() {
 	local appdir="${WORKDIR}/squashfs-root"
 
 	dodir /opt/deepseek-harness
 	cp -a "${appdir}/." "${ED}/opt/deepseek-harness/" || die
+	dsh_fix_sharp_glib "${ED}/opt/deepseek-harness"
 
 	# Portage runs with umask 077; the extracted tree would otherwise remain
 	# unreadable by unprivileged users on a fresh install.
@@ -126,13 +155,14 @@ Categories=Development;
 EOF
 	newmenu "${T}/${MY_PN}.desktop" com.deepseek.harness.desktop
 
-	# hicolor registers 16..512, and KDE resolves the Wayland app_id through
-	# the matching desktop file. Install both the correct name and the sizes.
-	local icon_src="${appdir}/usr/share/icons/hicolor/1024x1024/apps/${MY_PN}.png"
-	local icon_size
-	for icon_size in 16 22 24 32 48 64 128 256 512; do
-		convert "${icon_src}" -resize "${icon_size}x${icon_size}" "${T}/${MY_PN}-${icon_size}.png" || die
-		newicon -s "${icon_size}" "${T}/${MY_PN}-${icon_size}.png" com.deepseek.harness.png
+	# The AppImage ships these hicolor sizes, including 64 and 96.
+	# There is no 1024x1024 file to resize from.
+	local icon_src icon_size
+	for icon_src in "${appdir}/usr/share/icons/hicolor/"*/apps/${MY_PN}.png; do
+		[[ -f ${icon_src} ]] || die "no hicolor icons in the AppImage"
+		icon_size=${icon_src##*/hicolor/}
+		icon_size=${icon_size%%x*}
+		newicon -s "${icon_size}" "${icon_src}" com.deepseek.harness.png
 	done
 }
 
