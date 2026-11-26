@@ -111,3 +111,14 @@ For Flathub, the system libvips module can be built in the manifest and the
 sharp addon rebuilt against it. That does not remove the remaining source-build
 work: offline pnpm/npm/Python sources, Electron BaseApp integration, and a
 sandbox launch test are still required before a Flathub PR.
+
+## pnpm offline-source spike (2026-11-26)
+
+`flatpak-node-generator` 0.1.1 supports npm and yarn only; it does not support
+the upstream pnpm workspace. A `pnpm fetch --store-dir /tmp/dsh-pnpm-store`
+run downloaded 1.7 GB into the content-addressable store.
+
+That store would have to be hosted as an additional source and unpacked inside
+the Flatpak build before `pnpm install --offline`. Together with the Electron
+BaseApp integration, Python runtime, and libvips/sharp rebuild, this is not a
+small manifest change.
