@@ -384,9 +384,14 @@ nix run .#
 - `S="${WORKDIR}"` so Portage finds the extracted source directory;
 - `src_unpack()` runs `AppImage --appimage-extract`;
 - `src_install()` installs to `/opt/deepseek-harness`, generates the wrapper/desktop file,
-  `doicon -s 1024`;
+  and installs the hicolor icon sizes;
 - `fowners root:root` + `fperms 4755` set `chrome-sandbox`;
-- `RDEPEND` uses `app-crypt/libsecret` (not `dev-libs/libsecret`);
+- `RDEPEND` uses `app-crypt/libsecret` (not `dev-libs/libsecret`) and
+  `media-libs/vips`. The bundled `sharp` addon is linked to a private
+  libvips that ships its own GLib. Electron has already loaded the system
+  GLib, so `sharp().metadata()` segfaults and the desktop host exits.
+  `files/rebuild-sharp-sysvips.sh` rebuilds that addon against system
+  libvips during `src_install`;
 - `RESTRICT="strip"`, `QA_PREBUILT="*"`;
 - `pkg_postinst`/`pkg_postrm` call the xdg-utils eclass to update the desktop/icon/mime caches.
 
@@ -397,6 +402,9 @@ mkdir -p /var/db/repos/dshd/app-misc/deepseek-harness-bin
 cp packaging/gentoo/deepseek-harness-bin-0.2.2_rc1_p5.ebuild \
   packaging/gentoo/Manifest \
   /var/db/repos/dshd/app-misc/deepseek-harness-bin/
+mkdir -p /var/db/repos/dshd/app-misc/deepseek-harness-bin/files
+cp packaging/gentoo/files/rebuild-sharp-sysvips.sh \
+  /var/db/repos/dshd/app-misc/deepseek-harness-bin/files/
 cd /var/db/repos/dshd/app-misc/deepseek-harness-bin
 # Regenerate after changing the ebuild or version:
 # ebuild deepseek-harness-bin-0.2.2_rc1_p5.ebuild manifest
@@ -419,9 +427,13 @@ AppImage selected by the current architecture.
   `fperms 4755`, `doicon -s 1024` are present;
 - ✅ `pkgcheck scan` clean on Gentoo 2.18 / pkgcheck 0.10.49;
 - ✅ `ebuild … fetch`, clean merge/unmerge, `emerge -pv`, and ordinary-user
-  Wayland launch passed on the final revision;
+  Wayland launch passed on the revision before the sharp rebuild;
 - ✅ `/opt/deepseek-harness` is 0755, `chrome-sandbox` is 4755, and the
-  `com.deepseek.harness` desktop/icon entries resolve in KDE.
+  `com.deepseek.harness` desktop/icon entries resolve in KDE;
+- ✅ on one Gentoo x86_64 machine with `media-libs/vips` 8.18.7, the rebuild
+  script produces an addon that links `libvips-cpp.so.42`. Under
+  `ELECTRON_RUN_AS_NODE`, `sharp().metadata()` and a resize of a JPEG both
+  succeed. A full `ebuild install` of this revision was not re-run.
 
 **Limitations.**
 
@@ -437,7 +449,11 @@ AppImage selected by the current architecture.
 - the package still uses a prebuilt Electron tree and a setuid `chrome-sandbox`,
   which remain policy considerations for GURU/main-tree.
 - `pkgdev manifest` downloads both arch AppImages once; normal `emerge` downloads only
-  the current architecture.
+  the current architecture;
+- the sharp rebuild needs `net-libs/nodejs` (for `node-gyp` and headers under
+  `/usr/include/node`) and system `libvips` `>= 8.18.7`. aarch64 was not
+  rebuilt. The `[SharpElectronLinux]` warning is still printed; it is not the
+  crash.
 
 ---
 
