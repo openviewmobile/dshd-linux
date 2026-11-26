@@ -88,6 +88,11 @@ prepare() {
   fi
   [[ -n $appimage && -f $appimage ]] || error "AppImage not found: $appimage"
 
+  # The CI asset mount is read-only; copy it into the writable build tree so
+  # the AppImage can be made executable and extracted.
+  cp "$appimage" "$srcdir/dshd.AppImage"
+  appimage="$srcdir/dshd.AppImage"
+
   # Offline overrides bypass makepkg's checksum array, so verify here.  For
   # remote sources this is a second check of the same file (inexpensive enough
   # for a release build and protects DSHD_APPDIR-only invocations).
