@@ -165,6 +165,8 @@ jobs:
               GPG_SIGN=(gpg --homedir /tmp/gnupg --batch --yes --pinentry-mode loopback --passphrase-file /tmp/gpg-pass)
               "${GPG_SIGN[@]}" --armor --detach-sign -o /site/arch/x86_64/dshd-linux.db.tar.gz.sig /site/arch/x86_64/dshd-linux.db.tar.gz
               "${GPG_SIGN[@]}" --armor --detach-sign -o /site/arch/x86_64/dshd-linux.files.tar.gz.sig /site/arch/x86_64/dshd-linux.files.tar.gz
+              "${GPG_SIGN[@]}" --armor --detach-sign -o /site/arch/x86_64/dshd-linux.db.sig /site/arch/x86_64/dshd-linux.db
+              "${GPG_SIGN[@]}" --armor --detach-sign -o /site/arch/x86_64/dshd-linux.files.sig /site/arch/x86_64/dshd-linux.files
             '
 
           cat > site/dshd-linux-arch.conf <<'ARCH'
