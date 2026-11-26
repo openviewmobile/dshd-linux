@@ -100,12 +100,27 @@ jobs:
 
           mkdir -p site/rpm/x86_64
           cp /tmp/assets/*-linux-x86_64-unsigned.rpm site/rpm/x86_64/
-          for rpm in site/rpm/x86_64/*.rpm; do
-            rpm --addsign --define "_signature gpg" --define "_gpg_name $FPR" --define "_gpg_path $HOME/.gnupg" "${RPM_SIGN_ARGS[@]}" "$rpm" || true
-            if ! rpmkeys --checksig "$rpm" | grep -qE "digests signatures OK|signatures OK"; then
-              echo "::warning::RPM package signature is unavailable: $rpm (repository metadata remains signed)"
-            fi
-          done
+          rm -f site/rpm/x86_64/.rpms-signed
+          if [ -n "${GPG_PASSPHRASE:-}" ]; then
+            printf '%s' "$GPG_PASSPHRASE" > /tmp/gpg-pass
+            chmod 600 /tmp/gpg-pass
+          else
+            : > /tmp/gpg-pass
+          fi
+          if docker run --rm \
+            -e FPR="$FPR" \
+            -e GPG_PASSPHRASE="${GPG_PASSPHRASE:-}" \
+            -v "$PWD/site/rpm/x86_64:/rpms" \
+            -v "$HOME/.gnupg:/root/.gnupg" \
+            -v /tmp/gpg-pass:/tmp/gpg-pass:ro \
+            -v "$PWD/scripts/sign-rpms.sh:/sign-rpms.sh:ro" \
+            fedora:41 bash /sign-rpms.sh; then
+            RPM_GPGCHECK=1
+            rm -f site/rpm/x86_64/.rpms-signed
+          else
+            echo "::warning::RPM package signing failed; publishing metadata-signed repository with gpgcheck=0"
+            RPM_GPGCHECK=0
+          fi
           createrepo_c --database site/rpm/x86_64
           "${GPG[@]}" --armor --detach-sign -o site/rpm/x86_64/repodata/repomd.xml.asc site/rpm/x86_64/repodata/repomd.xml
           cat > site/dshd-linux.repo <<REPO
@@ -113,7 +128,7 @@ jobs:
           name=DSHD for Linux
           baseurl=https://openviewmobile.github.io/dshd-linux/rpm/x86_64
           enabled=1
-          gpgcheck=0
+          gpgcheck=$RPM_GPGCHECK
           repo_gpgcheck=1
           gpgkey=https://openviewmobile.github.io/dshd-linux/key.asc
           REPO
