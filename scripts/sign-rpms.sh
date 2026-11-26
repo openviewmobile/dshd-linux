@@ -10,6 +10,8 @@ rm -f /tmp/gnupg/S.*
 chown -R root:root /tmp/gnupg
 chmod 700 /tmp/gnupg
 gpg --homedir /tmp/gnupg --batch --list-secret-keys >/dev/null
+gpg --homedir /tmp/gnupg --armor --export "$FPR" > /tmp/RPM-GPG-KEY
+rpm --import /tmp/RPM-GPG-KEY
 shopt -s nullglob
 rpms=(/rpms/*.rpm)
 [[ ${#rpms[@]} -gt 0 ]] || { echo "no RPMs to sign" >&2; exit 1; }
