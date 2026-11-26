@@ -57,7 +57,7 @@ jobs:
       - name: Install from the Pages pacman repository
         run: |
           set -euo pipefail
-          pacman -Sy --noconfirm --needed gnupg
+          pacman -Sy --noconfirm --needed archlinux-keyring gnupg
           pacman-key --init
           pacman-key --populate archlinux
           curl -fsSL https://openviewmobile.github.io/dshd-linux/key.asc -o /tmp/dshd-linux.asc
