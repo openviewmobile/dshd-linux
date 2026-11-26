@@ -4,6 +4,9 @@
 set -euo pipefail
 
 dnf install -y -q gnupg2 rpm-sign >/dev/null
+chown -R root:root /root/.gnupg
+chmod 700 /root/.gnupg
+gpg --homedir /root/.gnupg --batch --list-secret-keys >/dev/null
 shopt -s nullglob
 rpms=(/rpms/*.rpm)
 [[ ${#rpms[@]} -gt 0 ]] || { echo "no RPMs to sign" >&2; exit 1; }
