@@ -25,7 +25,8 @@ KEYWORDS="~amd64 ~arm64"
 
 # The AppImage already contains Electron 44, Node 24 and Python.  System
 # Electron cannot be used: the desktop shell starts its Host with
-# ELECTRON_RUN_AS_NODE.  These are runtime libraries only.
+# ELECTRON_RUN_AS_NODE.  sharp is rebuilt against system libvips so that
+# host shares Electron's GLib.
 RDEPEND="
 	app-accessibility/at-spi2-core
 	dev-libs/expat
@@ -33,6 +34,7 @@ RDEPEND="
 	dev-libs/glib
 	dev-libs/nss
 	media-libs/alsa-lib
+	media-libs/vips
 	media-libs/mesa
 	net-print/cups
 	sys-apps/dbus
@@ -56,7 +58,13 @@ RDEPEND="
 	x11-misc/xdg-utils
 "
 
-BDEPEND="media-gfx/imagemagick"
+BDEPEND="
+	dev-libs/glib
+	media-gfx/imagemagick
+	media-libs/vips
+	net-libs/nodejs
+	virtual/pkgconfig
+"
 
 # Never strip Electron/Node/Python or the bundled native modules.
 RESTRICT="strip"
@@ -81,11 +89,24 @@ src_unpack() {
 	[[ -x "${WORKDIR}/squashfs-root/${MY_PN}" ]] || die "unexpected AppImage layout"
 }
 
+# The AppImage sharp addon is linked to a private libvips that bundles GLib.
+# Rebuild it against the system libvips so Electron and sharp share one GLib.
+dsh_fix_sharp_glib() {
+	local root="${1}" node
+	node="$(find "${root}/resources/app.asar.unpacked/dsh/node_modules/@img" -name 'sharp-linux-*.node' -print -quit)" || die
+	[[ -n ${node} ]] || die "bundled sharp addon not found"
+	einfo "Rebuilding sharp against system libvips"
+	bash "${FILESDIR}/rebuild-sharp-sysvips.sh" \
+		"${root}/resources/app.asar" "${node}" "${T}/sharp-sysvips" \
+		|| die "sharp rebuild against system libvips failed"
+}
+
 src_install() {
 	local appdir="${WORKDIR}/squashfs-root"
 
 	dodir /opt/deepseek-harness
 	cp -a "${appdir}/." "${ED}/opt/deepseek-harness/" || die
+	dsh_fix_sharp_glib "${ED}/opt/deepseek-harness"
 
 	# Portage runs with umask 077; the extracted tree would otherwise remain
 	# unreadable by unprivileged users on a fresh install.
