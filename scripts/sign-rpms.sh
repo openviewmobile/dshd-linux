@@ -3,7 +3,7 @@
 # produce a signature even when rpm --addsign exits zero.
 set -euo pipefail
 
-dnf install -y -q gnupg2 >/dev/null
+dnf install -y -q gnupg2 rpm-sign >/dev/null
 shopt -s nullglob
 rpms=(/rpms/*.rpm)
 [[ ${#rpms[@]} -gt 0 ]] || { echo "no RPMs to sign" >&2; exit 1; }
