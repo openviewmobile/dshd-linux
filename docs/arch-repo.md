@@ -26,7 +26,9 @@ dist/arch-repo/x86_64/dshd-linux.files.tar.gz
 ## Hosted repository
 
 The Pages workflow builds the package from `packaging/arch/PKGBUILD-ci` and
-publishes the pacman database to:
+publishes the pacman database. The `Package repository install smoke` workflow
+installs `dshd-linux-bin` from this repository in an Arch container and checks
+the binary, desktop entry and icon.
 
 ```text
 https://openviewmobile.github.io/dshd-linux/arch/x86_64
