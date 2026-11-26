@@ -167,6 +167,9 @@ jobs:
               "${GPG_SIGN[@]}" --armor --detach-sign -o /site/arch/x86_64/dshd-linux.files.tar.gz.sig /site/arch/x86_64/dshd-linux.files.tar.gz
               "${GPG_SIGN[@]}" --armor --detach-sign -o /site/arch/x86_64/dshd-linux.db.sig /site/arch/x86_64/dshd-linux.db
               "${GPG_SIGN[@]}" --armor --detach-sign -o /site/arch/x86_64/dshd-linux.files.sig /site/arch/x86_64/dshd-linux.files
+              for pkg in /site/arch/x86_64/*.pkg.tar.zst; do
+                "${GPG_SIGN[@]}" --detach-sign -o "$pkg.sig" "$pkg"
+              done
             '
 
           cat > site/dshd-linux-arch.conf <<'ARCH'
