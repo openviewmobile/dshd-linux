@@ -67,3 +67,23 @@ A complete update test needs two versions:
 
 Until that test is run, the feature should be described as **implemented, pending
 version-to-version acceptance**, not as “fully verified”.
+
+## 2026-11-26 acceptance finding
+
+The rc.1.4 AppImage reports:
+
+```text
+desktop update: this application has no packaged update source
+```
+
+Its extracted `resources/` directory contains no `app-update.yml`. The same is
+true of the installed rc.1.5 tree. The cause is in
+`apps/desktop/scripts/electron-builder-config.mjs`: `update` was set to
+`undefined` whenever `DSH_DESKTOP_UNSIGNED=1`, and the Linux release AppImages
+are all built unsigned. The release workflow therefore never enabled the
+generic feed for them.
+
+`patches/0009-linux-unsigned-update.patch` keeps the updater config for Linux
+when `DSHD_APPIMAGE_UPDATE_URL` is set, while leaving ordinary local unsigned
+builds without an update source. A new AppImage pair must be built before the
+A→B acceptance can be run; existing rc.1.4/rc.1.5 artifacts cannot self-update.
