@@ -57,7 +57,13 @@ jobs:
       - name: Install from the Pages pacman repository
         run: |
           set -euo pipefail
-          printf '\n[dshd-linux]\nServer = https://openviewmobile.github.io/dshd-linux/arch/x86_64\nSigLevel = Optional DatabaseOptional\n' >> /etc/pacman.conf
+          pacman -Sy --noconfirm --needed gnupg
+          curl -fsSL https://openviewmobile.github.io/dshd-linux/key.asc -o /tmp/dshd-linux.asc
+          pacman-key --add /tmp/dshd-linux.asc
+          FPR="$(gpg --with-colons --show-keys /tmp/dshd-linux.asc | awk -F: '$1 == "fpr" { print $10; exit }')"
+          test -n "$FPR"
+          pacman-key --lsign-key "$FPR"
+          printf '\n[dshd-linux]\nServer = https://openviewmobile.github.io/dshd-linux/arch/x86_64\nSigLevel = Required DatabaseOptional\nPackageSigLevel = Optional\n' >> /etc/pacman.conf
           pacman -Sy --noconfirm
           pacman -S --noconfirm --needed dshd-linux-bin
           pacman -Q dshd-linux-bin

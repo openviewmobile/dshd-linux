@@ -140,12 +140,16 @@ jobs:
           docker run --rm \
             -e DSHD_APPIMAGE_X86_64="/assets/$(basename "$appimage_path")" \
             -e DSHD_SHA256_X86_64="$appimage_sha" \
+            -e FPR="$FPR" \
+            -e GPG_PASSPHRASE="${GPG_PASSPHRASE:-}" \
             -v "$PWD/site:/site" \
             -v "$PWD/packaging/arch:/pkg:ro" \
             -v "/tmp/assets:/assets:ro" \
+            -v "$HOME/.gnupg:/root/.gnupg" \
+            -v /tmp/gpg-pass:/tmp/gpg-pass:ro \
             archlinux:base-devel bash -lc '
               set -euo pipefail
-              pacman -Sy --noconfirm --needed base-devel git imagemagick squashfs-tools
+              pacman -Sy --noconfirm --needed base-devel git imagemagick squashfs-tools gnupg
               useradd -m builder
               mkdir -p /tmp/archbuild /site/arch/x86_64
               cp /pkg/PKGBUILD-ci /tmp/archbuild/PKGBUILD
