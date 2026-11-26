@@ -375,7 +375,7 @@ nix run .#
 
 **Behavior.**
 
-- `EAPI=8`; `KEYWORDS="~amd64 ~arm64"`; dual architecture;
+- `EAPI=8`; `KEYWORDS="~amd64"`; `~arm64` stays masked until the sharp rebuild is verified on aarch64;
 - upstream `0.2.2-rc.1.5` maps to Gentoo `0.2.2_rc1_p5`; the `_p` suffix
   represents the upstream packaging/patch level, not a Gentoo ebuild revision;
 - `SRC_URI` points at the DSHD GitHub Release (not the upstream
@@ -387,17 +387,21 @@ nix run .#
   and installs the hicolor icon sizes;
 - `fowners root:root` + `fperms 4755` set `chrome-sandbox`;
 - `RDEPEND` uses `app-crypt/libsecret` (not `dev-libs/libsecret`) and
-  `media-libs/vips`. The bundled `sharp` addon is linked to a private
+  `>=media-libs/vips-8.18.7`. The bundled `sharp` addon is linked to a private
   libvips that ships its own GLib. Electron has already loaded the system
   GLib, so `sharp().metadata()` segfaults and the desktop host exits.
   `files/rebuild-sharp-sysvips.sh` rebuilds that addon against system
-  libvips during `src_install`;
+  libvips during `src_install`. `BDEPEND` lists `${PYTHON_DEPS}`
+  (`python-any-r1`, `python3_{12..15}`) and `net-libs/nodejs[npm]` because
+  node-gyp ships with npm and runs under Python;
 - `RESTRICT="strip"`, `QA_PREBUILT="*"`;
 - `pkg_postinst`/`pkg_postrm` call the xdg-utils eclass to update the desktop/icon/mime caches.
 
 **Commands (overlay).**
 
 ```bash
+# metadata/layout.conf must contain "thin-manifests = true".
+# The committed Manifest has no AUX entries for files/.
 mkdir -p /var/db/repos/dshd/app-misc/deepseek-harness-bin
 cp packaging/gentoo/deepseek-harness-bin-0.2.2_rc1_p5.ebuild \
   packaging/gentoo/Manifest \
@@ -424,16 +428,18 @@ AppImage selected by the current architecture.
 - ✅ source URL returns HTTP 302 to the DSHD release asset;
 - ✅ Manifest includes the EBUILD entry and both DIST entries; sizes and SHA-512/BLAKE2B match the published AppImages;
 - ✅ structural checks: `EAPI=8`, `RESTRICT="strip"`, `QA_PREBUILT`, `S="${WORKDIR}"`,
-  `fperms 4755`, `doicon -s 1024` are present;
-- ✅ `pkgcheck scan` clean on Gentoo 2.18 / pkgcheck 0.10.49;
-- ✅ `ebuild … fetch`, clean merge/unmerge, `emerge -pv`, and ordinary-user
-  Wayland launch passed on the revision before the sharp rebuild;
-- ✅ `/opt/deepseek-harness` is 0755, `chrome-sandbox` is 4755, and the
-  `com.deepseek.harness` desktop/icon entries resolve in KDE;
-- ✅ on one Gentoo x86_64 machine with `media-libs/vips` 8.18.7, the rebuild
-  script produces an addon that links `libvips-cpp.so.42`. Under
-  `ELECTRON_RUN_AS_NODE`, `sharp().metadata()` and a resize of a JPEG both
-  succeed. A full `ebuild install` of this revision was not re-run.
+  `fperms 4755` are present. Icons are the AppImage hicolor files, including 64 and 96;
+- ✅ `pkgcheck scan` on Gentoo reports one warning: `NonsolvableDepsInDev`
+  for `net-libs/nodejs[npm]` on the amd64/x32 profile, where nodejs is
+  package-masked. The default amd64 profile is fine;
+- ✅ `ebuild … clean unpack prepare install` and `emerge` of
+  `app-misc/deepseek-harness-bin-0.2.2_rc1_p5` completed on one Gentoo x86_64
+  machine. Wayland launch was checked on the revision before this sharp rebuild;
+- ✅ installed `/opt/deepseek-harness` addon `sharp-linux-x64-0.35.5.node`
+  links `libvips-cpp.so.42` and `libvips.so.42`. Under `ELECTRON_RUN_AS_NODE`,
+  `sharp().metadata()` of a 1024 PNG and an 8x8 resize both succeed, and
+  `sharp.versions.vips` is `8.18.7`. hicolor icons installed: 16, 22, 24, 32,
+  48, 64, 96, 128, 256, 512.
 
 **Limitations.**
 
@@ -450,10 +456,10 @@ AppImage selected by the current architecture.
   which remain policy considerations for GURU/main-tree.
 - `pkgdev manifest` downloads both arch AppImages once; normal `emerge` downloads only
   the current architecture;
-- the sharp rebuild needs `net-libs/nodejs` (for `node-gyp` and headers under
-  `/usr/include/node`) and system `libvips` `>= 8.18.7`. aarch64 was not
-  rebuilt. The `[SharpElectronLinux]` warning is still printed; it is not the
-  crash.
+- the sharp rebuild needs `net-libs/nodejs[npm]` (node-gyp and headers under
+  `/usr/include/node`), `python-any-r1`, and system `libvips` `>= 8.18.7`.
+  `~arm64` is masked until that rebuild is verified on aarch64. The
+  `[SharpElectronLinux]` warning is still printed; it is not the crash.
 
 ---
 
