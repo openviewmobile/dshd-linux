@@ -1,14 +1,11 @@
 --- a/apps/desktop/scripts/electron-builder-config.mjs
 +++ b/apps/desktop/scripts/electron-builder-config.mjs
-@@ -99,7 +99,14 @@
-   })
+@@ -99,7 +99,12 @@
    if (windowsSigner !== undefined) {
      installWindowsNsisBootstrapSigner({ sign: windowsSigner })
    }
 -  const update = unsigned ? undefined : resolveDesktopAutoUpdateConfig(env, resolvedPlatform, resolvedArch)
-+  // Linux AppImages are released unsigned. They still need the generic update
-+  // feed; only require DSHD_APPIMAGE_UPDATE_URL when a local unsigned build
-+  // explicitly wants an update source.
++  // Linux release AppImages are unsigned but still use the generic feed.
 +  const update = resolvedPlatform === 'linux'
 +    ? (env.DSHD_APPIMAGE_UPDATE_URL === undefined
 +        ? undefined
