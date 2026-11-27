@@ -61,6 +61,7 @@ jobs:
           releaseDate: '{__import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat()}'
           """
           pathlib.Path('assets/latest-linux.yml').write_text(yml)
+          pathlib.Path('assets/stable-linux.yml').write_text(yml)
           PY
 
       - name: Create or update the fixed feed release
@@ -70,7 +71,7 @@ jobs:
           if gh release view "$FEED" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release view "$FEED" --repo "$GITHUB_REPOSITORY" --json assets               --jq '.assets[].name' | while IFS= read -r name; do
                 case "$name" in
-                  *.AppImage|latest-linux.yml) gh release delete-asset "$FEED" "$name" --repo "$GITHUB_REPOSITORY" --yes || true ;;
+                  *.AppImage|*-linux.yml) gh release delete-asset "$FEED" "$name" --repo "$GITHUB_REPOSITORY" --yes || true ;;
                 esac
               done
           else
@@ -79,5 +80,5 @@ jobs:
               --notes "Rolling electron-updater feed; assets are replaced for each release." \
               --prerelease
           fi
-          gh release upload "$FEED" assets/latest-linux.yml assets/*.AppImage \
+          gh release upload "$FEED" assets/latest-linux.yml assets/stable-linux.yml assets/*.AppImage \
             --repo "$GITHUB_REPOSITORY" --clobber
