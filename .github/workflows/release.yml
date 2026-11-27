@@ -41,10 +41,10 @@ jobs:
             runner: ubuntu-24.04-arm
             suffix: arm64
     steps:
-      - name: Check out the release tag
+      - name: Check out the release source
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.inputs.tag || github.ref_name }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && 'main' || github.ref_name }}
 
       - name: Free runner disk space
         run: |
@@ -113,10 +113,10 @@ jobs:
     needs: build
     runs-on: ubuntu-24.04
     steps:
-      - name: Check out the release tag
+      - name: Check out the release source
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.inputs.tag || github.ref_name }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && 'main' || github.ref_name }}
 
       - name: Download both architecture artifacts
         uses: actions/download-artifact@v8
